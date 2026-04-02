@@ -395,18 +395,18 @@
       "name": "Full Contract Block",
       "section": "9.1",
       "scope": "function",
-      "contains_operative_form": false,
-      "contains_existential_form": false,
-      "contains_pipeline_corollary": false,
-      "contains_independence_caveat": false,
-      "contains_error_checklist": false
+      "contains_operative_form": true,
+      "contains_existential_form": true,
+      "contains_pipeline_corollary": true,
+      "contains_independence_caveat": true,
+      "contains_error_checklist": true
     },
     {
       "artifact_id": "short_form",
       "name": "Short-Form",
       "section": "9.2",
       "scope": "project",
-      "contains_operative_form": false,
+      "contains_operative_form": true,
       "contains_existential_form": false,
       "contains_pipeline_corollary": false,
       "contains_independence_caveat": false,
@@ -428,10 +428,10 @@
       "name": "CLAUDE.md Integration Block",
       "section": "9.4",
       "scope": "repository",
-      "contains_operative_form": false,
+      "contains_operative_form": true,
       "contains_existential_form": false,
-      "contains_pipeline_corollary": false,
-      "contains_independence_caveat": false,
+      "contains_pipeline_corollary": true,
+      "contains_independence_caveat": true,
       "contains_error_checklist": false
     }
   ],

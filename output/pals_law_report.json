@@ -264,14 +264,14 @@
       "block_id": "math_8_1",
       "section": "8",
       "latex": "\\frac{\\partial D_c}{\\partial C} \\leq 0\n\\quad \\text{for } c \\in \\bigl\\{\\texttt{ERR\\_SCHEMA},\\ \\texttt{ERR\\_TRUNCATION},\\ \\texttt{ERR\\_INSTRUCTION}\\bigr\\}",
-      "claim_status": "corollary",
+      "claim_status": "hypothesis",
       "description": "Corollary 5 \u2014 capability-detection partial derivatives"
     },
     {
       "block_id": "math_8_2",
       "section": "8",
       "latex": "\\frac{\\partial D_c}{\\partial C} > 0\n\\quad \\text{for } c \\in \\bigl\\{\\texttt{ERR\\_HALLUCINATION},\\ \\texttt{ERR\\_SEMANTIC},\\ \\texttt{ERR\\_SYCOPHANCY},\\ \\texttt{ERR\\_REASONING}\\bigr\\}",
-      "claim_status": "corollary",
+      "claim_status": "hypothesis",
       "description": "Corollary 5 \u2014 capability-detection partial derivatives"
     }
   ],

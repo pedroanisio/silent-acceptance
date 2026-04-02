@@ -119,9 +119,9 @@ def _get_section_text(text: str, section: str) -> str:
     """Extract the text of a specific section."""
     esc = re.escape(section)
     patterns = [
-        rf'^#{2,4}\s+{esc}\s',
-        rf'^#{2,4}\s+{esc}\.\s',
-        rf'^#{2,4}\s+{esc}\b',
+        rf'^#{{2,4}}\s+{esc}\s',
+        rf'^#{{2,4}}\s+{esc}\.\s',
+        rf'^#{{2,4}}\s+{esc}\b',
     ]
     match = None
     for pat in patterns:
