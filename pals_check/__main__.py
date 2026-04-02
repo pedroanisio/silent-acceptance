@@ -16,13 +16,66 @@ from dataclasses import asdict
 from pathlib import Path
 
 from pals_check.report import build_report
+from pals_check.signing import generate_certificate, sign_artifact, verify_artifact, verify_certificate
 
 
 def main() -> None:
     if len(sys.argv) < 2 or "--help" in sys.argv:
         print("Usage: python -m pals_check <path_to_md_file> [--no-verify]", file=sys.stderr)
-        print("  --no-verify  Skip network fetching of reference URLs", file=sys.stderr)
+        print("       python -m pals_check --check-sig <json_file>", file=sys.stderr)
+        print("       python -m pals_check --verify-cert <cert.json> <spec.md> [report.json] [schema.json]", file=sys.stderr)
+        print("  --no-verify    Skip network fetching of reference URLs", file=sys.stderr)
+        print("  --check-sig    Verify the digital signature of an output file", file=sys.stderr)
+        print("  --verify-cert  Verify a certificate against source artifacts", file=sys.stderr)
         sys.exit(1)
+
+    # Certificate verification mode
+    if sys.argv[1] == "--verify-cert":
+        if len(sys.argv) < 4:
+            print("Usage: python -m pals_check --verify-cert <cert.json> <spec.md> [report.json] [schema.json]", file=sys.stderr)
+            sys.exit(1)
+        cert_path = Path(sys.argv[2])
+        cert = json.loads(cert_path.read_text(encoding="utf-8"))
+
+        md_text = Path(sys.argv[3]).read_text(encoding="utf-8")
+
+        report_dict = None
+        schema_dict = None
+        for arg in sys.argv[4:]:
+            p = Path(arg)
+            data = json.loads(p.read_text(encoding="utf-8"))
+            if "math_checks" in data or "math_blocks" in data:
+                report_dict = data
+            elif "symbols" in data or "claims" in data:
+                schema_dict = data
+
+        valid, messages = verify_certificate(cert, md_text, report_dict, schema_dict)
+        for msg in messages:
+            icon = "\u2713" if ": OK" in msg else "\u2717"
+            print(f"  {icon} {msg}")
+        checks = cert.get("checks", {})
+        print(f"  Checks at generation: {checks.get('passed', '?')} passed, "
+              f"{checks.get('warned', '?')} warned, {checks.get('failed', '?')} failed")
+        print(f"  Generated: {cert.get('generated_at', '?')}")
+        sys.exit(0 if valid else 1)
+
+    # Signature verification mode
+    if sys.argv[1] == "--check-sig":
+        if len(sys.argv) < 3:
+            print("Usage: python -m pals_check --check-sig <json_file>", file=sys.stderr)
+            sys.exit(1)
+        sig_path = Path(sys.argv[2])
+        if not sig_path.exists():
+            print(f"File not found: {sig_path}", file=sys.stderr)
+            sys.exit(1)
+        signed = json.loads(sig_path.read_text(encoding="utf-8"))
+        valid, message = verify_artifact(signed)
+        if valid:
+            print(f"\u2713 {message}")
+            sys.exit(0)
+        else:
+            print(f"\u2717 INVALID: {message}")
+            sys.exit(1)
 
     md_path = Path(sys.argv[1])
     if not md_path.exists():
@@ -38,15 +91,24 @@ def main() -> None:
     output_dir = Path("output")
     output_dir.mkdir(exist_ok=True)
 
-    # Write report
+    # Sign and write report
+    source_hash = report.content_hash
+    report_dict = sign_artifact(asdict(report), source_hash)
     report_path = output_dir / "pals_law_report.json"
     with open(report_path, "w") as f:
-        json.dump(asdict(report), f, indent=2, default=str)
+        json.dump(report_dict, f, indent=2, default=str)
 
-    # Write schema
+    # Sign and write schema
+    schema_dict = sign_artifact(asdict(schema), source_hash)
     schema_path = output_dir / "pals_law_schema.json"
     with open(schema_path, "w") as f:
-        json.dump(asdict(schema), f, indent=2, default=str)
+        json.dump(schema_dict, f, indent=2, default=str)
+
+    # Generate and write certificate binding all three artifacts
+    cert = generate_certificate(text, report_dict, schema_dict)
+    cert_path = output_dir / "pals_law_certificate.json"
+    with open(cert_path, "w") as f:
+        json.dump(cert, f, indent=2, default=str)
 
     # Print summary
     print("=" * 72)
@@ -123,8 +185,32 @@ def main() -> None:
         print(f"  [{marker}] {ec:25s} \u2192 {', '.join(ref_ids) if ref_ids else 'NO DIRECT REFERENCE'}")
     print()
 
-    print(f"  Report written to: {report_path.resolve()}")
-    print(f"  Schema written to: {schema_path.resolve()}")
+    # Signature info
+    sig = report_dict["_signature"]
+    print("  DIGITAL SIGNATURE:")
+    print("  " + "-" * 68)
+    print(f"  Algorithm        : {sig['algorithm']}")
+    print(f"  Payload digest   : {sig['payload_digest'][:32]}...")
+    print(f"  Seal             : {sig['seal'][:32]}...")
+    print(f"  Signed at        : {sig['signed_at']}")
+    print(f"  Tool             : {sig['tool_id']} v{sig['tool_version']}")
+    print()
+
+    # Certificate info
+    print("  CERTIFICATE:")
+    print("  " + "-" * 68)
+    print(f"  Spec digest      : {cert['spec']['digest'][:32]}...")
+    print(f"  Report digest    : {cert['report']['digest'][:32]}...")
+    print(f"  Schema digest    : {cert['schema']['digest'][:32]}...")
+    print(f"  Binding          : {cert['binding']['digest'][:32]}...")
+    print(f"  Generated        : {cert['generated_at']}")
+    print()
+
+    print(f"  Report written to     : {report_path.resolve()}")
+    print(f"  Schema written to     : {schema_path.resolve()}")
+    print(f"  Certificate written to: {cert_path.resolve()}")
+    print()
+    print(f"  Verify with: python -m pals_check --verify-cert {cert_path} {md_path} {report_path} {schema_path}")
     print("=" * 72)
 
 

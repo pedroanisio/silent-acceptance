@@ -126,11 +126,11 @@ The binary predicate is a deliberate simplification.
 ## 8. Corollaries
 
 $$
-\\frac{\\partial D_c}{\\partial C} \\leq 0 \\quad c \\in \\{ERR\\_SCHEMA, ERR\\_TRUNCATION, ERR\\_INSTRUCTION\\}
+\\frac{\\partial D_c}{\\partial C} \\leq 0 \\quad c \\in \\{ERR\\_OMISSION, ERR\\_SCHEMA, ERR\\_TRUNCATION, ERR\\_INSTRUCTION\\}
 $$
 
 $$
-\\frac{\\partial D_c}{\\partial C} > 0 \\quad c \\in \\{ERR\\_HALLUCINATION, ERR\\_SEMANTIC, ERR\\_SYCOPHANCY, ERR\\_REASONING\\}
+\\frac{\\partial D_c}{\\partial C} > 0 \\quad c \\in \\{ERR\\_HALLUCINATION, ERR\\_SEMANTIC, ERR\\_SYCOPHANCY, ERR\\_CALIBRATION, ERR\\_REASONING\\}
 $$
 
 ---

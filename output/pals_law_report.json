@@ -1,6 +1,6 @@
 {
   "document_version": "1.5.0",
-  "content_hash": "4eca487253d7d57d",
+  "content_hash": "d1d1f8d3f8015a00",
   "references": [
     {
       "ref_id": "ji_2023",
@@ -51,7 +51,7 @@
       "title": "TruthfulQA: Measuring How Models Mimic Human Falsehoods.",
       "venue": "ACL 2022",
       "doi": null,
-      "arxiv_id": "2109.07958.",
+      "arxiv_id": "2109.07958",
       "relevance": "Benchmark quantifying factual error rates across models; no model scores 100%. Note: TruthfulQA has known saturation issues for frontier models (a decision tree achieves 79.6% without reading the question); it is cited here as historical evidence of non-zero error rates, not as a current evaluation recommendation.",
       "error_classes_supported": [
         "ERR_HALLUCINATION"
@@ -263,14 +263,14 @@
     {
       "block_id": "math_8_1",
       "section": "8",
-      "latex": "\\frac{\\partial D_c}{\\partial C} \\leq 0\n\\quad \\text{for } c \\in \\bigl\\{\\texttt{ERR\\_SCHEMA},\\ \\texttt{ERR\\_TRUNCATION},\\ \\texttt{ERR\\_INSTRUCTION}\\bigr\\}",
+      "latex": "\\frac{\\partial D_c}{\\partial C} \\leq 0\n\\quad \\text{for } c \\in \\bigl\\{\\texttt{ERR\\_OMISSION},\\ \\texttt{ERR\\_SCHEMA},\\ \\texttt{ERR\\_TRUNCATION},\\ \\texttt{ERR\\_INSTRUCTION}\\bigr\\}",
       "claim_status": "hypothesis",
       "description": "Corollary 5 \u2014 capability-detection partial derivatives"
     },
     {
       "block_id": "math_8_2",
       "section": "8",
-      "latex": "\\frac{\\partial D_c}{\\partial C} > 0\n\\quad \\text{for } c \\in \\bigl\\{\\texttt{ERR\\_HALLUCINATION},\\ \\texttt{ERR\\_SEMANTIC},\\ \\texttt{ERR\\_SYCOPHANCY},\\ \\texttt{ERR\\_REASONING}\\bigr\\}",
+      "latex": "\\frac{\\partial D_c}{\\partial C} > 0\n\\quad \\text{for } c \\in \\bigl\\{\\texttt{ERR\\_HALLUCINATION},\\ \\texttt{ERR\\_SEMANTIC},\\ \\texttt{ERR\\_SYCOPHANCY},\\ \\texttt{ERR\\_CALIBRATION},\\ \\texttt{ERR\\_REASONING}\\bigr\\}",
       "claim_status": "hypothesis",
       "description": "Corollary 5 \u2014 capability-detection partial derivatives"
     }
@@ -331,7 +331,7 @@
       ],
       "description": "Corollary 5: \u2202D_c/\u2202C \u2264 0 for structural classes, > 0 for semantic classes",
       "status": "pass",
-      "detail": "{\n  \"structural_sign_correct\": true,\n  \"semantic_sign_correct\": true,\n  \"structural_classes_found\": [\n    \"ERR_INSTRUCTION\",\n    \"ERR_SCHEMA\",\n    \"ERR_TRUNCATION\"\n  ],\n  \"semantic_classes_found\": [\n    \"ERR_HALLUCINATION\",\n    \"ERR_REASONING\",\n    \"ERR_SEMANTIC\",\n    \"ERR_SYCOPHANCY\"\n  ],\n  \"expected_structural\": [\n    \"ERR_INSTRUCTION\",\n    \"ERR_OMISSION\",\n    \"ERR_SCHEMA\",\n    \"ERR_TRUNCATION\"\n  ],\n  \"expected_semantic\": [\n    \"ERR_CALIBRATION\",\n    \"ERR_HALLUCINATION\",\n    \"ERR_REASONING\",\n    \"ERR_SEMANTIC\",\n    \"ERR_SYCOPHANCY\"\n  ]\n}"
+      "detail": "{\n  \"structural_sign_correct\": true,\n  \"semantic_sign_correct\": true,\n  \"structural_classes_found\": [\n    \"ERR_INSTRUCTION\",\n    \"ERR_OMISSION\",\n    \"ERR_SCHEMA\",\n    \"ERR_TRUNCATION\"\n  ],\n  \"semantic_classes_found\": [\n    \"ERR_CALIBRATION\",\n    \"ERR_HALLUCINATION\",\n    \"ERR_REASONING\",\n    \"ERR_SEMANTIC\",\n    \"ERR_SYCOPHANCY\"\n  ],\n  \"expected_structural\": [\n    \"ERR_INSTRUCTION\",\n    \"ERR_OMISSION\",\n    \"ERR_SCHEMA\",\n    \"ERR_TRUNCATION\"\n  ],\n  \"expected_semantic\": [\n    \"ERR_CALIBRATION\",\n    \"ERR_HALLUCINATION\",\n    \"ERR_REASONING\",\n    \"ERR_SEMANTIC\",\n    \"ERR_SYCOPHANCY\"\n  ],\n  \"coverage_complete\": true\n}"
     },
     {
       "check_id": "CHK_CROSS_REFERENCES",
@@ -420,5 +420,15 @@
   "total_math_blocks": 7,
   "checks_passed": 9,
   "checks_warned": 0,
-  "checks_failed": 0
+  "checks_failed": 0,
+  "_signature": {
+    "signature_version": "1",
+    "algorithm": "sha256",
+    "tool_id": "pals-check",
+    "tool_version": "1.0.0",
+    "signed_at": "2026-04-02T23:57:38Z",
+    "source_document_hash": "d1d1f8d3f8015a00",
+    "payload_digest": "b512050c318fda908b43b2b2eb887070f46dfd95759886721faba5fea4fbbd0c",
+    "seal": "347dd11b55f68f1475acc6bdc8aff70e4dba136c87664adbfca11cb18e29f27f"
+  }
 }

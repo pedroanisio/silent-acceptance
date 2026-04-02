@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import tempfile
 from pathlib import Path
 from unittest.mock import patch
@@ -10,6 +11,7 @@ from unittest.mock import patch
 import pytest
 
 from pals_check.__main__ import main
+from pals_check.signing import sign_artifact
 
 PROJECT_ROOT = Path(__file__).parent.parent
 
@@ -110,3 +112,68 @@ class TestMainInProcess:
                 assert "Cited in:" in output.out
             finally:
                 os.chdir(orig_cwd)
+
+    def test_main_outputs_include_signature(self, capsys):
+        md_path = str(PROJECT_ROOT / "PALS_LAW-v1.5.0.md")
+        with tempfile.TemporaryDirectory() as tmpdir:
+            orig_cwd = os.getcwd()
+            try:
+                os.chdir(tmpdir)
+                with patch("sys.argv", ["pals_check", md_path, "--no-verify"]):
+                    main()
+                output = capsys.readouterr()
+                assert "DIGITAL SIGNATURE" in output.out
+                assert "Payload digest" in output.out
+                assert "Seal" in output.out
+
+                report = json.loads((Path(tmpdir) / "output" / "pals_law_report.json").read_text())
+                assert "_signature" in report
+                assert report["_signature"]["algorithm"] == "sha256"
+            finally:
+                os.chdir(orig_cwd)
+
+
+class TestMainCheckSig:
+    def test_check_sig_valid_file(self, capsys):
+        signed = sign_artifact({"test": "data"}, "hash")
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
+            json.dump(signed, f)
+            f.flush()
+            try:
+                with patch("sys.argv", ["pals_check", "--check-sig", f.name]):
+                    with pytest.raises(SystemExit) as exc_info:
+                        main()
+                    assert exc_info.value.code == 0
+                output = capsys.readouterr()
+                assert "\u2713" in output.out
+                assert "Valid" in output.out
+            finally:
+                os.unlink(f.name)
+
+    def test_check_sig_tampered_file(self, capsys):
+        signed = sign_artifact({"test": "data"}, "hash")
+        signed["test"] = "tampered"
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
+            json.dump(signed, f)
+            f.flush()
+            try:
+                with patch("sys.argv", ["pals_check", "--check-sig", f.name]):
+                    with pytest.raises(SystemExit) as exc_info:
+                        main()
+                    assert exc_info.value.code == 1
+                output = capsys.readouterr()
+                assert "INVALID" in output.out
+            finally:
+                os.unlink(f.name)
+
+    def test_check_sig_missing_file(self):
+        with patch("sys.argv", ["pals_check", "--check-sig", "/nonexistent.json"]):
+            with pytest.raises(SystemExit) as exc_info:
+                main()
+            assert exc_info.value.code == 1
+
+    def test_check_sig_no_file_arg(self):
+        with patch("sys.argv", ["pals_check", "--check-sig"]):
+            with pytest.raises(SystemExit) as exc_info:
+                main()
+            assert exc_info.value.code == 1

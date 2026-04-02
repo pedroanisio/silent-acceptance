@@ -96,7 +96,7 @@ def _parse_formal_reference(raw: str, relevance: str, confidence: str) -> Option
     doi = doi_match.group(1).strip().rstrip('.') if doi_match else None
 
     arxiv_match = re.search(r'arXiv:([\d.]+)', raw)
-    arxiv_id = arxiv_match.group(1) if arxiv_match else None
+    arxiv_id = arxiv_match.group(1).rstrip('.') if arxiv_match else None
 
     year_match = re.search(r'\((\d{4})\)', raw)
     if not year_match:
@@ -234,6 +234,8 @@ def _fetch_and_extract(url: str, ref: Reference) -> dict:
                 }
 
             fetched_title = _extract_html_title(body)
+            if not fetched_title:
+                fetched_title = _extract_meta_citation_title(body)
 
             if not fetched_title:
                 return {

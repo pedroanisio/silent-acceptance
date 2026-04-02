@@ -278,18 +278,26 @@ def check_math_consistency(blocks: list[MathBlock], text: str) -> list[MathCheck
             if esc_name in b_semantic:
                 semantic_classes.add(ec.value)
 
+        expected_structural = {"ERR_OMISSION", "ERR_SCHEMA", "ERR_TRUNCATION", "ERR_INSTRUCTION"}
+        expected_semantic = {"ERR_HALLUCINATION", "ERR_SYCOPHANCY", "ERR_CALIBRATION", "ERR_REASONING", "ERR_SEMANTIC"}
+
+        signs_ok = structural_leq_0 and semantic_gt_0
+        coverage_ok = structural_classes == expected_structural and semantic_classes == expected_semantic
+        all_ok = signs_ok and coverage_ok
+
         checks.append(MathCheck(
             check_id="CHK_COR5_SIGNS",
             target_blocks=[b.block_id for b in cor5_blocks],
             description="Corollary 5: \u2202D_c/\u2202C \u2264 0 for structural classes, > 0 for semantic classes",
-            status="pass" if (structural_leq_0 and semantic_gt_0) else "fail",
+            status="pass" if all_ok else ("warn" if signs_ok else "fail"),
             detail=json.dumps({
                 "structural_sign_correct": structural_leq_0,
                 "semantic_sign_correct": semantic_gt_0,
                 "structural_classes_found": sorted(structural_classes),
                 "semantic_classes_found": sorted(semantic_classes),
-                "expected_structural": sorted({"ERR_OMISSION", "ERR_SCHEMA", "ERR_TRUNCATION", "ERR_INSTRUCTION"}),
-                "expected_semantic": sorted({"ERR_HALLUCINATION", "ERR_SYCOPHANCY", "ERR_CALIBRATION", "ERR_REASONING", "ERR_SEMANTIC"}),
+                "expected_structural": sorted(expected_structural),
+                "expected_semantic": sorted(expected_semantic),
+                "coverage_complete": coverage_ok,
             }, indent=2),
         ))
 

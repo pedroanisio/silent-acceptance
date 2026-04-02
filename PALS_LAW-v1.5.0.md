@@ -487,12 +487,12 @@ before this can be tested empirically.]*
 
 $$
 \frac{\partial D_c}{\partial C} \leq 0
-\quad \text{for } c \in \bigl\{\texttt{ERR\_SCHEMA},\ \texttt{ERR\_TRUNCATION},\ \texttt{ERR\_INSTRUCTION}\bigr\}
+\quad \text{for } c \in \bigl\{\texttt{ERR\_OMISSION},\ \texttt{ERR\_SCHEMA},\ \texttt{ERR\_TRUNCATION},\ \texttt{ERR\_INSTRUCTION}\bigr\}
 $$
 
 $$
 \frac{\partial D_c}{\partial C} > 0
-\quad \text{for } c \in \bigl\{\texttt{ERR\_HALLUCINATION},\ \texttt{ERR\_SEMANTIC},\ \texttt{ERR\_SYCOPHANCY},\ \texttt{ERR\_REASONING}\bigr\}
+\quad \text{for } c \in \bigl\{\texttt{ERR\_HALLUCINATION},\ \texttt{ERR\_SEMANTIC},\ \texttt{ERR\_SYCOPHANCY},\ \texttt{ERR\_CALIBRATION},\ \texttt{ERR\_REASONING}\bigr\}
 $$
 
 The supporting observation is qualitative but concrete: a less capable model
