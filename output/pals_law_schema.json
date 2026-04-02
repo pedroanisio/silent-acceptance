@@ -469,14 +469,16 @@
     ]
   },
   "structural_error_classes": [
+    "ERR_OMISSION",
     "ERR_SCHEMA",
     "ERR_TRUNCATION",
     "ERR_INSTRUCTION"
   ],
   "semantic_error_classes": [
     "ERR_HALLUCINATION",
-    "ERR_SEMANTIC",
     "ERR_SYCOPHANCY",
-    "ERR_REASONING"
+    "ERR_CALIBRATION",
+    "ERR_REASONING",
+    "ERR_SEMANTIC"
   ]
 }

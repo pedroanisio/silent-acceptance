@@ -331,7 +331,7 @@
       ],
       "description": "Corollary 5: \u2202D_c/\u2202C \u2264 0 for structural classes, > 0 for semantic classes",
       "status": "pass",
-      "detail": "{\n  \"structural_sign_correct\": true,\n  \"semantic_sign_correct\": true,\n  \"structural_classes_found\": [\n    \"ERR_INSTRUCTION\",\n    \"ERR_SCHEMA\",\n    \"ERR_TRUNCATION\"\n  ],\n  \"semantic_classes_found\": [\n    \"ERR_HALLUCINATION\",\n    \"ERR_REASONING\",\n    \"ERR_SEMANTIC\",\n    \"ERR_SYCOPHANCY\"\n  ],\n  \"expected_structural\": [\n    \"ERR_INSTRUCTION\",\n    \"ERR_SCHEMA\",\n    \"ERR_TRUNCATION\"\n  ],\n  \"expected_semantic\": [\n    \"ERR_HALLUCINATION\",\n    \"ERR_REASONING\",\n    \"ERR_SEMANTIC\",\n    \"ERR_SYCOPHANCY\"\n  ]\n}"
+      "detail": "{\n  \"structural_sign_correct\": true,\n  \"semantic_sign_correct\": true,\n  \"structural_classes_found\": [\n    \"ERR_INSTRUCTION\",\n    \"ERR_SCHEMA\",\n    \"ERR_TRUNCATION\"\n  ],\n  \"semantic_classes_found\": [\n    \"ERR_HALLUCINATION\",\n    \"ERR_REASONING\",\n    \"ERR_SEMANTIC\",\n    \"ERR_SYCOPHANCY\"\n  ],\n  \"expected_structural\": [\n    \"ERR_INSTRUCTION\",\n    \"ERR_OMISSION\",\n    \"ERR_SCHEMA\",\n    \"ERR_TRUNCATION\"\n  ],\n  \"expected_semantic\": [\n    \"ERR_CALIBRATION\",\n    \"ERR_HALLUCINATION\",\n    \"ERR_REASONING\",\n    \"ERR_SEMANTIC\",\n    \"ERR_SYCOPHANCY\"\n  ]\n}"
     },
     {
       "check_id": "CHK_CROSS_REFERENCES",
@@ -376,15 +376,17 @@
     "total_error_classes": 9,
     "total_artifacts": 4,
     "structural_classes": [
+      "ERR_OMISSION",
       "ERR_SCHEMA",
       "ERR_TRUNCATION",
       "ERR_INSTRUCTION"
     ],
     "semantic_classes": [
       "ERR_HALLUCINATION",
-      "ERR_SEMANTIC",
       "ERR_SYCOPHANCY",
-      "ERR_REASONING"
+      "ERR_CALIBRATION",
+      "ERR_REASONING",
+      "ERR_SEMANTIC"
     ]
   },
   "error_class_coverage": {
