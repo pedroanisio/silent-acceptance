@@ -8,6 +8,34 @@ from dataclasses import dataclass
 
 from pals_check.constants import ClaimStatus, ErrorClass
 
+# Section IDs that are hardcoded in this module's logic.
+# If the spec restructures sections, this set must be updated.
+EXPECTED_SECTIONS = {
+    "3.1", "3.2", "3.3", "3.4",
+    "6.1",
+    "7.3",
+    "8",
+}
+
+
+def validate_section_ids(text: str) -> list[str]:
+    """Check that all hardcoded section IDs exist in the document.
+
+    Returns a list of warnings for any missing sections.
+    """
+    existing: set[str] = set()
+    for m in re.finditer(r'^#{2,4}\s+([\d.]+)\.?\s', text, re.MULTILINE):
+        existing.add(m.group(1).rstrip('.'))
+
+    warnings: list[str] = []
+    for sec_id in sorted(EXPECTED_SECTIONS):
+        if sec_id not in existing and not any(s.startswith(sec_id) for s in existing):
+            warnings.append(
+                f"Hardcoded section ID '{sec_id}' not found in document headings. "
+                f"The spec may have been restructured."
+            )
+    return warnings
+
 
 @dataclass
 class MathBlock:
@@ -260,8 +288,8 @@ def check_math_consistency(blocks: list[MathBlock], text: str) -> list[MathCheck
                 "semantic_sign_correct": semantic_gt_0,
                 "structural_classes_found": sorted(structural_classes),
                 "semantic_classes_found": sorted(semantic_classes),
-                "expected_structural": sorted({"ERR_SCHEMA", "ERR_TRUNCATION", "ERR_INSTRUCTION"}),
-                "expected_semantic": sorted({"ERR_HALLUCINATION", "ERR_SEMANTIC", "ERR_SYCOPHANCY", "ERR_REASONING"}),
+                "expected_structural": sorted({"ERR_OMISSION", "ERR_SCHEMA", "ERR_TRUNCATION", "ERR_INSTRUCTION"}),
+                "expected_semantic": sorted({"ERR_HALLUCINATION", "ERR_SYCOPHANCY", "ERR_CALIBRATION", "ERR_REASONING", "ERR_SEMANTIC"}),
             }, indent=2),
         ))
 

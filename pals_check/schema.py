@@ -103,10 +103,11 @@ def build_schema(text: str) -> PALSLawSchema:
         artifacts=artifacts,
         dependency_graph=dep_graph,
         structural_error_classes=[
-            "ERR_SCHEMA", "ERR_TRUNCATION", "ERR_INSTRUCTION",
+            "ERR_OMISSION", "ERR_SCHEMA", "ERR_TRUNCATION", "ERR_INSTRUCTION",
         ],
         semantic_error_classes=[
-            "ERR_HALLUCINATION", "ERR_SEMANTIC", "ERR_SYCOPHANCY", "ERR_REASONING",
+            "ERR_HALLUCINATION", "ERR_SYCOPHANCY", "ERR_CALIBRATION",
+            "ERR_REASONING", "ERR_SEMANTIC",
         ],
     )
 
@@ -359,6 +360,47 @@ def _build_error_classes() -> list[ErrorClassDef]:
     ]
 
 
+def _has_operative_form(sec: str) -> bool:
+    """Detect operative form via Unicode, LaTeX, or keyword."""
+    low = sec.lower()
+    return (
+        "\ud835\udd3c[\u03b5(M(x), x)]" in sec  # Unicode 𝔼[ε(M(x), x)]
+        or r"\mathbb{E}" in sec  # LaTeX
+        or "operative" in low
+        or "non-negligible" in low
+    )
+
+
+def _has_existential_form(sec: str) -> bool:
+    """Detect existential form via Unicode, LaTeX, or keyword."""
+    return (
+        "\u2203 x" in sec  # Unicode ∃ x
+        or "\u2203x" in sec
+        or r"\exists" in sec  # LaTeX
+        or "existential" in sec.lower()
+    )
+
+
+def _has_pipeline_corollary(sec: str) -> bool:
+    """Detect pipeline corollary via Unicode, LaTeX, or keyword."""
+    return (
+        "\u220f" in sec  # Unicode ∏
+        or r"\prod" in sec  # LaTeX
+        or "pipeline" in sec.lower()
+    )
+
+
+def _has_independence_caveat(sec: str) -> bool:
+    """Detect independence caveat via keywords."""
+    low = sec.lower()
+    return "independen" in low or "correlat" in low
+
+
+def _has_error_checklist(sec: str) -> bool:
+    """Detect error checklist by presence of any ERR_ identifier."""
+    return "ERR_HALLUCINATION" in sec or "ERR_" in sec
+
+
 def _build_artifacts(text: str) -> list[PractitionerArtifact]:
     artifacts = []
 
@@ -368,11 +410,11 @@ def _build_artifacts(text: str) -> list[PractitionerArtifact]:
         name="Full Contract Block",
         section="9.1",
         scope="function",
-        contains_operative_form="\ud835\udd3c[\u03b5(M(x), x)]" in sec91 or "operative" in sec91.lower(),
-        contains_existential_form="\u2203 x" in sec91 or "existential" in sec91.lower(),
-        contains_pipeline_corollary="\u220f" in sec91 or "pipeline" in sec91.lower(),
-        contains_independence_caveat="independen" in sec91.lower() or "correlation" in sec91.lower(),
-        contains_error_checklist="ERR_HALLUCINATION" in sec91,
+        contains_operative_form=_has_operative_form(sec91),
+        contains_existential_form=_has_existential_form(sec91),
+        contains_pipeline_corollary=_has_pipeline_corollary(sec91),
+        contains_independence_caveat=_has_independence_caveat(sec91),
+        contains_error_checklist=_has_error_checklist(sec91),
     ))
 
     sec92 = _get_section_text(text, "9.2")
@@ -381,11 +423,11 @@ def _build_artifacts(text: str) -> list[PractitionerArtifact]:
         name="Short-Form",
         section="9.2",
         scope="project",
-        contains_operative_form="non-negligible" in sec92.lower(),
-        contains_existential_form=False,
-        contains_pipeline_corollary=False,
-        contains_independence_caveat=False,
-        contains_error_checklist=False,
+        contains_operative_form=_has_operative_form(sec92),
+        contains_existential_form=_has_existential_form(sec92),
+        contains_pipeline_corollary=_has_pipeline_corollary(sec92),
+        contains_independence_caveat=_has_independence_caveat(sec92),
+        contains_error_checklist=_has_error_checklist(sec92),
     ))
 
     sec93 = _get_section_text(text, "9.3")
@@ -394,11 +436,11 @@ def _build_artifacts(text: str) -> list[PractitionerArtifact]:
         name="Inline Banner",
         section="9.3",
         scope="inline",
-        contains_operative_form=False,
-        contains_existential_form=False,
-        contains_pipeline_corollary=False,
-        contains_independence_caveat=False,
-        contains_error_checklist=False,
+        contains_operative_form=_has_operative_form(sec93),
+        contains_existential_form=_has_existential_form(sec93),
+        contains_pipeline_corollary=_has_pipeline_corollary(sec93),
+        contains_independence_caveat=_has_independence_caveat(sec93),
+        contains_error_checklist=_has_error_checklist(sec93),
     ))
 
     sec94 = _get_section_text(text, "9.4")
@@ -407,11 +449,11 @@ def _build_artifacts(text: str) -> list[PractitionerArtifact]:
         name="CLAUDE.md Integration Block",
         section="9.4",
         scope="repository",
-        contains_operative_form="\ud835\udd3c[\u03b5(M(x), x)]" in sec94 or "non-negligible" in sec94.lower(),
-        contains_existential_form=False,
-        contains_pipeline_corollary="pipeline" in sec94.lower(),
-        contains_independence_caveat="independen" in sec94.lower() or "correlation" in sec94.lower(),
-        contains_error_checklist=False,
+        contains_operative_form=_has_operative_form(sec94),
+        contains_existential_form=_has_existential_form(sec94),
+        contains_pipeline_corollary=_has_pipeline_corollary(sec94),
+        contains_independence_caveat=_has_independence_caveat(sec94),
+        contains_error_checklist=_has_error_checklist(sec94),
     ))
 
     return artifacts

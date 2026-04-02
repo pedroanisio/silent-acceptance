@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass, asdict
 
 from pals_check.constants import ErrorClass
-from pals_check.math_checker import MathCheck, extract_math_blocks, check_math_consistency
+from pals_check.math_checker import MathCheck, extract_math_blocks, check_math_consistency, validate_section_ids
 from pals_check.references import Reference, extract_references, verify_references
 from pals_check.schema import PALSLawSchema, build_schema
 
@@ -63,6 +63,11 @@ def build_report(text: str, do_verify: bool = True) -> tuple[AuditReport, PALSLa
 
     # Warnings
     warnings: list[str] = []
+
+    # Validate hardcoded section IDs against document structure
+    section_warnings = validate_section_ids(text)
+    warnings.extend(section_warnings)
+
     if uncovered:
         warnings.append(
             f"Error classes with no direct empirical reference: {', '.join(uncovered)}"
