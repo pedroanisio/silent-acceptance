@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 1920" width="1400" height="1920">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 2380" width="1400" height="2380">
   <defs>
     <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5"
             markerWidth="5" markerHeight="5" orient="auto-start-reverse">
@@ -50,45 +50,42 @@
   </defs>
 
   <!-- Background -->
-  <rect width="1400" height="1920" fill="#FAFAF8"/>
+  <rect width="1400" height="2380" fill="#FAFAF8"/>
 
-  <!-- ═══ Section 1: Header + Stat Cards ═══ -->
-  <text class="title" x="70" y="48">Drift-Risk Map — PALS's LAW</text>
-  <text class="subtitle" x="70" y="72">7 couplings · 4 files · Python + Markdown specification · No CI/tests detected</text>
+  <!-- ============ Section 1: Header + stat cards ============ -->
+  <g transform="translate(0, 20)">
+    <text class="title" x="70" y="30">pals-check</text>
+    <text class="subtitle" x="70" y="54">Drift-Risk Map (v2) — 12 couplings across 7 modules · commit 1758363 (working tree)</text>
+    <line x1="70" y1="70" x2="1330" y2="70" stroke="#e0ddd5" stroke-width="0.5"/>
 
-  <line x1="70" y1="88" x2="1330" y2="88" stroke="#e0ddd5" stroke-width="0.5"/>
+    <!-- Stat cards -->
+    <rect x="70" y="88" width="150" height="72" rx="10" fill="#FEF3EF" stroke="#F0997B" stroke-width="0.5"/>
+    <text class="stat-num" x="90" y="132" fill="#712B13">1</text>
+    <text class="stat-label" x="118" y="122" fill="#712B13">CRITICAL</text>
+    <text x="118" y="136" font-size="10" fill="#993C1D">P0 — silent drift</text>
 
-  <!-- Stat cards -->
-  <!-- CRITICAL -->
-  <rect x="70" y="106" width="150" height="72" rx="10" fill="#FEF3EF" stroke="#F0997B" stroke-width="0.5"/>
-  <text class="stat-num" x="90" y="148" fill="#712B13">4</text>
-  <text class="stat-label" x="130" y="138" fill="#712B13">CRITICAL</text>
-  <text x="130" y="153" font-size="10" fill="#993C1D">P0 — no guard</text>
+    <rect x="238" y="88" width="150" height="72" rx="10" fill="#FDF6E9" stroke="#FAC775" stroke-width="0.5"/>
+    <text class="stat-num" x="258" y="132" fill="#633806">4</text>
+    <text class="stat-label" x="298" y="122" fill="#633806">HIGH</text>
+    <text x="298" y="136" font-size="10" fill="#854F0B">P1 — weak guard</text>
 
-  <!-- HIGH -->
-  <rect x="238" y="106" width="150" height="72" rx="10" fill="#FDF6E9" stroke="#FAC775" stroke-width="0.5"/>
-  <text class="stat-num" x="258" y="148" fill="#633806">2</text>
-  <text class="stat-label" x="298" y="138" fill="#633806">HIGH</text>
-  <text x="298" y="153" font-size="10" fill="#854F0B">P1 — weak guard</text>
+    <rect x="406" y="88" width="150" height="72" rx="10" fill="#EDF4FC" stroke="#85B7EB" stroke-width="0.5"/>
+    <text class="stat-num" x="426" y="132" fill="#042C53">5</text>
+    <text class="stat-label" x="466" y="122" fill="#042C53">MODERATE</text>
+    <text x="466" y="136" font-size="10" fill="#185FA5">P2 — guarded w/ gaps</text>
 
-  <!-- MODERATE -->
-  <rect x="406" y="106" width="150" height="72" rx="10" fill="#EDF4FC" stroke="#85B7EB" stroke-width="0.5"/>
-  <text class="stat-num" x="426" y="148" fill="#042C53">1</text>
-  <text class="stat-label" x="466" y="138" fill="#042C53">MODERATE</text>
-  <text x="466" y="153" font-size="10" fill="#185FA5">P2 — partial</text>
+    <rect x="574" y="88" width="150" height="72" rx="10" fill="#E9F7F0" stroke="#5DCAA5" stroke-width="0.5"/>
+    <text class="stat-num" x="594" y="132" fill="#04342C">2</text>
+    <text class="stat-label" x="634" y="122" fill="#04342C">LOW</text>
+    <text x="634" y="136" font-size="10" fill="#0F6E56">P3 — well guarded</text>
+  </g>
 
-  <!-- LOW -->
-  <rect x="574" y="106" width="150" height="72" rx="10" fill="#E9F7F0" stroke="#5DCAA5" stroke-width="0.5"/>
-  <text class="stat-num" x="594" y="148" fill="#04342C">0</text>
-  <text class="stat-label" x="634" y="138" fill="#04342C">LOW</text>
-  <text x="634" y="153" font-size="10" fill="#0F6E56">P3 — guarded</text>
+  <!-- ============ Section 2: Hub-and-spoke diagram ============ -->
+  <line x1="70" y1="210" x2="1330" y2="210" stroke="#e0ddd5" stroke-width="0.5"/>
+  <text class="section-title" x="70" y="238">Coupling Topology</text>
+  <text class="section-sub" x="70" y="255">Hub = PALS_LAW spec; spokes = dependent artifacts positioned by risk tier</text>
 
-  <!-- ═══ Section 2: Hub-and-Spoke Diagram ═══ -->
-  <line x1="70" y1="208" x2="1330" y2="208" stroke="#e0ddd5" stroke-width="0.5"/>
-  <text class="section-title" x="70" y="236">Coupling Topology</text>
-  <text class="section-sub" x="70" y="254">Source of truth at center · dependents on risk rings · arrows show dependency direction</text>
-
-  <g transform="translate(700, 560)">
+  <g transform="translate(700, 600)">
     <!-- Risk rings -->
     <circle cx="0" cy="0" r="340" fill="url(#ring-p3)" stroke="#1D9E75" stroke-width="0.4" stroke-dasharray="6 4" opacity="0.35"/>
     <circle cx="0" cy="0" r="270" fill="url(#ring-p2)" stroke="#378ADD" stroke-width="0.4" stroke-dasharray="6 4" opacity="0.4"/>
@@ -96,236 +93,332 @@
     <circle cx="0" cy="0" r="120" fill="url(#ring-p0)" stroke="#D85A30" stroke-width="0.4" stroke-dasharray="6 4" opacity="0.6"/>
 
     <!-- Ring labels -->
-    <text class="ring-label" x="346" y="4" fill="#1D9E75" opacity="0.7">P3 LOW</text>
-    <text class="ring-label" x="276" y="4" fill="#378ADD" opacity="0.7">P2</text>
-    <text class="ring-label" x="201" y="4" fill="#BA7517" opacity="0.7">P1</text>
     <text class="ring-label" x="126" y="4" fill="#D85A30" opacity="0.7">P0</text>
-
-    <!-- Connectors (dependent → hub) -->
-    <!-- #1 Error Taxonomy (P0, ~150deg) -->
-    <line x1="-90" y1="-72" x2="-30" y2="-24" stroke="#D85A30" stroke-width="2.5" opacity="0.5" marker-end="url(#arr)"/>
-    <!-- #2 Formal Claims (P0, ~210deg) -->
-    <line x1="-90" y1="72" x2="-30" y2="24" stroke="#D85A30" stroke-width="2.5" opacity="0.5" marker-end="url(#arr)"/>
-    <!-- #3 Corollary 5 (P0, ~330deg) -->
-    <line x1="90" y1="-72" x2="30" y2="-24" stroke="#D85A30" stroke-width="2.5" opacity="0.5" marker-end="url(#arr)"/>
-    <!-- #4 Artifact Detection (P0, ~30deg) -->
-    <line x1="90" y1="72" x2="30" y2="24" stroke="#D85A30" stroke-width="2.5" opacity="0.5" marker-end="url(#arr)"/>
-    <!-- #5 Section IDs (P1, ~160deg) -->
-    <line x1="-168" y1="-88" x2="-30" y2="-14" stroke="#BA7517" stroke-width="1.8" opacity="0.4" marker-end="url(#arr)"/>
-    <!-- #6 JSON Regeneration (P1, ~20deg) -->
-    <line x1="168" y1="-88" x2="30" y2="-14" stroke="#BA7517" stroke-width="1.8" opacity="0.4" marker-end="url(#arr)"/>
-    <!-- #7 Regex Parser (P2, ~270deg) -->
-    <line x1="0" y1="232" x2="0" y2="38" stroke="#378ADD" stroke-width="1.2" opacity="0.35" marker-end="url(#arr)"/>
+    <text class="ring-label" x="201" y="4" fill="#BA7517" opacity="0.6">P1</text>
+    <text class="ring-label" x="276" y="4" fill="#378ADD" opacity="0.5">P2</text>
+    <text class="ring-label" x="346" y="4" fill="#1D9E75" opacity="0.45">P3</text>
 
     <!-- Hub node -->
     <circle cx="0" cy="0" r="42" fill="#534AB7" stroke="#3C3489" stroke-width="1.5"/>
     <text class="hub-label" x="0" y="-6" text-anchor="middle" dominant-baseline="central">PALS_LAW</text>
     <text class="hub-sub" x="0" y="14" text-anchor="middle" dominant-baseline="central">v1.5.0.md</text>
 
-    <!-- Spoke nodes — P0 CRITICAL -->
-    <!-- #1 Error Taxonomy -->
-    <g transform="translate(-160, -108)">
+    <!-- === P0 CRITICAL spoke (r=120) === -->
+
+    <!-- #1: Spec Version Pinning (12 o'clock) -->
+    <line x1="0" y1="-42" x2="0" y2="-90" stroke="#D85A30" stroke-width="2.5" opacity="0.5" marker-end="url(#arr)"/>
+    <g transform="translate(0, -145)">
       <rect x="-75" y="-24" width="150" height="48" rx="8" fill="#FEF3EF" stroke="#D85A30" stroke-width="1"/>
-      <text class="node-title" x="0" y="-6" text-anchor="middle" dominant-baseline="central" fill="#712B13">Error Taxonomy</text>
-      <text class="node-sub" x="0" y="10" text-anchor="middle" dominant-baseline="central" fill="#993C1D">4 Python locations</text>
-      <rect x="-27" y="28" width="54" height="16" rx="4" fill="#D85A30"/>
+      <text class="node-title" x="0" y="-6" text-anchor="middle" dominant-baseline="central" fill="#712B13">v1.5.1 Exists</text>
+      <text class="node-sub" x="0" y="10" text-anchor="middle" dominant-baseline="central" fill="#993C1D">Makefile + conftest pin v1.5.0</text>
+      <rect x="-28" y="28" width="56" height="16" rx="4" fill="#D85A30"/>
       <text class="badge-text" x="0" y="36" text-anchor="middle" dominant-baseline="central">CRITICAL</text>
     </g>
 
-    <!-- #2 Formal Claims -->
-    <g transform="translate(-160, 108)">
-      <rect x="-75" y="-24" width="150" height="48" rx="8" fill="#FEF3EF" stroke="#D85A30" stroke-width="1"/>
-      <text class="node-title" x="0" y="-6" text-anchor="middle" dominant-baseline="central" fill="#712B13">Formal Claims</text>
-      <text class="node-sub" x="0" y="10" text-anchor="middle" dominant-baseline="central" fill="#993C1D">15 symbols, 12 claims</text>
-      <rect x="-27" y="28" width="54" height="16" rx="4" fill="#D85A30"/>
-      <text class="badge-text" x="0" y="36" text-anchor="middle" dominant-baseline="central">CRITICAL</text>
+    <!-- === P1 HIGH spokes (r=195) === -->
+
+    <!-- #2: --package undocumented (10 o'clock, ~150°) -->
+    <line x1="-36" y1="-22" x2="-135" y2="-110" stroke="#BA7517" stroke-width="1.8" opacity="0.4" marker-end="url(#arr)"/>
+    <g transform="translate(-240, -175)">
+      <rect x="-75" y="-24" width="150" height="48" rx="8" fill="#FDF6E9" stroke="#BA7517" stroke-width="0.8"/>
+      <text class="node-title" x="0" y="-6" text-anchor="middle" dominant-baseline="central" fill="#633806">--package Flag</text>
+      <text class="node-sub" x="0" y="10" text-anchor="middle" dominant-baseline="central" fill="#854F0B">README missing docs</text>
+      <rect x="-20" y="28" width="40" height="16" rx="4" fill="#BA7517"/>
+      <text class="badge-text" x="0" y="36" text-anchor="middle" dominant-baseline="central">HIGH</text>
     </g>
 
-    <!-- #3 Corollary 5 Partition -->
-    <g transform="translate(160, -108)">
-      <rect x="-75" y="-24" width="150" height="48" rx="8" fill="#FEF3EF" stroke="#D85A30" stroke-width="1"/>
-      <text class="node-title" x="0" y="-6" text-anchor="middle" dominant-baseline="central" fill="#712B13">Cor. 5 Partition</text>
-      <text class="node-sub" x="0" y="10" text-anchor="middle" dominant-baseline="central" fill="#993C1D">ALREADY DRIFTED</text>
-      <rect x="-27" y="28" width="54" height="16" rx="4" fill="#D85A30"/>
-      <text class="badge-text" x="0" y="36" text-anchor="middle" dominant-baseline="central">CRITICAL</text>
+    <!-- #3: Math Desc Map (2 o'clock, ~30°) -->
+    <line x1="36" y1="-22" x2="135" y2="-110" stroke="#BA7517" stroke-width="1.8" opacity="0.4" marker-end="url(#arr)"/>
+    <g transform="translate(240, -175)">
+      <rect x="-75" y="-24" width="150" height="48" rx="8" fill="#FDF6E9" stroke="#BA7517" stroke-width="0.8"/>
+      <text class="node-title" x="0" y="-6" text-anchor="middle" dominant-baseline="central" fill="#633806">Math Desc Map</text>
+      <text class="node-sub" x="0" y="10" text-anchor="middle" dominant-baseline="central" fill="#854F0B">math_checker.py:102-113</text>
+      <rect x="-20" y="28" width="40" height="16" rx="4" fill="#BA7517"/>
+      <text class="badge-text" x="0" y="36" text-anchor="middle" dominant-baseline="central">HIGH</text>
     </g>
 
-    <!-- #4 Artifact Detection -->
-    <g transform="translate(160, 108)">
-      <rect x="-75" y="-24" width="150" height="48" rx="8" fill="#FEF3EF" stroke="#D85A30" stroke-width="1"/>
-      <text class="node-title" x="0" y="-6" text-anchor="middle" dominant-baseline="central" fill="#712B13">Artifact Detection</text>
-      <text class="node-sub" x="0" y="10" text-anchor="middle" dominant-baseline="central" fill="#993C1D">ALREADY BROKEN</text>
-      <rect x="-27" y="28" width="54" height="16" rx="4" fill="#D85A30"/>
-      <text class="badge-text" x="0" y="36" text-anchor="middle" dominant-baseline="central">CRITICAL</text>
+    <!-- #4: Output JSONs (6 o'clock) -->
+    <line x1="0" y1="42" x2="0" y2="160" stroke="#BA7517" stroke-width="1.8" opacity="0.4" marker-end="url(#arr)"/>
+    <g transform="translate(0, 220)">
+      <rect x="-75" y="-24" width="150" height="48" rx="8" fill="#FDF6E9" stroke="#BA7517" stroke-width="0.8"/>
+      <text class="node-title" x="0" y="-6" text-anchor="middle" dominant-baseline="central" fill="#633806">Output JSONs</text>
+      <text class="node-sub" x="0" y="10" text-anchor="middle" dominant-baseline="central" fill="#854F0B">output/*.json — no CI</text>
+      <rect x="-20" y="28" width="40" height="16" rx="4" fill="#BA7517"/>
+      <text class="badge-text" x="0" y="36" text-anchor="middle" dominant-baseline="central">HIGH</text>
     </g>
 
-    <!-- Spoke nodes — P1 HIGH -->
-    <!-- #5 Section IDs -->
-    <g transform="translate(-250, -130)">
-      <rect x="-70" y="-24" width="140" height="48" rx="8" fill="#FDF6E9" stroke="#BA7517" stroke-width="0.8"/>
+    <!-- #5: Section IDs (4 o'clock, ~330°) -->
+    <line x1="36" y1="22" x2="135" y2="120" stroke="#BA7517" stroke-width="1.8" opacity="0.4" marker-end="url(#arr)"/>
+    <g transform="translate(250, 185)">
+      <rect x="-75" y="-24" width="150" height="48" rx="8" fill="#FDF6E9" stroke="#BA7517" stroke-width="0.8"/>
       <text class="node-title" x="0" y="-6" text-anchor="middle" dominant-baseline="central" fill="#633806">Section IDs</text>
-      <text class="node-sub" x="0" y="10" text-anchor="middle" dominant-baseline="central" fill="#854F0B">Hardcoded in Python</text>
-      <rect x="-16" y="28" width="32" height="16" rx="4" fill="#BA7517"/>
+      <text class="node-sub" x="0" y="10" text-anchor="middle" dominant-baseline="central" fill="#854F0B">Unidirectional guard</text>
+      <rect x="-20" y="28" width="40" height="16" rx="4" fill="#BA7517"/>
       <text class="badge-text" x="0" y="36" text-anchor="middle" dominant-baseline="central">HIGH</text>
     </g>
 
-    <!-- #6 JSON Regeneration -->
-    <g transform="translate(250, -130)">
-      <rect x="-70" y="-24" width="140" height="48" rx="8" fill="#FDF6E9" stroke="#BA7517" stroke-width="0.8"/>
-      <text class="node-title" x="0" y="-6" text-anchor="middle" dominant-baseline="central" fill="#633806">JSON Outputs</text>
-      <text class="node-sub" x="0" y="10" text-anchor="middle" dominant-baseline="central" fill="#854F0B">No regen trigger</text>
-      <rect x="-16" y="28" width="32" height="16" rx="4" fill="#BA7517"/>
-      <text class="badge-text" x="0" y="36" text-anchor="middle" dominant-baseline="central">HIGH</text>
-    </g>
+    <!-- === P2 MODERATE spokes (r=270) === -->
 
-    <!-- Spoke nodes — P2 MODERATE -->
-    <!-- #7 Regex Parser -->
-    <g transform="translate(0, 270)">
-      <rect x="-70" y="-24" width="140" height="48" rx="8" fill="#EDF4FC" stroke="#378ADD" stroke-width="0.7"/>
-      <text class="node-title" x="0" y="-6" text-anchor="middle" dominant-baseline="central" fill="#042C53">Regex Parser</text>
-      <text class="node-sub" x="0" y="10" text-anchor="middle" dominant-baseline="central" fill="#185FA5">Table format fragile</text>
-      <rect x="-27" y="28" width="54" height="16" rx="4" fill="#378ADD"/>
+    <!-- #6: Claims (9 o'clock, ~180°) -->
+    <line x1="-42" y1="0" x2="-225" y2="0" stroke="#378ADD" stroke-width="1.2" opacity="0.35" marker-end="url(#arr)"/>
+    <g transform="translate(-340, 0)">
+      <rect x="-75" y="-24" width="150" height="48" rx="8" fill="#EDF4FC" stroke="#378ADD" stroke-width="0.7"/>
+      <text class="node-title" x="0" y="-6" text-anchor="middle" dominant-baseline="central" fill="#042C53">Claims</text>
+      <text class="node-sub" x="0" y="10" text-anchor="middle" dominant-baseline="central" fill="#185FA5">4 contract tests</text>
+      <rect x="-32" y="28" width="64" height="16" rx="4" fill="#378ADD"/>
       <text class="badge-text" x="0" y="36" text-anchor="middle" dominant-baseline="central">MODERATE</text>
+    </g>
+
+    <!-- #7: Symbols (10:30, ~195°) -->
+    <line x1="-38" y1="16" x2="-200" y2="115" stroke="#378ADD" stroke-width="1.2" opacity="0.35" marker-end="url(#arr)"/>
+    <g transform="translate(-310, 185)">
+      <rect x="-75" y="-24" width="150" height="48" rx="8" fill="#EDF4FC" stroke="#378ADD" stroke-width="0.7"/>
+      <text class="node-title" x="0" y="-6" text-anchor="middle" dominant-baseline="central" fill="#042C53">Symbols</text>
+      <text class="node-sub" x="0" y="10" text-anchor="middle" dominant-baseline="central" fill="#185FA5">2 contract tests</text>
+      <rect x="-32" y="28" width="64" height="16" rx="4" fill="#378ADD"/>
+      <text class="badge-text" x="0" y="36" text-anchor="middle" dominant-baseline="central">MODERATE</text>
+    </g>
+
+    <!-- #8: Error Classes (7:30, ~225°) -->
+    <line x1="-30" y1="30" x2="-165" y2="195" stroke="#378ADD" stroke-width="1.2" opacity="0.35" marker-end="url(#arr)"/>
+    <g transform="translate(-270, 290)">
+      <rect x="-75" y="-24" width="150" height="48" rx="8" fill="#EDF4FC" stroke="#378ADD" stroke-width="0.7"/>
+      <text class="node-title" x="0" y="-6" text-anchor="middle" dominant-baseline="central" fill="#042C53">Error Classes</text>
+      <text class="node-sub" x="0" y="10" text-anchor="middle" dominant-baseline="central" fill="#185FA5">3 contract tests</text>
+      <rect x="-32" y="28" width="64" height="16" rx="4" fill="#378ADD"/>
+      <text class="badge-text" x="0" y="36" text-anchor="middle" dominant-baseline="central">MODERATE</text>
+    </g>
+
+    <!-- #9: EC Partition (5 o'clock, ~300°) -->
+    <line x1="30" y1="30" x2="170" y2="210" stroke="#378ADD" stroke-width="1.2" opacity="0.35" marker-end="url(#arr)"/>
+    <g transform="translate(280, 290)">
+      <rect x="-75" y="-24" width="150" height="48" rx="8" fill="#EDF4FC" stroke="#378ADD" stroke-width="0.7"/>
+      <text class="node-title" x="0" y="-6" text-anchor="middle" dominant-baseline="central" fill="#042C53">EC Partition</text>
+      <text class="node-sub" x="0" y="10" text-anchor="middle" dominant-baseline="central" fill="#185FA5">Internal consistency</text>
+      <rect x="-32" y="28" width="64" height="16" rx="4" fill="#378ADD"/>
+      <text class="badge-text" x="0" y="36" text-anchor="middle" dominant-baseline="central">MODERATE</text>
+    </g>
+
+    <!-- #10: Version Strings (3 o'clock, ~0°) -->
+    <line x1="42" y1="0" x2="225" y2="0" stroke="#378ADD" stroke-width="1.2" opacity="0.35" marker-end="url(#arr)"/>
+    <g transform="translate(340, 0)">
+      <rect x="-75" y="-24" width="150" height="48" rx="8" fill="#EDF4FC" stroke="#378ADD" stroke-width="0.7"/>
+      <text class="node-title" x="0" y="-6" text-anchor="middle" dominant-baseline="central" fill="#042C53">TOOL_VERSION</text>
+      <text class="node-sub" x="0" y="10" text-anchor="middle" dominant-baseline="central" fill="#185FA5">signing.py ↔ pyproject</text>
+      <rect x="-32" y="28" width="64" height="16" rx="4" fill="#378ADD"/>
+      <text class="badge-text" x="0" y="36" text-anchor="middle" dominant-baseline="central">MODERATE</text>
+    </g>
+
+    <!-- === P3 LOW spokes (r=340) === -->
+
+    <!-- #11: Report→CLI (8 o'clock, ~210°) -->
+    <line x1="-30" y1="30" x2="-240" y2="260" stroke="#1D9E75" stroke-width="0.8" stroke-dasharray="4 3" opacity="0.35" marker-end="url(#arr)"/>
+    <g transform="translate(-370, 340)">
+      <rect x="-75" y="-24" width="150" height="48" rx="8" fill="#E9F7F0" stroke="#1D9E75" stroke-width="0.5"/>
+      <text class="node-title" x="0" y="-6" text-anchor="middle" dominant-baseline="central" fill="#04342C">Report→CLI</text>
+      <text class="node-sub" x="0" y="10" text-anchor="middle" dominant-baseline="central" fill="#0F6E56">__main__.py + tests</text>
+      <rect x="-16" y="28" width="32" height="16" rx="4" fill="#1D9E75"/>
+      <text class="badge-text" x="0" y="36" text-anchor="middle" dominant-baseline="central">LOW</text>
+    </g>
+
+    <!-- #12: Signing→CLI (8 o'clock offset) -->
+    <line x1="-38" y1="16" x2="-270" y2="150" stroke="#1D9E75" stroke-width="0.8" stroke-dasharray="4 3" opacity="0.35" marker-end="url(#arr)"/>
+    <g transform="translate(-410, 170)">
+      <rect x="-75" y="-24" width="150" height="48" rx="8" fill="#E9F7F0" stroke="#1D9E75" stroke-width="0.5"/>
+      <text class="node-title" x="0" y="-6" text-anchor="middle" dominant-baseline="central" fill="#04342C">Signing→CLI</text>
+      <text class="node-sub" x="0" y="10" text-anchor="middle" dominant-baseline="central" fill="#0F6E56">test_signing + test_main</text>
+      <rect x="-16" y="28" width="32" height="16" rx="4" fill="#1D9E75"/>
+      <text class="badge-text" x="0" y="36" text-anchor="middle" dominant-baseline="central">LOW</text>
     </g>
   </g>
 
-  <!-- ═══ Section 3: Coupling Inventory Table ═══ -->
-  <line x1="70" y1="940" x2="1330" y2="940" stroke="#e0ddd5" stroke-width="0.5"/>
-  <text class="section-title" x="70" y="968">Coupling Inventory</text>
-  <text class="section-sub" x="70" y="986">All detected couplings sorted by risk tier</text>
+  <!-- ============ Section 3: Coupling inventory table ============ -->
+  <line x1="70" y1="1010" x2="1330" y2="1010" stroke="#e0ddd5" stroke-width="0.5"/>
+  <text class="section-title" x="70" y="1038">Coupling Inventory</text>
+  <text class="section-sub" x="70" y="1055">All identified couplings ranked by drift risk</text>
 
-  <g transform="translate(70, 1004)">
-    <!-- Header row -->
+  <g transform="translate(70, 1070)">
+    <!-- Table header -->
     <rect x="0" y="0" width="1260" height="26" rx="4" fill="#EEEDEE"/>
-    <text class="cell-head" x="10" y="17">#</text>
-    <text class="cell-head" x="34" y="17">Relationship</text>
-    <text class="cell-head" x="340" y="17">Mechanism</text>
-    <text class="cell-head" x="500" y="17">Guard</text>
+    <text class="cell-head" x="16" y="17">#</text>
+    <text class="cell-head" x="44" y="17">Relationship</text>
+    <text class="cell-head" x="330" y="17">Mechanism</text>
+    <text class="cell-head" x="480" y="17">Guard</text>
     <text class="cell-head" x="780" y="17">Propagation</text>
     <text class="cell-head" x="920" y="17">Risk</text>
 
-    <!-- Row 1: Error Taxonomy — CRITICAL -->
+    <!-- Row 1 — CRITICAL -->
     <rect x="0" y="30" width="1260" height="52" rx="0" fill="#FEF3EF" opacity="0.7"/>
-    <text class="cell-text" x="10" y="52" font-weight="600">1</text>
-    <text class="cell-text" x="34" y="48" fill="#712B13">§5 Error Taxonomy → ErrorClass enum + builders</text>
-    <text class="cell-mono" x="34" y="68">4 locations in pals_law_companion.py</text>
-    <text class="cell-text" x="340" y="56">manual-mirror</text>
-    <text class="cell-text" x="500" y="56" fill="#D85A30" font-weight="600">NONE</text>
-    <text class="cell-text" x="780" y="56">silent</text>
-    <rect x="920" y="44" width="64" height="18" rx="4" fill="#D85A30"/>
-    <text class="badge-text" x="952" y="53" text-anchor="middle" dominant-baseline="central">CRITICAL</text>
+    <text class="cell-text" x="16" y="52" font-weight="600">1</text>
+    <text class="cell-text" x="44" y="48">v1.5.1 spec ↔ v1.5.0 pinning</text>
+    <text class="cell-mono" x="44" y="64">Makefile, conftest.py, README</text>
+    <text class="cell-mono" x="330" y="56">manual-mirror</text>
+    <text class="cell-text" x="480" y="56" fill="#993C1D">⚠ NONE</text>
+    <text class="cell-text" x="780" y="56" fill="#993C1D">silent</text>
+    <rect x="920" y="44" width="56" height="16" rx="4" fill="#D85A30"/>
+    <text class="badge-text" x="948" y="52" text-anchor="middle" dominant-baseline="central">CRITICAL</text>
 
-    <!-- Row 2: Formal Claims — CRITICAL -->
-    <rect x="0" y="86" width="1260" height="52" rx="0" fill="#FEF8F5" opacity="0.5"/>
-    <text class="cell-text" x="10" y="108" font-weight="600">2</text>
-    <text class="cell-text" x="34" y="104" fill="#712B13">§3 Symbols/Claims → _build_symbols/_build_claims</text>
-    <text class="cell-mono" x="34" y="124">15 symbols + 12 claims hardcoded</text>
-    <text class="cell-text" x="340" y="112">manual-mirror</text>
-    <text class="cell-text" x="500" y="112" fill="#D85A30" font-weight="600">NONE</text>
-    <text class="cell-text" x="780" y="112">silent</text>
-    <rect x="920" y="100" width="64" height="18" rx="4" fill="#D85A30"/>
-    <text class="badge-text" x="952" y="109" text-anchor="middle" dominant-baseline="central">CRITICAL</text>
+    <!-- Row 2 — HIGH -->
+    <rect x="0" y="86" width="1260" height="52" rx="0" fill="#FDF6E9" opacity="0.6"/>
+    <text class="cell-text" x="16" y="108" font-weight="600">2</text>
+    <text class="cell-text" x="44" y="104">--package flag ↔ README</text>
+    <text class="cell-mono" x="44" y="120">__main__.py:30,89,117-130</text>
+    <text class="cell-mono" x="330" y="112">manual-mirror</text>
+    <text class="cell-text" x="480" y="112" fill="#854F0B">⚠ NONE</text>
+    <text class="cell-text" x="780" y="112" fill="#854F0B">silent</text>
+    <rect x="920" y="100" width="40" height="16" rx="4" fill="#BA7517"/>
+    <text class="badge-text" x="940" y="108" text-anchor="middle" dominant-baseline="central">HIGH</text>
 
-    <!-- Row 3: Corollary 5 — CRITICAL -->
-    <rect x="0" y="142" width="1260" height="52" rx="0" fill="#FEF3EF" opacity="0.7"/>
-    <text class="cell-text" x="10" y="164" font-weight="600">3</text>
-    <text class="cell-text" x="34" y="160" fill="#712B13">§8 Cor.5 partition → expected sets + schema lists</text>
-    <text class="cell-mono" x="34" y="180">DRIFTED: 2 of 9 classes orphaned</text>
-    <text class="cell-text" x="340" y="168">manual-mirror</text>
-    <text class="cell-text" x="500" y="168" fill="#D85A30" font-weight="600">NONE (drifted)</text>
-    <text class="cell-text" x="780" y="168">silent</text>
-    <rect x="920" y="156" width="64" height="18" rx="4" fill="#D85A30"/>
-    <text class="badge-text" x="952" y="165" text-anchor="middle" dominant-baseline="central">CRITICAL</text>
+    <!-- Row 3 — HIGH -->
+    <rect x="0" y="142" width="1260" height="52" rx="0" fill="#FDF6E9" opacity="0.6"/>
+    <text class="cell-text" x="16" y="164" font-weight="600">3</text>
+    <text class="cell-text" x="44" y="160">Math Block Desc Map ↔ Spec</text>
+    <text class="cell-mono" x="44" y="176">math_checker.py:102-113</text>
+    <text class="cell-mono" x="330" y="168">manual-mirror</text>
+    <text class="cell-text" x="480" y="168" fill="#854F0B">⚠ NONE</text>
+    <text class="cell-text" x="780" y="168" fill="#854F0B">silent</text>
+    <rect x="920" y="156" width="40" height="16" rx="4" fill="#BA7517"/>
+    <text class="badge-text" x="940" y="164" text-anchor="middle" dominant-baseline="central">HIGH</text>
 
-    <!-- Row 4: Artifact Detection — CRITICAL -->
-    <rect x="0" y="198" width="1260" height="52" rx="0" fill="#FEF8F5" opacity="0.5"/>
-    <text class="cell-text" x="10" y="220" font-weight="600">4</text>
-    <text class="cell-text" x="34" y="216" fill="#712B13">§9 Artifacts → _build_artifacts() detection</text>
-    <text class="cell-mono" x="34" y="236">BROKEN: all 5 flags report false</text>
-    <text class="cell-text" x="340" y="224">manual-mirror</text>
-    <text class="cell-text" x="500" y="224" fill="#D85A30" font-weight="600">NONE (broken)</text>
-    <text class="cell-text" x="780" y="224">silent</text>
-    <rect x="920" y="212" width="64" height="18" rx="4" fill="#D85A30"/>
-    <text class="badge-text" x="952" y="221" text-anchor="middle" dominant-baseline="central">CRITICAL</text>
+    <!-- Row 4 — HIGH -->
+    <rect x="0" y="198" width="1260" height="52" rx="0" fill="#FDF6E9" opacity="0.6"/>
+    <text class="cell-text" x="16" y="220" font-weight="600">4</text>
+    <text class="cell-text" x="44" y="216">Output JSONs ↔ Code + Spec</text>
+    <text class="cell-mono" x="44" y="232">output/*.json (3 files)</text>
+    <text class="cell-mono" x="330" y="224">build-step</text>
+    <text class="cell-text" x="480" y="216">make check (manual)</text>
+    <text class="cell-text" x="480" y="232">No CI pipeline</text>
+    <text class="cell-text" x="780" y="224" fill="#854F0B">silent*</text>
+    <rect x="920" y="212" width="40" height="16" rx="4" fill="#BA7517"/>
+    <text class="badge-text" x="940" y="220" text-anchor="middle" dominant-baseline="central">HIGH</text>
 
-    <!-- Row 5: Section IDs — HIGH -->
-    <rect x="0" y="254" width="1260" height="52" rx="0" fill="#FDF6E9" opacity="0.5"/>
-    <text class="cell-text" x="10" y="276" font-weight="600">5</text>
-    <text class="cell-text" x="34" y="272" fill="#633806">Section headings → hardcoded Python section IDs</text>
-    <text class="cell-mono" x="34" y="292">_describe_math_block, _infer_claim_status</text>
-    <text class="cell-text" x="340" y="280">manual-mirror</text>
-    <text class="cell-text" x="500" y="280" fill="#BA7517">CHK_CROSS_REFERENCES (partial)</text>
-    <text class="cell-text" x="780" y="280">silent</text>
-    <rect x="920" y="268" width="44" height="18" rx="4" fill="#BA7517"/>
-    <text class="badge-text" x="942" y="277" text-anchor="middle" dominant-baseline="central">HIGH</text>
+    <!-- Row 5 — HIGH -->
+    <rect x="0" y="254" width="1260" height="52" rx="0" fill="#FDF6E9" opacity="0.6"/>
+    <text class="cell-text" x="16" y="276" font-weight="600">5</text>
+    <text class="cell-text" x="44" y="272">Section IDs ↔ Spec headings</text>
+    <text class="cell-mono" x="44" y="288">math_checker.py:13-18</text>
+    <text class="cell-mono" x="330" y="280">manual-mirror</text>
+    <text class="cell-text" x="480" y="272">validate_section_ids() +</text>
+    <text class="cell-text" x="480" y="288">TestSectionIdContract (1-way)</text>
+    <text class="cell-text" x="780" y="280" fill="#854F0B">test-failure</text>
+    <rect x="920" y="268" width="40" height="16" rx="4" fill="#BA7517"/>
+    <text class="badge-text" x="940" y="276" text-anchor="middle" dominant-baseline="central">HIGH</text>
 
-    <!-- Row 6: JSON Outputs — HIGH -->
-    <rect x="0" y="310" width="1260" height="52" rx="0" fill="#FDF6E9" opacity="0.35"/>
-    <text class="cell-text" x="10" y="332" font-weight="600">6</text>
-    <text class="cell-text" x="34" y="328" fill="#633806">Companion script → report.json + schema.json</text>
-    <text class="cell-mono" x="34" y="348">No Makefile/CI to trigger regeneration</text>
-    <text class="cell-text" x="340" y="336">codegen</text>
-    <text class="cell-text" x="500" y="336" fill="#BA7517">NONE (manual run)</text>
-    <text class="cell-text" x="780" y="336">silent</text>
-    <rect x="920" y="324" width="44" height="18" rx="4" fill="#BA7517"/>
-    <text class="badge-text" x="942" y="333" text-anchor="middle" dominant-baseline="central">HIGH</text>
+    <!-- Row 6 — MODERATE -->
+    <rect x="0" y="310" width="1260" height="44" rx="0" fill="#EDF4FC" opacity="0.5"/>
+    <text class="cell-text" x="16" y="336">6</text>
+    <text class="cell-text" x="44" y="336">Claims ↔ Spec (§3, §6, §8)</text>
+    <text class="cell-mono" x="330" y="336">manual-mirror</text>
+    <text class="cell-text" x="480" y="336">TestClaimsContentContract (4)</text>
+    <text class="cell-text" x="780" y="336" fill="#185FA5">test-failure</text>
+    <rect x="920" y="324" width="64" height="16" rx="4" fill="#378ADD"/>
+    <text class="badge-text" x="952" y="332" text-anchor="middle" dominant-baseline="central">MODERATE</text>
 
-    <!-- Row 7: Regex Parser — MODERATE -->
-    <rect x="0" y="366" width="1260" height="52" rx="0" fill="#EDF4FC" opacity="0.35"/>
-    <text class="cell-text" x="10" y="388" font-weight="600">7</text>
-    <text class="cell-text" x="34" y="384" fill="#042C53">§4 reference table format → regex parser</text>
-    <text class="cell-mono" x="34" y="404">Fragile regex; partial results on format change</text>
-    <text class="cell-text" x="340" y="392">manual-mirror</text>
-    <text class="cell-text" x="500" y="392" fill="#378ADD">Parser produces partial output</text>
-    <text class="cell-text" x="780" y="392">runtime-error</text>
-    <rect x="920" y="380" width="64" height="18" rx="4" fill="#378ADD"/>
-    <text class="badge-text" x="952" y="389" text-anchor="middle" dominant-baseline="central">MODERATE</text>
+    <!-- Row 7 — MODERATE -->
+    <rect x="0" y="358" width="1260" height="44" rx="0" fill="#EDF4FC" opacity="0.5"/>
+    <text class="cell-text" x="16" y="384">7</text>
+    <text class="cell-text" x="44" y="384">Symbols ↔ Spec (§3.1)</text>
+    <text class="cell-mono" x="330" y="384">manual-mirror</text>
+    <text class="cell-text" x="480" y="384">TestSymbolsContentContract (2)</text>
+    <text class="cell-text" x="780" y="384" fill="#185FA5">test-failure</text>
+    <rect x="920" y="372" width="64" height="16" rx="4" fill="#378ADD"/>
+    <text class="badge-text" x="952" y="380" text-anchor="middle" dominant-baseline="central">MODERATE</text>
+
+    <!-- Row 8 — MODERATE -->
+    <rect x="0" y="406" width="1260" height="44" rx="0" fill="#EDF4FC" opacity="0.5"/>
+    <text class="cell-text" x="16" y="432">8</text>
+    <text class="cell-text" x="44" y="432">Error Classes ↔ Spec (§5, §8)</text>
+    <text class="cell-mono" x="330" y="432">manual-mirror</text>
+    <text class="cell-text" x="480" y="432">TestErrorClassesSpecContract (3)</text>
+    <text class="cell-text" x="780" y="432" fill="#185FA5">test-failure</text>
+    <rect x="920" y="420" width="64" height="16" rx="4" fill="#378ADD"/>
+    <text class="badge-text" x="952" y="428" text-anchor="middle" dominant-baseline="central">MODERATE</text>
+
+    <!-- Row 9 — MODERATE -->
+    <rect x="0" y="454" width="1260" height="44" rx="0" fill="#EDF4FC" opacity="0.5"/>
+    <text class="cell-text" x="16" y="480">9</text>
+    <text class="cell-text" x="44" y="480">ErrorClass Enum ↔ Partition Lists</text>
+    <text class="cell-mono" x="330" y="480">manual-mirror</text>
+    <text class="cell-text" x="480" y="480">TestErrorClassPartitionContract</text>
+    <text class="cell-text" x="780" y="480" fill="#185FA5">test-failure</text>
+    <rect x="920" y="468" width="64" height="16" rx="4" fill="#378ADD"/>
+    <text class="badge-text" x="952" y="476" text-anchor="middle" dominant-baseline="central">MODERATE</text>
+
+    <!-- Row 10 — MODERATE -->
+    <rect x="0" y="502" width="1260" height="44" rx="0" fill="#EDF4FC" opacity="0.5"/>
+    <text class="cell-text" x="16" y="528">10</text>
+    <text class="cell-text" x="44" y="528">TOOL_VERSION ↔ pyproject.toml</text>
+    <text class="cell-mono" x="330" y="528">manual-mirror</text>
+    <text class="cell-text" x="480" y="528" fill="#185FA5">⚠ NONE</text>
+    <text class="cell-text" x="780" y="528" fill="#185FA5">silent</text>
+    <rect x="920" y="516" width="64" height="16" rx="4" fill="#378ADD"/>
+    <text class="badge-text" x="952" y="524" text-anchor="middle" dominant-baseline="central">MODERATE</text>
+
+    <!-- Row 11 — LOW -->
+    <rect x="0" y="550" width="1260" height="44" rx="0" fill="#E9F7F0" opacity="0.4"/>
+    <text class="cell-text" x="16" y="576">11</text>
+    <text class="cell-text" x="44" y="576">AuditReport → CLI Printer</text>
+    <text class="cell-mono" x="330" y="576">shared-import</text>
+    <text class="cell-text" x="480" y="576">Runtime error + test_main.py</text>
+    <text class="cell-text" x="780" y="576" fill="#0F6E56">test-failure</text>
+    <rect x="920" y="564" width="32" height="16" rx="4" fill="#1D9E75"/>
+    <text class="badge-text" x="936" y="572" text-anchor="middle" dominant-baseline="central">LOW</text>
+
+    <!-- Row 12 — LOW -->
+    <rect x="0" y="598" width="1260" height="44" rx="0" fill="#E9F7F0" opacity="0.4"/>
+    <text class="cell-text" x="16" y="624">12</text>
+    <text class="cell-text" x="44" y="624">Signing Dict → CLI + Tests</text>
+    <text class="cell-mono" x="330" y="624">shared-import</text>
+    <text class="cell-text" x="480" y="624">test_signing.py + test_main.py</text>
+    <text class="cell-text" x="780" y="624" fill="#0F6E56">test-failure</text>
+    <rect x="920" y="612" width="32" height="16" rx="4" fill="#1D9E75"/>
+    <text class="badge-text" x="936" y="620" text-anchor="middle" dominant-baseline="central">LOW</text>
   </g>
 
-  <!-- ═══ Section 4: Top Mitigations ═══ -->
-  <line x1="70" y1="1450" x2="1330" y2="1450" stroke="#e0ddd5" stroke-width="0.5"/>
-  <text class="section-title" x="70" y="1478">Top Mitigations</text>
-  <text class="section-sub" x="70" y="1496">Recommended actions to convert silent drift to loud failure</text>
+  <!-- ============ Section 4: Mitigations ============ -->
+  <line x1="70" y1="1730" x2="1330" y2="1730" stroke="#e0ddd5" stroke-width="0.5"/>
+  <text class="section-title" x="70" y="1758">Top Mitigations</text>
+  <text class="section-sub" x="70" y="1775">Priority actions to convert silent drift into loud failures</text>
 
-  <g transform="translate(70, 1514)">
+  <g transform="translate(70, 1790)">
     <!-- Mitigation 1 -->
     <rect x="0" y="0" width="1260" height="40" rx="6" fill="#FEF3EF" stroke="#F0997B" stroke-width="0.4"/>
-    <rect x="10" y="12" width="24" height="16" rx="4" fill="#D85A30"/>
-    <text class="badge-text" x="22" y="20" text-anchor="middle" dominant-baseline="central">P0</text>
-    <text class="fix-label" x="44" y="24">Single-source error taxonomy:</text>
-    <text class="fix-text" x="220" y="24">Extract error classes to error_classes.json; derive both Markdown table and Python enum from it.</text>
+    <rect x="10" y="12" width="22" height="16" rx="4" fill="#D85A30"/>
+    <text class="badge-text" x="21" y="20" text-anchor="middle" dominant-baseline="central">P0</text>
+    <text class="fix-label" x="42" y="24">Resolve spec version ambiguity.</text>
+    <text class="fix-text" x="290" y="24">Choose canonical spec (v1.5.0 or v1.5.1). Update Makefile, conftest.py, README. Remove the other.</text>
 
     <!-- Mitigation 2 -->
-    <rect x="0" y="48" width="1260" height="40" rx="6" fill="#FEF3EF" stroke="#F0997B" stroke-width="0.4"/>
-    <rect x="10" y="60" width="24" height="16" rx="4" fill="#D85A30"/>
-    <text class="badge-text" x="22" y="68" text-anchor="middle" dominant-baseline="central">P0</text>
-    <text class="fix-label" x="44" y="72">Fix _build_artifacts() encoding:</text>
-    <text class="fix-text" x="230" y="72">Replace Unicode char matching with LaTeX pattern matching (\mathbb{E}, \prod) — ~10 lines.</text>
+    <rect x="0" y="48" width="1260" height="40" rx="6" fill="#FDF6E9" stroke="#FAC775" stroke-width="0.4"/>
+    <rect x="10" y="60" width="22" height="16" rx="4" fill="#BA7517"/>
+    <text class="badge-text" x="21" y="68" text-anchor="middle" dominant-baseline="central">P1</text>
+    <text class="fix-label" x="42" y="72">Document --package in README.</text>
+    <text class="fix-text" x="268" y="72">Add --package to CLI usage section (line 80-86). Consider a test asserting help text ⊆ README.</text>
 
     <!-- Mitigation 3 -->
-    <rect x="0" y="96" width="1260" height="40" rx="6" fill="#FEF3EF" stroke="#F0997B" stroke-width="0.4"/>
-    <rect x="10" y="108" width="24" height="16" rx="4" fill="#D85A30"/>
-    <text class="badge-text" x="22" y="116" text-anchor="middle" dominant-baseline="central">P0</text>
-    <text class="fix-label" x="44" y="120">Complete Corollary 5 partition:</text>
-    <text class="fix-text" x="230" y="120">Classify ERR_OMISSION + ERR_CALIBRATION in §8 math; add assertion: structural ∪ semantic = all classes.</text>
+    <rect x="0" y="96" width="1260" height="40" rx="6" fill="#FDF6E9" stroke="#FAC775" stroke-width="0.4"/>
+    <rect x="10" y="108" width="22" height="16" rx="4" fill="#BA7517"/>
+    <text class="badge-text" x="21" y="116" text-anchor="middle" dominant-baseline="central">P1</text>
+    <text class="fix-label" x="42" y="120">CI pipeline: make check in GitHub Actions.</text>
+    <text class="fix-text" x="338" y="120">Add .github/workflows/check.yml; fail if output/ has uncommitted changes after regeneration.</text>
 
     <!-- Mitigation 4 -->
     <rect x="0" y="144" width="1260" height="40" rx="6" fill="#FDF6E9" stroke="#FAC775" stroke-width="0.4"/>
-    <rect x="10" y="156" width="24" height="16" rx="4" fill="#BA7517"/>
-    <text class="badge-text" x="22" y="164" text-anchor="middle" dominant-baseline="central">P1</text>
-    <text class="fix-label" x="44" y="168">Add Makefile with regen check:</text>
-    <text class="fix-text" x="224" y="168">`make check` runs companion, diffs output vs committed JSON, fails on any difference.</text>
+    <rect x="10" y="156" width="22" height="16" rx="4" fill="#BA7517"/>
+    <text class="badge-text" x="21" y="164" text-anchor="middle" dominant-baseline="central">P1</text>
+    <text class="fix-label" x="42" y="168">Bidirectional section guard + math desc map test.</text>
+    <text class="fix-text" x="360" y="168">Assert every section with $$...$$ blocks is in EXPECTED_SECTIONS and _describe_math_block.</text>
 
     <!-- Mitigation 5 -->
-    <rect x="0" y="192" width="1260" height="40" rx="6" fill="#FDF6E9" stroke="#FAC775" stroke-width="0.4"/>
-    <rect x="10" y="204" width="24" height="16" rx="4" fill="#BA7517"/>
-    <text class="badge-text" x="22" y="212" text-anchor="middle" dominant-baseline="central">P1</text>
-    <text class="fix-label" x="44" y="216">Validate section IDs at startup:</text>
-    <text class="fix-text" x="230" y="216">Companion script extracts headings from Markdown and asserts all hardcoded section IDs exist.</text>
+    <rect x="0" y="192" width="1260" height="40" rx="6" fill="#EDF4FC" stroke="#85B7EB" stroke-width="0.4"/>
+    <rect x="10" y="204" width="22" height="16" rx="4" fill="#378ADD"/>
+    <text class="badge-text" x="21" y="212" text-anchor="middle" dominant-baseline="central">P2</text>
+    <text class="fix-label" x="42" y="216">Version sync test.</text>
+    <text class="fix-text" x="178" y="216">Assert signing.TOOL_VERSION == pyproject.toml version to prevent version string drift.</text>
   </g>
 
-  <!-- ═══ Section 5: Footer ═══ -->
-  <line x1="70" y1="1780" x2="1330" y2="1780" stroke="#e0ddd5" stroke-width="0.5"/>
-  <text class="disclaimer" x="70" y="1797">This diagram was produced by static heuristic analysis. No finding should be taken as ground truth. Validate all CRITICAL and HIGH findings manually before acting on them.</text>
-  <text class="disclaimer" x="70" y="1812">Companion report: drift-risk-map.md</text>
+  <!-- ============ Section 5: Footer ============ -->
+  <line x1="70" y1="2320" x2="1330" y2="2320" stroke="#e0ddd5" stroke-width="0.5"/>
+  <text class="disclaimer" x="70" y="2340">This diagram was produced by static heuristic analysis. No finding should be taken as ground truth. Validate all CRITICAL and HIGH findings manually before acting on them.</text>
+  <text class="disclaimer" x="70" y="2355">Generated 2026-04-02 by Claude Opus 4.6 via Claude Code (v2 — post-fix re-audit). Companion report: drift-risk-map.md</text>
 </svg>

@@ -12,7 +12,9 @@ from __future__ import annotations
 
 import json
 import sys
+import zipfile
 from dataclasses import asdict
+from datetime import datetime, timezone
 from pathlib import Path
 
 from pals_check.report import build_report
@@ -25,6 +27,7 @@ def main() -> None:
         print("       python -m pals_check --check-sig <json_file>", file=sys.stderr)
         print("       python -m pals_check --verify-cert <cert.json> <spec.md> [report.json] [schema.json]", file=sys.stderr)
         print("  --no-verify    Skip network fetching of reference URLs", file=sys.stderr)
+        print("  --package      Bundle spec + outputs into a signed .zip archive", file=sys.stderr)
         print("  --check-sig    Verify the digital signature of an output file", file=sys.stderr)
         print("  --verify-cert  Verify a certificate against source artifacts", file=sys.stderr)
         sys.exit(1)
@@ -83,6 +86,7 @@ def main() -> None:
         sys.exit(1)
 
     do_verify = "--no-verify" not in sys.argv
+    do_package = "--package" in sys.argv
 
     text = md_path.read_text(encoding="utf-8")
     report, schema = build_report(text, do_verify=do_verify)
@@ -109,6 +113,20 @@ def main() -> None:
     cert_path = output_dir / "pals_law_certificate.json"
     with open(cert_path, "w") as f:
         json.dump(cert, f, indent=2, default=str)
+
+    # Package into zip if requested
+    zip_path = None
+    if do_package:
+        version = report.document_version
+        ts = datetime.now(timezone.utc).strftime("%Y%m%d")
+        zip_name = f"pals-law-v{version}-{ts}.zip"
+        zip_path = output_dir / zip_name
+
+        with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zf:
+            zf.write(md_path, md_path.name)
+            zf.write(report_path, report_path.name)
+            zf.write(schema_path, schema_path.name)
+            zf.write(cert_path, cert_path.name)
 
     # Print summary
     print("=" * 72)
@@ -209,6 +227,8 @@ def main() -> None:
     print(f"  Report written to     : {report_path.resolve()}")
     print(f"  Schema written to     : {schema_path.resolve()}")
     print(f"  Certificate written to: {cert_path.resolve()}")
+    if zip_path:
+        print(f"  Package written to    : {zip_path.resolve()}")
     print()
     print(f"  Verify with: python -m pals_check --verify-cert {cert_path} {md_path} {report_path} {schema_path}")
     print("=" * 72)

@@ -8,25 +8,27 @@ disclaimer: >
   reference or a verifiable logical relationship may be inaccurate or
   incomplete. Validate all CRITICAL and HIGH findings manually before acting
   on them.
+generated_by: "Claude Opus 4.6 via Claude Code"
+date: "2026-04-02"
 ---
 
-# Drift-Risk Map — PALS's LAW
+# Drift-Risk Map — pals-check
 
 **Generated**: 2026-04-02
 **Scope**: Full repo
-**Commit / ref**: working tree (not a git repository)
+**Commit / ref**: `1758363` (working tree, uncommitted changes)
 
 ## Executive Summary
 
-7 couplings found. 4 CRITICAL, 2 HIGH, 1 MODERATE, 0 LOW.
+12 couplings found. 1 CRITICAL, 4 HIGH, 5 MODERATE, 2 LOW.
 
 **Top-3 drift vectors:**
 
-1. **Error taxonomy (§5) ↔ hardcoded Python enum + builders** — Nine error classes defined in prose are manually restated in three independent locations in the companion script. Two classes (`ERR_OMISSION`, `ERR_CALIBRATION`) have already drifted out of the Corollary 5 partition.
-2. **Formal claims/symbols (§3) ↔ hardcoded `_build_symbols()` / `_build_claims()`** — 15 symbols and 12 claims are hand-copied from the spec into Python dataclass constructors with zero automated synchronization.
-3. **Artifact content (§9) ↔ `_build_artifacts()` detection logic** — Unicode/LaTeX mismatch means all five boolean content flags report `false` for every artifact. This coupling is already broken and producing incorrect output.
+1. **Spec version pinning: v1.5.1 exists but pipeline targets v1.5.0** — `PALS_LAW-v1.5.1.md` has been added to the repo but the Makefile, `conftest.py`, and README all reference `PALS_LAW-v1.5.0.md`. The v1.5.1 spec changes the Corollary 5 partition (adding `ERR_OMISSION` to structural and `ERR_CALIBRATION` to semantic), which means the current hardcoded partitions in `schema.py` agree with v1.5.0 but **disagree with v1.5.1**. If/when the pipeline switches to v1.5.1, the contract tests will catch this — but the existence of two spec files with no clear canonical pointer is itself a drift hazard.
+2. **`--package` CLI flag undocumented** — `__main__.py:30,89,117-130` implements `--package` (zip archive bundling), but `README.md:80-86` does not list it. Users reading the README will not discover this feature.
+3. **Output JSON artifacts ↔ code + spec state** — The checked-in `output/*.json` files must match `python -m pals_check` output. No CI enforces `make check`.
 
-**Overall posture**: This codebase has no automated consistency guards whatsoever — no CI, no tests, no linter, no build step, no Makefile. The companion script is the only verification tool, and it is itself the primary source of drift. Every coupling is manual-mirror with silent propagation. The core risk is not in the periphery — it is in the fundamental architecture: the Python companion hardcodes a parallel copy of the spec's formal structure, creating a specification-within-a-specification that can diverge at every edit. Two of seven couplings have already drifted, producing incorrect JSON output. The project would benefit enormously from either (a) deriving the Python schema from the Markdown programmatically, or (b) deriving the Markdown from a single-source-of-truth data file.
+**Overall posture**: The codebase is in significantly better shape than the previous audit. The three former CRITICAL findings (claims, symbols, error classes vs. spec) have been mitigated by contract tests in `tests/test_drift_guards.py` that parse the spec and assert structural agreement. These tests convert silent drift into loud test failures. The remaining risk landscape is dominated by (a) the ambiguity of having two spec versions, (b) documentation lag on new features, and (c) the absence of CI to enforce the existing `make check` guard. No coupling is unguarded and silent in the core pipeline anymore — a substantial improvement.
 
 > A visual overview of this coupling topology is available in
 > `drift-risk-map.svg` (generated alongside this report).
@@ -35,145 +37,141 @@ disclaimer: >
 
 | # | Source Artifact | Dependent Artifact(s) | Coupling Mechanism | Consistency Guard | Propagation Mode | Drift Risk |
 |---|---|---|---|---|---|---|
-| 1 | `PALS_LAW-v1.5.0.md` §5 (error taxonomy table) | `pals_law_companion.py:38-48` (`ErrorClass` enum), `pals_law_companion.py:1106-1144` (`_build_error_classes()`), `pals_law_companion.py:654-655` (expected sets), `pals_law_companion.py:890-895` (schema partition) | manual-mirror | ⚠ NONE | silent | **CRITICAL** |
-| 2 | `PALS_LAW-v1.5.0.md` §3 (formal definitions) | `pals_law_companion.py:899-931` (`_build_symbols()`), `pals_law_companion.py:934-1103` (`_build_claims()`) | manual-mirror | ⚠ NONE | silent | **CRITICAL** |
-| 3 | `PALS_LAW-v1.5.0.md` §8 Corollary 5 (structural/semantic partition) | `pals_law_companion.py:654-655` (`expected_structural`, `expected_semantic`), `pals_law_companion.py:890-895` (`structural_error_classes`, `semantic_error_classes`) | manual-mirror | ⚠ NONE — already drifted | silent | **CRITICAL** |
-| 4 | `PALS_LAW-v1.5.0.md` §9 (practitioner artifacts) | `pals_law_companion.py:1147-1206` (`_build_artifacts()`) | manual-mirror | ⚠ NONE — already broken | silent | **CRITICAL** |
-| 5 | `PALS_LAW-v1.5.0.md` section structure (heading numbers) | `pals_law_companion.py:468-479` (`_describe_math_block`), `pals_law_companion.py:492-510` (`_infer_claim_status`) | manual-mirror | Partial — `CHK_CROSS_REFERENCES` checks §N.M references but not hardcoded Python section IDs | silent | **HIGH** |
-| 6 | `pals_law_companion.py` (script output) | `pals_law_report.json`, `pals_law_schema.json` | codegen | ⚠ NONE — no Makefile, no CI, no regeneration trigger | silent | **HIGH** |
-| 7 | `PALS_LAW-v1.5.0.md` §4 (reference table format) | `pals_law_companion.py:96-148` (regex parser) | manual-mirror | Partial — parser silently produces partial results on format change | runtime-error (empty refs) | **MODERATE** |
+| 1 | `PALS_LAW-v1.5.1.md` (canonical spec?) | `Makefile:3`, `tests/conftest.py:16`, `README.md:39,62` (all pin `v1.5.0`) | manual-mirror | ⚠ NONE | silent | **CRITICAL** |
+| 2 | `__main__.py:30,89,117-130` (`--package` flag) | `README.md:80-86` (CLI usage section) | manual-mirror | ⚠ NONE | silent | **HIGH** |
+| 3 | `PALS_LAW-v1.5.0.md` (math blocks) | `pals_check/math_checker.py:102-113` (`_describe_math_block` section→description map) | manual-mirror | ⚠ NONE | silent | **HIGH** |
+| 4 | `pals_check/*.py` (pipeline output) | `output/pals_law_report.json`, `output/pals_law_schema.json`, `output/pals_law_certificate.json` | build-step | `make check` (git diff) — manual only, no CI | silent (if not run) | **HIGH** |
+| 5 | `PALS_LAW-v1.5.0.md` (section headings) | `pals_check/math_checker.py:13-18` (`EXPECTED_SECTIONS`) | manual-mirror | `validate_section_ids()` + `TestSectionIdContract` (unidirectional: catches removed, not added) | test-failure | **HIGH** |
+| 6 | `PALS_LAW-v1.5.0.md` (claims in §3, §6, §8) | `pals_check/schema.py:150-319` (`_build_claims`) | manual-mirror | `TestClaimsContentContract` (4 tests: display math fragments, inline text, section coverage, supported_by validity) | test-failure | **MODERATE** |
+| 7 | `PALS_LAW-v1.5.0.md` (symbols in §3.1) | `pals_check/schema.py:115-147` (`_build_symbols`) | manual-mirror | `TestSymbolsContentContract` (2 tests: latex in spec, section validity) | test-failure | **MODERATE** |
+| 8 | `PALS_LAW-v1.5.0.md` (error classes in §5, §8) | `pals_check/constants.py:8-19`, `pals_check/schema.py:322-360` | manual-mirror | `TestErrorClassesSpecContract` (3 tests: identifier set match, count, Corollary 5 partition) | test-failure | **MODERATE** |
+| 9 | `pals_check/constants.py` (`ErrorClass` enum) | `pals_check/schema.py:104-112` (partition lists), `pals_check/math_checker.py:281-282` (expected sets) | manual-mirror | `TestErrorClassPartitionContract` | test-failure | **MODERATE** |
+| 10 | `pals_check/signing.py:17-19` (`TOOL_VERSION`) | `pyproject.toml:3` (`version`) | manual-mirror | ⚠ NONE | silent | **MODERATE** |
+| 11 | `pals_check/report.py` (`AuditReport` fields) | `pals_check/__main__.py:132-234` (print statements) | shared-import | runtime `AttributeError` + `test_main.py` | test-failure | **LOW** |
+| 12 | `pals_check/signing.py` (cert/sig dict structure) | `pals_check/__main__.py:207-225`, `tests/test_signing.py` | shared-import | `test_signing.py`, `test_main.py` | test-failure | **LOW** |
 
 ### Coupling mechanism legend
 
-- **codegen**: Dependent is machine-generated from the source. Stays in sync if the generation step runs.
-- **shared-import**: Dependent imports types/values directly from the source module. Compiler/interpreter enforces the contract.
+- **codegen**: Dependent is machine-generated from the source.
+- **shared-import**: Dependent imports types/values directly from the source module.
 - **manual-mirror**: Dependent restates information from the source by hand. No automated enforcement.
 - **contract-test**: A dedicated test asserts agreement between source and dependent.
-- **lint-rule**: A linter or static analysis rule enforces consistency.
 - **build-step**: A build/compile step fails if the artifacts disagree.
-- **runtime-validation**: Inconsistency is caught at runtime, not at build/test time.
 - **none**: No known enforcement mechanism.
 
 ### Propagation mode legend
 
-- **build-error**: Change in source causes a build/compile failure. Immediate, loud.
-- **type-error**: Change causes a type-checker failure. Loud if type-checking is in CI.
-- **test-failure**: Change causes an existing test to fail. Loud if tests run in CI.
-- **lint-failure**: Change causes a linter to flag. Loud if linting is in CI.
-- **runtime-error**: Change causes an error at runtime. Loud only in production or integration tests.
-- **silent**: Change propagates with no error at any stage. The dependent artifact is now wrong and nothing signals this.
+- **build-error**: Change in source causes a build/compile failure.
+- **type-error**: Change causes a type-checker failure.
+- **test-failure**: Change causes an existing test to fail.
+- **runtime-error**: Change causes an error at runtime.
+- **silent**: Change propagates with no error at any stage.
 
 ## CRITICAL Findings
 
-### Finding #1: Error taxonomy defined in prose, restated in four Python locations
+### Finding #1: Spec version pinning — v1.5.1 exists but pipeline targets v1.5.0
 
-**Source**: `PALS_LAW-v1.5.0.md` §5 — defines 9 error classes in a Markdown table
-**Dependent**: Four locations in `pals_law_companion.py`:
-  - `ErrorClass` enum (L38-48) — 9 members
-  - `_build_error_classes()` (L1106-1144) — 9 `ErrorClassDef` constructors
-  - `expected_structural` / `expected_semantic` (L654-655) — 7 of 9 classes partitioned
-  - `structural_error_classes` / `semantic_error_classes` (L890-895) — 7 of 9 classes partitioned
+**Source**: `PALS_LAW-v1.5.1.md` — added to the repo with a v1.5.1 changelog entry noting Corollary 5 partition changes.
+**Dependent**: `Makefile:3` (`SPEC := PALS_LAW-v1.5.0.md`), `tests/conftest.py:16` (`PROJECT_ROOT / "PALS_LAW-v1.5.0.md"`), `README.md:39,62` (references to v1.5.0 path).
 **Mechanism**: manual-mirror
-**Guard**: ⚠ NONE
+**Guard**: ⚠ NONE — no check asserts which spec version is canonical.
 
-**How drift manifests**: If a developer adds `ERR_COHERENCE` to §5, they must update four separate locations in the Python file. Missing any one produces no error — the new class simply doesn't appear in the schema, the checks, or the partition. **This has already happened**: `ERR_OMISSION` and `ERR_CALIBRATION` exist in the enum and error class list but are absent from both the `expected_structural`/`expected_semantic` sets (L654-655) and the `structural_error_classes`/`semantic_error_classes` lists (L890-895). The schema JSON's partition covers 7 of 9 classes — 2 are orphaned.
+**How drift manifests**: A contributor reads the repo and sees two spec files. They may edit v1.5.1 (the newer one) assuming it's canonical, but `make check`, `make test`, and all contract tests run against v1.5.0. Their changes to v1.5.1 are never validated. Conversely, if the intent is to adopt v1.5.1, the Corollary 5 partition change (adding `ERR_OMISSION` to structural prose and `ERR_CALIBRATION` to semantic prose) would require updating the code — but nothing currently signals this.
 
-**Recommended fix**: Extract the error class taxonomy into a single `error_classes.json` data file that is the source of truth. The companion script reads this file instead of hardcoding. The spec document can either be generated from it (preferred) or a contract test can assert that the Markdown table and the JSON agree. Minimal version: add a `pytest` test that parses the §5 table from the Markdown and asserts `set(parsed_classes) == set(ErrorClass)` and that every class appears in exactly one partition.
-
----
-
-### Finding #2: Formal symbols and claims hardcoded in Python
-
-**Source**: `PALS_LAW-v1.5.0.md` §3.1 (15 symbols), §3.2-3.4, §6, §8 (12 claims)
-**Dependent**: `pals_law_companion.py:899-931` (`_build_symbols()`), `pals_law_companion.py:934-1103` (`_build_claims()`)
-**Mechanism**: manual-mirror
-**Guard**: ⚠ NONE
-
-**How drift manifests**: If the spec adds a new symbol (e.g., a graded error predicate in a future §7.5 extension) or changes a claim's section number, dependencies, or caveats, the Python builders must be manually updated in lockstep. There is no check that the claim set in Python matches the claims in the document. A removed caveat reference (e.g., dropping §7.5 from the OPERATIVE claim's caveats list) would silently leave the schema JSON pointing to a nonexistent limitation.
-
-**Recommended fix**: Parse symbols and claims from the Markdown using structural patterns (the `### 3.1 Definitions` section has a consistent `Let:` / `- $...$ be ...` format). Alternatively, embed structured YAML/JSON frontmatter per section that the companion reads. A bridge solution: a `pytest` test that parses section headings from the Markdown and asserts every claim's `section` field points to an existing heading — this is partially done by `CHK_CROSS_REFERENCES` but only for inline `§N.M` references, not for the hardcoded `section` fields in `_build_claims()`.
-
----
-
-### Finding #3: Corollary 5 partition already drifted
-
-**Source**: `PALS_LAW-v1.5.0.md` §8 — Corollary 5 partial derivatives list structural classes {`ERR_SCHEMA`, `ERR_TRUNCATION`, `ERR_INSTRUCTION`} and semantic classes {`ERR_HALLUCINATION`, `ERR_SEMANTIC`, `ERR_SYCOPHANCY`, `ERR_REASONING`}
-**Dependent**: `pals_law_companion.py:654-655` and `pals_law_companion.py:890-895`
-**Mechanism**: manual-mirror
-**Guard**: ⚠ NONE — already drifted
-
-**How drift manifests**: The spec's Corollary 5 math blocks explicitly list 7 of 9 error classes across two inequalities. `ERR_OMISSION` and `ERR_CALIBRATION` are not mentioned in either inequality. The companion's `check_math_consistency` hardcodes the same 7-class partition as `expected_structural` and `expected_semantic`, so the check passes — but the check is validating against a stale expectation, not against the full taxonomy. The schema JSON's `structural_error_classes` and `semantic_error_classes` lists also contain only 7 classes, leaving 2 orphaned with no Corollary 5 classification.
-
-**Recommended fix**: The spec itself needs to resolve whether `ERR_OMISSION` and `ERR_CALIBRATION` belong in the structural or semantic partition (see review notes — `ERR_OMISSION` is arguably semantic; `ERR_CALIBRATION` is explicitly classified as semantic in `_build_error_classes` but absent from the math). Once resolved, add an assertion: `set(structural) | set(semantic) == set(ErrorClass) - set(explicitly_excluded)` — if any class is intentionally unclassified, it must be declared so.
-
----
-
-### Finding #4: Artifact content detection broken by encoding mismatch
-
-**Source**: `PALS_LAW-v1.5.0.md` §9.1-9.4 — practitioner artifact code blocks
-**Dependent**: `pals_law_companion.py:1147-1206` (`_build_artifacts()`)
-**Mechanism**: manual-mirror
-**Guard**: ⚠ NONE — already broken
-
-**How drift manifests**: `_build_artifacts()` checks for Unicode math symbols (`𝔼`, `∏`) in the section text, but the Markdown source uses LaTeX notation (`\mathbb{E}`, `\prod`) inside code fences. The `_get_section_text()` function returns raw Markdown including code blocks, so the Unicode symbols never match. The fallback checks (`"operative" in sec91.lower()`) catch some keywords but not all. Result: `pals_law_schema.json` reports all five boolean flags (`contains_operative_form`, `contains_existential_form`, `contains_pipeline_corollary`, `contains_independence_caveat`, `contains_error_checklist`) as `false` for every artifact — including §9.1 which visibly contains the error checklist and §9.4 which contains the operative form.
-
-**Recommended fix**: Replace Unicode character matching with LaTeX pattern matching or keyword matching. For `contains_error_checklist`, check for `ERR_HALLUCINATION` (already done correctly at L1161). For `contains_operative_form`, check for `\\mathbb{E}` or the natural-language phrase "non-negligible". For `contains_pipeline_corollary`, check for `\\prod` or "pipeline". The fix is approximately 10 lines of code in `_build_artifacts()`.
+**Recommended fix**: Choose one:
+- **If v1.5.1 is canonical**: Update `Makefile:3` to `SPEC := PALS_LAW-v1.5.1.md`, update `conftest.py:16` to reference v1.5.1, update README paths. Then run `make test` — the contract tests (`TestErrorClassesSpecContract::test_corollary5_partition_matches_spec_math_blocks`) will flag any code/spec mismatches that need resolving.
+- **If v1.5.0 remains canonical**: Remove or archive `PALS_LAW-v1.5.1.md` to avoid ambiguity.
+- **Either way**: Add a single-source-of-truth pointer (e.g., a `SPEC_VERSION` variable or symlink `PALS_LAW.md → PALS_LAW-v1.5.0.md`) that all consumers reference.
 
 ---
 
 ## HIGH Findings
 
-### Finding #5: Hardcoded section IDs fragile under restructuring
+### Finding #2: `--package` CLI flag undocumented in README
 
-**Source**: `PALS_LAW-v1.5.0.md` section heading structure
-**Dependent**: `pals_law_companion.py:468-479` (`_describe_math_block` section-to-description map), `pals_law_companion.py:492-510` (`_infer_claim_status` section-to-status map)
+**Source**: `pals_check/__main__.py:30,89,117-130` — implements `--package` flag for zip archive bundling.
+**Dependent**: `README.md:80-86` — CLI usage section lists `--no-verify`, `--check-sig`, `--verify-cert` but not `--package`.
 **Mechanism**: manual-mirror
-**Guard**: `CHK_CROSS_REFERENCES` validates `§N.M` references in the Markdown body, but does not check hardcoded section IDs in the Python code.
+**Guard**: ⚠ NONE
 
-**Gap**: If a future version restructures sections (e.g., moves the argument sketch from §6 to §7 after adding a new section), the companion's `_infer_claim_status` would silently assign wrong epistemic statuses. For example, if the argument sketch moved to §7, claims in new-§7 would be classified as "unclassified" instead of "informal_arg", producing incorrect schema output.
+**Gap**: Users reading the README will not discover the `--package` feature. The `--help` output (line 30) does mention it, but README is the primary documentation artifact.
+**Upgrade path**: Add `--package` to the README's CLI usage section and the code block at line 80. Consider adding a test that asserts all flags from `__main__.py`'s help text appear in README.
 
-**Upgrade path**: Add a startup validation step in the companion that extracts all section headings from the Markdown and asserts that every hardcoded section ID in the Python maps exists in the document. This converts the propagation from "silent" to "runtime-error" at script execution time.
+---
+
+### Finding #3: Math block description map ↔ spec sections
+
+**Source**: `PALS_LAW-v1.5.0.md` — section headings and math content.
+**Dependent**: `pals_check/math_checker.py:102-113` — hardcoded `{section: description}` dict.
+**Mechanism**: manual-mirror
+**Guard**: ⚠ NONE
+
+**Gap**: If a new section with math is added, or an existing section's meaning changes, the description map silently produces wrong or missing descriptions.
+**Upgrade path**: Add a test asserting every key in the `descriptions` dict corresponds to a real spec section, and every section with `$$...$$` blocks is represented.
 
 ---
 
-### Finding #6: Generated JSON outputs have no regeneration trigger
+### Finding #4: Output JSON artifacts ↔ code + spec state
 
-**Source**: `pals_law_companion.py` (generates both JSON files)
-**Dependent**: `pals_law_report.json`, `pals_law_schema.json`
-**Mechanism**: codegen (the script generates the files)
-**Guard**: No Makefile, no CI, no `pre-commit` hook, no file watcher. Regeneration depends entirely on the developer remembering to re-run `python pals_law_companion.py PALS_LAW-v1.5.0.md`.
+**Source**: `pals_check/*.py` + `PALS_LAW-v1.5.0.md`
+**Dependent**: `output/*.json` (3 files)
+**Mechanism**: build-step
+**Guard**: `make check` (manual only)
 
-**Gap**: After any edit to the Markdown spec, the JSON files are stale until manually regenerated. A consumer of the JSON (e.g., a downstream tool or a reader who checks the schema) would see data from a previous version of the spec. The `content_hash` field would mismatch, but nothing checks this automatically.
-
-**Upgrade path**: Add a `Makefile` or shell script with a target like `make check` that runs the companion and diffs the output against the committed JSON. Alternatively, add a `pre-commit` hook that regenerates and fails if the output changed. Either converts propagation from "silent" to "build-error" or "test-failure".
+**Gap**: No CI pipeline. `make check` must be run manually.
+**Upgrade path**: Add `.github/workflows/check.yml` running `make check` on every PR.
 
 ---
+
+### Finding #5: Hardcoded section IDs (unidirectional guard)
+
+**Source**: `PALS_LAW-v1.5.0.md` — section headings.
+**Dependent**: `pals_check/math_checker.py:13-18` (`EXPECTED_SECTIONS`).
+**Mechanism**: manual-mirror
+**Guard**: `validate_section_ids()` + `TestSectionIdContract` — catches removed sections but not added ones.
+
+**Gap**: New math-bearing sections in the spec will not be flagged as missing from `EXPECTED_SECTIONS`.
+**Upgrade path**: Add a bidirectional check: assert every section with `$$...$$` blocks is in `EXPECTED_SECTIONS`.
+
+---
+
+## MODERATE Findings (Summary)
+
+| # | Coupling | Guard | Gap |
+|---|---|---|---|
+| 6 | Claims ↔ spec | `TestClaimsContentContract` (4 tests) | Checks structural fragments, not exact latex verbatim. |
+| 7 | Symbols ↔ spec | `TestSymbolsContentContract` (2 tests) | Validates notation presence, not field-level content. |
+| 8 | Error classes ↔ spec | `TestErrorClassesSpecContract` (3 tests) | Full identifier-set match + partition check. Strongest guard of the three. |
+| 9 | ErrorClass enum ↔ partition lists | `TestErrorClassPartitionContract` | Internal consistency only; external consistency covered by #8. |
+| 10 | `TOOL_VERSION` ↔ `pyproject.toml` | ⚠ NONE | `signing.py:18` says `"1.0.0"`, `pyproject.toml:3` says `"1.0.0"` — match today, no guard for future. |
 
 ## Methodology Notes
 
 ### What was inspected
 
-- All 4 files in `/home/admin/codebases/pals-check/`:
-  - `PALS_LAW-v1.5.0.md` (specification document, 627 lines)
-  - `pals_law_companion.py` (companion script, 1438 lines)
-  - `pals_law_schema.json` (generated schema, 482 lines)
-  - `pals_law_report.json` (generated report, 420 lines)
-- Language: Python 3 (stdlib only — no dependencies)
-- No build system, CI pipeline, test suite, or package manifest detected
+- All Python source files under `pals_check/` (7 modules)
+- All test files under `tests/` (11 files + conftest.py)
+- `Makefile`, `pyproject.toml`, `README.md`
+- `PALS_LAW-v1.5.0.md` (626 lines) and `PALS_LAW-v1.5.1.md` (633 lines)
+- `output/*.json` (3 generated artifacts)
+- `.github/workflows/` (empty — no CI)
+- Tech stack: Python 3.10+, pytest, ruff, mypy (strict mode)
 
 ### What was NOT inspected
 
-- The `pals-law.zip` archive (assumed to be a distribution bundle of the same files)
-- Runtime behavior of the companion script (only static analysis of source)
-- Network behavior of the reference verifier (URLs not fetched during this analysis)
-- Any external consumers of the JSON outputs (none detected in-repo)
+- Runtime behavior of reference verification (network-dependent)
+- `.hypothesis/` test data, `.codex/` configuration
+- External services (DOI/arXiv endpoints)
 
 ### Heuristic limitations
 
-This analysis is based on static file-pattern matching (grep, file reads, structural inference). It cannot detect:
+Static file-pattern matching cannot detect: couplings mediated by runtime reflection or metaprogramming; cross-repo couplings; semantic equivalence between differently-formatted definitions; completeness of any test suite.
 
-- Couplings mediated by runtime reflection or metaprogramming.
-- Couplings that exist only across repository boundaries.
-- Semantic equivalence — two definitions may look different but be logically identical.
-- The completeness of any test suite — this project has no tests.
-- Whether the `pals-law.zip` contains files that differ from the working tree copies.
+### Change from previous audit
+
+The previous audit (commit `e394236`) identified 3 CRITICAL, 3 HIGH, 3 MODERATE, 2 LOW. Since then:
+
+- **3 CRITICALs → MODERATE**: Contract tests added in `tests/test_drift_guards.py` for claims (#1→#6), symbols (#2→#7), and error classes (#3→#8).
+- **1 new CRITICAL**: Dual spec versions (`v1.5.0` + `v1.5.1`) with no canonical pointer.
+- **1 new HIGH**: `--package` flag added to CLI without README update.
+- Net improvement: CRITICAL count dropped from 3 to 1; all core pipeline couplings now have at least one automated guard.

@@ -1,6 +1,6 @@
 {
-  "version": "1.5.0",
-  "content_hash": "d1d1f8d3f8015a00",
+  "version": "1.5.2",
+  "content_hash": "22e89f2ba9ef6223",
   "symbols": [
     {
       "name": "M_class",
@@ -486,9 +486,9 @@
     "algorithm": "sha256",
     "tool_id": "pals-check",
     "tool_version": "1.0.0",
-    "signed_at": "2026-04-02T23:58:53Z",
-    "source_document_hash": "d1d1f8d3f8015a00",
-    "payload_digest": "6fa03e9e26aecbb25b2b9cdcb0bf72b60930f035d4384bee45406d73b2d35e04",
-    "seal": "a5e5ce1445fc1a45af8b09aa2f8e6d456b8756eec12a760d39787cb5f3cdd15b"
+    "signed_at": "2026-04-03T00:28:03Z",
+    "source_document_hash": "22e89f2ba9ef6223",
+    "payload_digest": "07dc5135fca1f399f8ca614f41362b071665bacf50d92ba12572a34a53ead195",
+    "seal": "4e526c33999c1356de7837df5f4c1c2a69d64ad3dc2774f2450072c7e15692f1"
   }
 }

@@ -133,6 +133,50 @@ class TestMainInProcess:
                 os.chdir(orig_cwd)
 
 
+class TestMainPackage:
+    def test_package_creates_zip(self, capsys):
+        md_path = str(PROJECT_ROOT / "PALS_LAW-v1.5.0.md")
+        with tempfile.TemporaryDirectory() as tmpdir:
+            orig_cwd = os.getcwd()
+            try:
+                os.chdir(tmpdir)
+                with patch("sys.argv", ["pals_check", md_path, "--no-verify", "--package"]):
+                    main()
+                output = capsys.readouterr()
+                assert "Package written to" in output.out
+
+                # Find the zip file
+                import zipfile
+                zips = list(Path(tmpdir).rglob("*.zip"))
+                assert len(zips) == 1
+                zip_path = zips[0]
+                assert "pals-law-v1.5.0-" in zip_path.name
+
+                with zipfile.ZipFile(zip_path) as zf:
+                    names = zf.namelist()
+                    assert "PALS_LAW-v1.5.0.md" in names
+                    assert "pals_law_report.json" in names
+                    assert "pals_law_schema.json" in names
+                    assert "pals_law_certificate.json" in names
+            finally:
+                os.chdir(orig_cwd)
+
+    def test_no_package_flag_skips_zip(self, capsys):
+        md_path = str(PROJECT_ROOT / "PALS_LAW-v1.5.0.md")
+        with tempfile.TemporaryDirectory() as tmpdir:
+            orig_cwd = os.getcwd()
+            try:
+                os.chdir(tmpdir)
+                with patch("sys.argv", ["pals_check", md_path, "--no-verify"]):
+                    main()
+                output = capsys.readouterr()
+                assert "Package written to" not in output.out
+                zips = list(Path(tmpdir).rglob("*.zip"))
+                assert len(zips) == 0
+            finally:
+                os.chdir(orig_cwd)
+
+
 class TestMainCheckSig:
     def test_check_sig_valid_file(self, capsys):
         signed = sign_artifact({"test": "data"}, "hash")
