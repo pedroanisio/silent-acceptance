@@ -1,0 +1,32 @@
+\contentsline {section}{\numberline {1}Preamble}{2}{section.1}%
+\contentsline {section}{\numberline {2}Informal Statement}{3}{section.2}%
+\contentsline {section}{\numberline {3}Formal Statement}{3}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Definitions}{3}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}The Law (Operative Form)}{3}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}The Law (Existential Form)}{4}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}The Pipeline Corollary (Compounding)}{4}{subsection.3.4}%
+\contentsline {section}{\numberline {4}Empirical Support}{5}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Theoretical Foundations}{6}{subsection.4.1}%
+\contentsline {section}{\numberline {5}Taxonomy of LLM Errors}{7}{section.5}%
+\contentsline {section}{\numberline {6}Argument Sketch}{8}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Probabilistic generation is not deterministic truth}{8}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Finite parameters cannot encode unbounded world knowledge}{8}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}Evaluation is not generation}{9}{subsection.6.3}%
+\contentsline {section}{\numberline {7}Limitations}{9}{section.7}%
+\contentsline {subsection}{\numberline {7.1}The error predicate $\varepsilon $ is not computable in general}{9}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}$\delta $ is task-dependent, model-dependent, and distribution-dependent}{9}{subsection.7.2}%
+\contentsline {subsection}{\numberline {7.3}Independence assumption in pipeline compounding is approximate}{9}{subsection.7.3}%
+\contentsline {subsection}{\numberline {7.4}Verification coverage vs.\ verification depth is unresolved}{9}{subsection.7.4}%
+\contentsline {subsection}{\numberline {7.5}The Boolean error predicate is a deliberate simplification}{9}{subsection.7.5}%
+\contentsline {subsection}{\numberline {7.6}Computability-theoretic impossibility vs.\ practical non-negligibility}{9}{subsection.7.6}%
+\contentsline {section}{\numberline {8}Architectural Corollaries}{10}{section.8}%
+\contentsline {subsection}{\numberline {8.1}Corollary 1 --- Appearance of correctness is not correctness}{10}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}Corollary 2 --- Trust accumulation is prohibited}{10}{subsection.8.2}%
+\contentsline {subsection}{\numberline {8.3}Corollary 3 --- Verification scope must match error taxonomy}{10}{subsection.8.3}%
+\contentsline {subsection}{\numberline {8.4}Corollary 4 --- Silent acceptance is an architectural defect}{10}{subsection.8.4}%
+\contentsline {subsection}{\numberline {8.5}Corollary 5 --- Capability growth shifts the verification problem, not away from it}{10}{subsection.8.5}%
+\contentsline {section}{\numberline {9}Practitioner Artifacts}{11}{section.9}%
+\contentsline {subsection}{\numberline {9.1}Full Contract Block}{11}{subsection.9.1}%
+\contentsline {subsection}{\numberline {9.2}Short-Form (headers, PR descriptions, commit messages)}{12}{subsection.9.2}%
+\contentsline {subsection}{\numberline {9.3}Inline Banner (single-line, for code comments)}{12}{subsection.9.3}%
+\contentsline {subsection}{\numberline {9.4}CLAUDE.md Integration Block}{12}{subsection.9.4}%

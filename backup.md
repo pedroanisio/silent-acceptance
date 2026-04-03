@@ -6,7 +6,7 @@ disclaimer:
     or verifiable reference may be invalid, erroneous, or a hallucination.
     Mathematical claims that cannot be attributed to a published theorem
     are first-principles derivations and must be treated as such.
-  generated_by: "PALS along side Claude Sonnet 4.6 via claude.ai"
+  generated_by: "Claude Sonnet 4.6 via claude.ai"
   date: "2026-04-02"
 ---
 
@@ -16,12 +16,17 @@ disclaimer:
 **Author of the principle:** Pedro Anisio de Luna e Silva (PALS)  
 **Document version:** 1.5.4  
 **Status:** Draft — peer review pending  
-**Version history:**
-- v1.1 — Demoted unestablished strong form; elevated operative form (§3.2) as primary claim.
-- v1.2 — Added working definition of "realistic distribution" (§3.2); added independence caveat (§3.4); added `MODEL_VERSION` to contract block.
-- v1.3 — Restructured section order to match logical dependency graph; merged practitioner artifacts; corrected stale cross-references.
-- v1.4 — Added `ERR_REASONING` to taxonomy; added prompt-injection scope note; added Sharma et al. (2023); added §7.5 (Boolean predicate disclosure); formalized Corollary 5 as labeled hypothesis.
-- v1.5 — Added §1 positioning paragraph and §4.1 theoretical foundations (Kalai & Vempala, Xu et al., Karpowicz, Suzuki et al.); completed 9-class taxonomy coverage; added §7.6 (computability-theoretic vs. practical non-negligibility); added Berglund et al. and Zhou et al. (IFEval) as empirical anchors; tightened §3.2 dom(Σ) restriction and Corollary 2; added scope notes for `ERR_POLICY`, `ERR_TOOL_USE`, and verification cost model.
+**Changelog:**
+- v1.1.0 — Demoted unestablished strong form; elevated practical form as operative claim; removed QED markers from informal arguments; cut §9 (invocation without application); expanded Corollary 5.
+- v1.2.0 — Fixed §2 informal statement to reflect statistical framing; added working definition of "realistic 𝒟" to §3.2; added independence caveat at point of use in §3.4; added `MODEL_VERSION:` field to contract block.
+- v1.3.0 — Redaction-reconciliation pass: restructured section order to match logical dependency graph (empirical support before taxonomy before argument sketch before limitations before corollaries); merged practitioner artifacts into single section; corrected stale cross-references (§10.2 pointed to existential form instead of operative; §10.3 described only one direction of independence failure); propagated §2 phrasing fix to stale copies in short-form and CLAUDE.md block.
+- v1.4.0 — Added `ERR_REASONING` to taxonomy (distinct detection strategy from `ERR_HALLUCINATION`); added scope note on prompt injection as extrinsic threat vs. intrinsic error; added Sharma et al. (2023) as second empirical anchor for `ERR_SYCOPHANCY`; added §7.5 disclosing Boolean predicate as deliberate simplification; formalized Corollary 5 as labeled partial-derivative hypothesis; updated contract checklist with `ERR_REASONING`.
+- v1.4.1 — Redaction-reconciliation pass (RC-4): added independence caveat to §9.4 CLAUDE.md block to resolve qualification-chain inconsistency with §3.4, §7.3, and §9.1. No other redactional damage found.
+- v1.5.0 — Feedback-processor pass: added §1 positioning paragraph acknowledging safety engineering tradition and prior theoretical art (Kalai & Vempala STOC 2024, Xu et al. 2024); added §4.1 theoretical references section (Kalai & Vempala, Xu et al., Karpowicz, Suzuki et al.); added inference-truncation note to §3.3; added TruthfulQA saturation note and Kadavath trajectory note to §4; added §7.6 on computability-theoretic vs. practical non-negligibility (Suzuki et al. counterpoint); added missing DOIs for Maynez and Lin; noted uncovered error classes in §4.
+- v1.5.1 — Completed Corollary 5 partition: added `ERR_OMISSION` to structural set (∂D_c/∂C ≤ 0) and `ERR_CALIBRATION` to semantic set (∂D_c/∂C > 0), achieving exhaustive 9-class coverage. Fixed prose–formula resolution inconsistency in Corollary 5 text (prose listed 2+4 classes, formula listed 4+5).
+- v1.5.2 — Added Berglund et al. (2023) to §4 as empirical anchor for `ERR_REASONING`; updated coverage note (four of nine classes now have dedicated references).
+- v1.5.3 — Multi-model review feedback pass: (1) corrected §3.4 pipeline limit to require uniform lower bound p_i ≥ δ > 0 (Σp_i = ∞ convergence condition; counterexample: p_i = 2^{-i} gives convergent product); (2) added `PALS_LAW_VERSION:` field to §9.1 contract block and §9.4 CLAUDE.md block for contract-staleness tracking; (3) added §5 scope note on `ERR_POLICY`/`ERR_COMPLIANCE` as explicit out-of-scope acknowledgement; (4) added Zhou et al. (2023) IFEval to §4 as empirical anchor for `ERR_INSTRUCTION`; updated coverage note (five of nine classes now have dedicated references).
+- v1.5.4 — Assessment feedback pass: (1) fixed footer version (v1.5.2→v1.5.3 redaction artifact); (2) added explicit dom(Σ) restriction to operative form §3.2 — expectation applies only to inputs where ground truth is defined; (3) tightened Corollary 2 to state the no-inductive-guarantee claim precisely (finite correct outputs provide no guarantee on unseen inputs) rather than the trivially-true unconditional expectation statement; (4) added §5 scope note on multimodal/agentic error classes (`ERR_TOOL_USE`) and verification cost model as acknowledged future extensions; (5) updated `PALS_LAW_VERSION` in §9.1 and §9.4 to v1.5.4.
 
 ---
 

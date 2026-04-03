@@ -1,3 +1,6 @@
 .coverage
 .hypothesis/
 *.pyc
+zenodo-sdk/dist/
+node_modules/
+.env

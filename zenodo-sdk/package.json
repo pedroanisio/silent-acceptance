@@ -1,0 +1,55 @@
+{
+  "name": "@pals/zenodo-sdk",
+  "version": "0.1.0",
+  "description": "Modular TypeScript SDK for the Zenodo REST API — depositions, files, records, licenses.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./modules/*": {
+      "types": "./dist/modules/*.d.ts",
+      "import": "./dist/modules/*.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prepublishOnly": "npm run clean && npm run build"
+  },
+  "keywords": [
+    "zenodo",
+    "api",
+    "sdk",
+    "doi",
+    "research",
+    "publication",
+    "open-access",
+    "deposition"
+  ],
+  "author": "Pedro Anisio de Luna e Silva",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "mime-types": "^2.1.35"
+  },
+  "devDependencies": {
+    "@types/mime-types": "^2.1.4",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.4.0",
+    "vitest": "^4.1.2"
+  }
+}

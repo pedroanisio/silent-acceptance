@@ -1,6 +1,6 @@
 {
   "document_version": "1.5.4",
-  "content_hash": "d53ccc7f3a35a359",
+  "content_hash": "eb0df6521a993c8c",
   "references": [
     {
       "ref_id": "ji_2023",
@@ -19,10 +19,10 @@
         "\u00a74"
       ],
       "publication_type": "peer-reviewed",
-      "verification_status": "unverified",
+      "verification_status": "partial",
       "fetched_title": null,
-      "fetched_url": null,
-      "fetch_error": null
+      "fetched_url": "https://doi.org/10.1145/3571730",
+      "fetch_error": "HTTP 403: Forbidden"
     },
     {
       "ref_id": "maynez_2020",
@@ -41,9 +41,9 @@
         "\u00a74"
       ],
       "publication_type": "peer-reviewed",
-      "verification_status": "unverified",
-      "fetched_title": null,
-      "fetched_url": null,
+      "verification_status": "verified",
+      "fetched_title": "On Faithfulness and Factuality in Abstractive Summarization - ACL Anthology",
+      "fetched_url": "https://aclanthology.org/2020.acl-main.173/",
       "fetch_error": null
     },
     {
@@ -63,9 +63,9 @@
         "\u00a74"
       ],
       "publication_type": "preprint",
-      "verification_status": "unverified",
-      "fetched_title": null,
-      "fetched_url": null,
+      "verification_status": "verified",
+      "fetched_title": "[2109.07958] TruthfulQA: Measuring How Models Mimic Human Falsehoods",
+      "fetched_url": "https://arxiv.org/abs/2109.07958",
       "fetch_error": null
     },
     {
@@ -86,9 +86,9 @@
         "\u00a76.3"
       ],
       "publication_type": "preprint",
-      "verification_status": "unverified",
-      "fetched_title": null,
-      "fetched_url": null,
+      "verification_status": "verified",
+      "fetched_title": "[2207.05221] Language Models (Mostly) Know What They Know",
+      "fetched_url": "https://arxiv.org/abs/2207.05221",
       "fetch_error": null
     },
     {
@@ -108,9 +108,9 @@
         "\u00a74"
       ],
       "publication_type": "preprint",
-      "verification_status": "unverified",
-      "fetched_title": null,
-      "fetched_url": null,
+      "verification_status": "verified",
+      "fetched_title": "[2212.09251] Discovering Language Model Behaviors with Model-Written Evaluations",
+      "fetched_url": "https://arxiv.org/abs/2212.09251",
       "fetch_error": null
     },
     {
@@ -130,9 +130,9 @@
         "\u00a74"
       ],
       "publication_type": "preprint",
-      "verification_status": "unverified",
-      "fetched_title": null,
-      "fetched_url": null,
+      "verification_status": "verified",
+      "fetched_title": "[2310.13548] Towards Understanding Sycophancy in Language Models",
+      "fetched_url": "https://arxiv.org/abs/2310.13548",
       "fetch_error": null
     },
     {
@@ -152,9 +152,9 @@
         "\u00a74"
       ],
       "publication_type": "preprint",
-      "verification_status": "unverified",
-      "fetched_title": null,
-      "fetched_url": null,
+      "verification_status": "verified",
+      "fetched_title": "[2309.12288] The Reversal Curse: LLMs trained on A is B fail to learn B is A ",
+      "fetched_url": "https://arxiv.org/abs/2309.12288",
       "fetch_error": null
     },
     {
@@ -174,9 +174,9 @@
         "\u00a74"
       ],
       "publication_type": "preprint",
-      "verification_status": "unverified",
-      "fetched_title": null,
-      "fetched_url": null,
+      "verification_status": "verified",
+      "fetched_title": "[2311.07911] Instruction-Following Evaluation for Large Language Models",
+      "fetched_url": "https://arxiv.org/abs/2311.07911",
       "fetch_error": null
     },
     {
@@ -196,10 +196,10 @@
         "\u00a74"
       ],
       "publication_type": "peer-reviewed",
-      "verification_status": "unverified",
+      "verification_status": "partial",
       "fetched_title": null,
-      "fetched_url": null,
-      "fetch_error": null
+      "fetched_url": "https://doi.org/10.1145/3618260.3649777",
+      "fetch_error": "HTTP 403: Forbidden"
     },
     {
       "ref_id": "xu_2024",
@@ -218,9 +218,9 @@
         "\u00a74"
       ],
       "publication_type": "preprint",
-      "verification_status": "unverified",
-      "fetched_title": null,
-      "fetched_url": null,
+      "verification_status": "verified",
+      "fetched_title": "[2401.11817] Hallucination is Inevitable: An Innate Limitation of Large Language Models",
+      "fetched_url": "https://arxiv.org/abs/2401.11817",
       "fetch_error": null
     },
     {
@@ -240,9 +240,9 @@
         "\u00a74"
       ],
       "publication_type": "preprint",
-      "verification_status": "unverified",
-      "fetched_title": null,
-      "fetched_url": null,
+      "verification_status": "verified",
+      "fetched_title": "[2506.06382] On the Fundamental Impossibility of Hallucination Control in Large Language Models",
+      "fetched_url": "https://arxiv.org/abs/2506.06382",
       "fetch_error": null
     },
     {
@@ -263,9 +263,9 @@
         "\u00a77.6"
       ],
       "publication_type": "preprint",
-      "verification_status": "unverified",
-      "fetched_title": null,
-      "fetched_url": null,
+      "verification_status": "verified",
+      "fetched_title": "[2502.12187] Hallucinations are inevitable but can be made statistically negligible. The innate inevitability of hallucinations cannot explain practical LLM issues",
+      "fetched_url": "https://arxiv.org/abs/2502.12187",
       "fetch_error": null
     }
   ],
@@ -394,7 +394,7 @@
       ],
       "description": "All \u00a7N.M cross-references resolve to existing section headings",
       "status": "pass",
-      "detail": "{\n  \"existing_sections\": [\n    \"1\",\n    \"2\",\n    \"3\",\n    \"3.1\",\n    \"3.2\",\n    \"3.3\",\n    \"3.4\",\n    \"4\",\n    \"4.1\",\n    \"5\",\n    \"6\",\n    \"6.1\",\n    \"6.2\",\n    \"6.3\",\n    \"7\",\n    \"7.1\",\n    \"7.2\",\n    \"7.3\",\n    \"7.4\",\n    \"7.5\",\n    \"7.6\",\n    \"8\",\n    \"9\",\n    \"9.1\",\n    \"9.2\",\n    \"9.3\",\n    \"9.4\"\n  ],\n  \"referenced_sections\": [\n    \"3.1\",\n    \"3.2\",\n    \"3.3\",\n    \"3.4\",\n    \"4\",\n    \"4.1\",\n    \"5\",\n    \"6.2\",\n    \"7.2\",\n    \"7.3\",\n    \"7.6\",\n    \"8\",\n    \"9\",\n    \"9.1\",\n    \"9.4\"\n  ],\n  \"broken_references\": []\n}"
+      "detail": "{\n  \"existing_sections\": [\n    \"1\",\n    \"2\",\n    \"3\",\n    \"3.1\",\n    \"3.2\",\n    \"3.3\",\n    \"3.4\",\n    \"4\",\n    \"4.1\",\n    \"5\",\n    \"6\",\n    \"6.1\",\n    \"6.2\",\n    \"6.3\",\n    \"7\",\n    \"7.1\",\n    \"7.2\",\n    \"7.3\",\n    \"7.4\",\n    \"7.5\",\n    \"7.6\",\n    \"8\",\n    \"9\",\n    \"9.1\",\n    \"9.2\",\n    \"9.3\",\n    \"9.4\"\n  ],\n  \"referenced_sections\": [\n    \"1\",\n    \"3.1\",\n    \"3.2\",\n    \"3.3\",\n    \"3.4\",\n    \"4\",\n    \"4.1\",\n    \"5\",\n    \"6.2\",\n    \"7.2\",\n    \"7.3\",\n    \"7.5\",\n    \"7.6\",\n    \"8\",\n    \"9\",\n    \"9.1\",\n    \"9.4\"\n  ],\n  \"broken_references\": []\n}"
     },
     {
       "check_id": "CHK_EPSILON_DOMAIN",
@@ -484,9 +484,9 @@
     "algorithm": "sha256",
     "tool_id": "pals-check",
     "tool_version": "1.0.0",
-    "signed_at": "2026-04-03T09:59:10Z",
-    "source_document_hash": "d53ccc7f3a35a359",
-    "payload_digest": "a259d084ca6bb975a10b752fdfb3657b60d91dc9bc176be2cc20bebb3123365e",
-    "seal": "f374322ac0adc5bca8e5487cc6463b618127d9e6129743d0520ceb93920b1865"
+    "signed_at": "2026-04-03T10:35:55Z",
+    "source_document_hash": "eb0df6521a993c8c",
+    "payload_digest": "c4e738a6a6030be72befc8e399aba26b341059b0d8ba88ea0a89975ff7dca31f",
+    "seal": "fc63b049177dd9bb0440bdb6a29b93356ef6436b6626dfca4db9021ffd3a4204"
   }
 }
