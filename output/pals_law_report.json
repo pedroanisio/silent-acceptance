@@ -426,9 +426,9 @@
     "algorithm": "sha256",
     "tool_id": "pals-check",
     "tool_version": "1.0.0",
-    "signed_at": "2026-04-02T23:57:38Z",
+    "signed_at": "2026-04-02T23:58:53Z",
     "source_document_hash": "d1d1f8d3f8015a00",
     "payload_digest": "b512050c318fda908b43b2b2eb887070f46dfd95759886721faba5fea4fbbd0c",
-    "seal": "347dd11b55f68f1475acc6bdc8aff70e4dba136c87664adbfca11cb18e29f27f"
+    "seal": "895a05f63ec3e5c03d60a852346726503ee7e7d83c450b2972afbd58817f6125"
   }
 }

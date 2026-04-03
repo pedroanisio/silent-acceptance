@@ -2,7 +2,7 @@
   "certificate_version": "1",
   "tool_id": "pals-check",
   "tool_version": "1.0.0",
-  "generated_at": "2026-04-02T23:57:38Z",
+  "generated_at": "2026-04-02T23:58:53Z",
   "spec": {
     "algorithm": "sha256",
     "digest": "d1d1f8d3f8015a0042276c8b9c737c5943c7db59531d9f195ce6012f2697a112"
@@ -25,6 +25,6 @@
   },
   "binding": {
     "algorithm": "sha256",
-    "digest": "ff9c1ea3a49d0ba36929f9a1d32f51a08756461f9bd9e1ea023941ec4dde84d3"
+    "digest": "f5ecc668edb169ada5e24e9b0391272c48a731882e8ab351ca6fa9d0cc6d4614"
   }
 }

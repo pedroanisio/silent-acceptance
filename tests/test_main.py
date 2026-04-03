@@ -11,7 +11,7 @@ from unittest.mock import patch
 import pytest
 
 from pals_check.__main__ import main
-from pals_check.signing import sign_artifact
+from pals_check.signing import generate_certificate, sign_artifact
 
 PROJECT_ROOT = Path(__file__).parent.parent
 
@@ -177,3 +177,113 @@ class TestMainCheckSig:
             with pytest.raises(SystemExit) as exc_info:
                 main()
             assert exc_info.value.code == 1
+
+
+class TestMainVerifyCert:
+    def test_verify_cert_all_valid(self, capsys):
+        md_text = "# Test\nContent."
+        report = {"document_version": "1.0", "checks_passed": 1, "checks_warned": 0,
+                  "checks_failed": 0, "math_checks": []}
+        schema = {"version": "1.0", "symbols": [], "claims": []}
+        cert = generate_certificate(md_text, report, schema)
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            cert_path = Path(tmpdir) / "cert.json"
+            md_path = Path(tmpdir) / "spec.md"
+            report_path = Path(tmpdir) / "report.json"
+            schema_path = Path(tmpdir) / "schema.json"
+
+            cert_path.write_text(json.dumps(cert))
+            md_path.write_text(md_text)
+            report_path.write_text(json.dumps(report))
+            schema_path.write_text(json.dumps(schema))
+
+            with patch("sys.argv", ["pals_check", "--verify-cert",
+                                     str(cert_path), str(md_path),
+                                     str(report_path), str(schema_path)]):
+                with pytest.raises(SystemExit) as exc_info:
+                    main()
+                assert exc_info.value.code == 0
+
+            output = capsys.readouterr()
+            assert "spec: OK" in output.out
+            assert "report: OK" in output.out
+            assert "schema: OK" in output.out
+
+    def test_verify_cert_tampered_spec(self, capsys):
+        md_text = "# Test\nContent."
+        report = {"document_version": "1.0", "checks_passed": 1, "checks_warned": 0,
+                  "checks_failed": 0, "math_checks": []}
+        schema = {"version": "1.0", "symbols": [], "claims": []}
+        cert = generate_certificate(md_text, report, schema)
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            cert_path = Path(tmpdir) / "cert.json"
+            md_path = Path(tmpdir) / "spec.md"
+
+            cert_path.write_text(json.dumps(cert))
+            md_path.write_text("tampered content")
+
+            with patch("sys.argv", ["pals_check", "--verify-cert",
+                                     str(cert_path), str(md_path)]):
+                with pytest.raises(SystemExit) as exc_info:
+                    main()
+                assert exc_info.value.code == 1
+
+    def test_verify_cert_spec_only(self, capsys):
+        md_text = "# Test\nContent."
+        report = {"document_version": "1.0", "checks_passed": 0, "checks_warned": 0,
+                  "checks_failed": 0}
+        schema = {"version": "1.0", "symbols": [], "claims": []}
+        cert = generate_certificate(md_text, report, schema)
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            cert_path = Path(tmpdir) / "cert.json"
+            md_path = Path(tmpdir) / "spec.md"
+
+            cert_path.write_text(json.dumps(cert))
+            md_path.write_text(md_text)
+
+            with patch("sys.argv", ["pals_check", "--verify-cert",
+                                     str(cert_path), str(md_path)]):
+                with pytest.raises(SystemExit) as exc_info:
+                    main()
+                assert exc_info.value.code == 0
+            output = capsys.readouterr()
+            assert "Checks at generation" in output.out
+            assert "Generated" in output.out
+
+    def test_verify_cert_no_args(self):
+        with patch("sys.argv", ["pals_check", "--verify-cert"]):
+            with pytest.raises(SystemExit) as exc_info:
+                main()
+            assert exc_info.value.code == 1
+
+
+class TestMainRefDetailOutput:
+    def test_main_prints_fetched_url_title_error(self, capsys):
+        """Cover L147/149/151 — ref output with fetched_url, fetched_title, fetch_error."""
+        md_path = str(PROJECT_ROOT / "PALS_LAW-v1.5.0.md")
+        with tempfile.TemporaryDirectory() as tmpdir:
+            orig_cwd = os.getcwd()
+            try:
+                os.chdir(tmpdir)
+
+                def fake_verify(refs, quiet=False):
+                    for ref in refs:
+                        ref.verification_status = "verified"
+                        ref.fetched_url = "https://example.com/paper"
+                        ref.fetched_title = "Fetched Paper Title"
+                        ref.fetch_error = "Some transient error"
+                    return refs
+
+                # Must NOT pass --no-verify so verify_references gets called
+                with patch("sys.argv", ["pals_check", md_path]):
+                    with patch("pals_check.report.verify_references", side_effect=fake_verify):
+                        main()
+                output = capsys.readouterr()
+                assert "URL: https://example.com/paper" in output.out
+                assert "Fetched title: Fetched Paper Title" in output.out
+                assert "Error: Some transient error" in output.out
+            finally:
+                os.chdir(orig_cwd)
