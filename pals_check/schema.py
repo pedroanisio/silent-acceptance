@@ -64,6 +64,7 @@ class PractitionerArtifact:
     contains_pipeline_corollary: bool
     contains_independence_caveat: bool
     contains_error_checklist: bool
+    contains_spec_version_field: bool
 
 
 @dataclass
@@ -155,7 +156,12 @@ def _build_claims() -> list[FormalClaim]:
             section="3.1",
             status=ClaimStatus.DEFINITION.value,
             latex=r"\varepsilon(y, x) \in \{0, 1\},\ \varepsilon = 1 \iff y \text{ deviates from } \Sigma(x)",
-            natural_language="\u03b5 is 1 when model output deviates from ground truth in any dimension of \u00a75",
+            natural_language=(
+                "\u03b5 is 1 when model output deviates from ground truth in any dimension of \u00a75. "
+                "NOTE: \u03a3 is a partial function \u2014 \u03b5(y,x) is undefined when \u03a3(x) is undefined "
+                "(creative/subjective prompts). The operative form's expectation is implicitly "
+                "restricted to dom(\u03a3)."
+            ),
             depends_on=[],
             supported_by=[],
             caveats=["7.1", "7.5"],
@@ -169,8 +175,8 @@ def _build_claims() -> list[FormalClaim]:
             latex=r"\forall M \in \mathcal{M},\ \forall \text{ realistic } \mathcal{D}: \mathbb{E}_{x \sim \mathcal{D}}[\varepsilon(M(x), x)] \geq \delta > 0",
             natural_language="For any model and any realistic distribution, expected error rate is non-negligibly above zero",
             depends_on=["DEF_EPSILON"],
-            supported_by=["ji_2023", "maynez_2020", "lin_2022", "kadavath_2022", "perez_2022", "sharma_2023"],
-            caveats=["7.1", "7.2", "7.5"],
+            supported_by=["ji_2023", "maynez_2020", "lin_2022", "kadavath_2022", "perez_2022", "sharma_2023", "kalai_2024"],
+            caveats=["7.1", "7.2", "7.5", "7.6"],
             is_falsifiable=True,
             falsification_method=(
                 "Produce a model M and a realistic distribution D (per \u00a73.2 working definition) "
@@ -201,14 +207,21 @@ def _build_claims() -> list[FormalClaim]:
             section="3.4",
             status=ClaimStatus.COROLLARY.value,
             latex=r"P(\text{error-free pipeline}) = \prod_{i=1}^{n}(1-p_i) \to 0 \text{ as } n \to \infty",
-            natural_language="Unverified pipeline failure probability approaches 1 as pipeline length grows",
+            natural_language=(
+                "Unverified pipeline failure probability approaches 1 as pipeline length grows. "
+                "Requires \u03a3p_i = \u221e (e.g. p_i \u2265 \u03b4 > 0 uniform lower bound); "
+                "if p_i decreases fast enough (e.g. p_i = 2^{-i}), the product converges "
+                "and pipeline error stays bounded below 1."
+            ),
             depends_on=["OPERATIVE"],
             supported_by=[],
             caveats=["7.3"],
             is_falsifiable=True,
             falsification_method=(
                 "Show that pipeline errors are so correlated (non-independent) that "
-                "the product formula fundamentally mischaracterizes the risk direction. "
+                "the product formula fundamentally mischaracterizes the risk direction, "
+                "or that per-step error probabilities decrease fast enough (p_i = o(1/i)) "
+                "for \u03a3p_i < \u221e, making the product converge to a positive value. "
                 "\u00a77.3 already acknowledges the independence assumption is approximate."
             ),
         ),
@@ -401,6 +414,11 @@ def _has_error_checklist(sec: str) -> bool:
     return "ERR_HALLUCINATION" in sec or "ERR_" in sec
 
 
+def _has_spec_version_field(sec: str) -> bool:
+    """Detect PALS_LAW_VERSION field for contract staleness tracking."""
+    return "PALS_LAW_VERSION" in sec or "pals_law_version" in sec.lower()
+
+
 def _build_artifacts(text: str) -> list[PractitionerArtifact]:
     artifacts = []
 
@@ -415,6 +433,7 @@ def _build_artifacts(text: str) -> list[PractitionerArtifact]:
         contains_pipeline_corollary=_has_pipeline_corollary(sec91),
         contains_independence_caveat=_has_independence_caveat(sec91),
         contains_error_checklist=_has_error_checklist(sec91),
+        contains_spec_version_field=_has_spec_version_field(sec91),
     ))
 
     sec92 = _get_section_text(text, "9.2")
@@ -428,6 +447,7 @@ def _build_artifacts(text: str) -> list[PractitionerArtifact]:
         contains_pipeline_corollary=_has_pipeline_corollary(sec92),
         contains_independence_caveat=_has_independence_caveat(sec92),
         contains_error_checklist=_has_error_checklist(sec92),
+        contains_spec_version_field=_has_spec_version_field(sec92),
     ))
 
     sec93 = _get_section_text(text, "9.3")
@@ -441,6 +461,7 @@ def _build_artifacts(text: str) -> list[PractitionerArtifact]:
         contains_pipeline_corollary=_has_pipeline_corollary(sec93),
         contains_independence_caveat=_has_independence_caveat(sec93),
         contains_error_checklist=_has_error_checklist(sec93),
+        contains_spec_version_field=_has_spec_version_field(sec93),
     ))
 
     sec94 = _get_section_text(text, "9.4")
@@ -454,6 +475,7 @@ def _build_artifacts(text: str) -> list[PractitionerArtifact]:
         contains_pipeline_corollary=_has_pipeline_corollary(sec94),
         contains_independence_caveat=_has_independence_caveat(sec94),
         contains_error_checklist=_has_error_checklist(sec94),
+        contains_spec_version_field=_has_spec_version_field(sec94),
     ))
 
     return artifacts

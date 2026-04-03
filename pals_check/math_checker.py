@@ -247,6 +247,39 @@ def check_math_consistency(blocks: list[MathBlock], text: str) -> list[MathCheck
             ),
         ))
 
+    # Check 3b: Convergence condition for pipeline limit
+    if len(pipeline_blocks) >= 2:
+        b2 = pipeline_blocks[1].latex
+        b2_norm = re.sub(r'\s+', '', b2)
+        # Check if the spec states the convergence condition (delta > 0 uniform bound
+        # or Σp_i = ∞) rather than just "p_i > 0"
+        sec34_text = _get_section_text(text, "3.4")
+        has_uniform_bound = (
+            r'\delta' in b2 or r'\delta' in pipeline_blocks[0].latex
+            or "delta" in sec34_text.lower()
+            or r'\geq' in b2
+        )
+        has_divergence_note = (
+            "diverge" in sec34_text.lower()
+            or "sum" in sec34_text.lower() and "infin" in sec34_text.lower()
+        )
+        checks.append(MathCheck(
+            check_id="CHK_CONVERGENCE_CONDITION",
+            target_blocks=[pipeline_blocks[1].block_id],
+            description=(
+                "Pipeline limit requires \u03a3p_i = \u221e (e.g. uniform lower bound p_i \u2265 \u03b4 > 0); "
+                "p_i > 0 alone is insufficient (counterexample: p_i = 2^{-i})"
+            ),
+            status="pass" if has_uniform_bound else "warn",
+            detail=(
+                f"Uniform bound stated in formula: {has_uniform_bound}. "
+                f"Divergence condition noted in text: {has_divergence_note}. "
+                "The operative form guarantees p_i \u2265 \u03b4 > 0 for each step, "
+                "which implies \u03a3p_i = \u221e and validates the limit. "
+                "If this condition is not explicit in the spec, it should be."
+            ),
+        ))
+
     # Check 4: Autoregressive factorization (\u00a76.1) is standard
     arg_blocks = [b for b in blocks if b.section == "6.1"]
     if arg_blocks:

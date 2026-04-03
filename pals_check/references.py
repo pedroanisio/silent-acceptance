@@ -28,6 +28,7 @@ class Reference:
     error_classes_supported: list[str] = field(default_factory=list)
     confidence_note: Optional[str] = None
     section_cited_in: list[str] = field(default_factory=list)
+    publication_type: str = "unknown"  # "peer-reviewed" | "preprint" | "unknown"
     verification_status: str = "unverified"
     fetched_title: Optional[str] = None
     fetched_url: Optional[str] = None
@@ -135,6 +136,16 @@ def _parse_formal_reference(raw: str, relevance: str, confidence: str) -> Option
     first_author = re.sub(r'[^a-z_]', '', first_author)
     ref_id = f"{first_author}_{year}"
 
+    # Infer publication type: DOI with non-arXiv venue = peer-reviewed
+    if doi and arxiv_id:
+        pub_type = "peer-reviewed"  # Published with DOI + has arXiv preprint
+    elif doi and not arxiv_id:
+        pub_type = "peer-reviewed"  # Journal/conference DOI only
+    elif arxiv_id and not doi:
+        pub_type = "preprint"  # arXiv only, no DOI
+    else:
+        pub_type = "unknown"
+
     return Reference(
         ref_id=ref_id,
         authors=authors,
@@ -147,6 +158,7 @@ def _parse_formal_reference(raw: str, relevance: str, confidence: str) -> Option
         error_classes_supported=error_classes,
         confidence_note=confidence,
         section_cited_in=["\u00a74"],
+        publication_type=pub_type,
     )
 
 

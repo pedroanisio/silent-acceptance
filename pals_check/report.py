@@ -85,6 +85,27 @@ def build_report(text: str, do_verify: bool = True) -> tuple[AuditReport, PALSLa
                 f"claimed: '{ref.title[:60]}' vs fetched: '{(ref.fetched_title or '?')[:60]}'"
             )
 
+    # Scope gap checks (from multi-model review feedback)
+    # Check if spec addresses cyclic/agentic architectures
+    if "cyclic" not in text.lower() and "agentic" not in text.lower() and "self-correct" not in text.lower():
+        warnings.append(
+            "Scope gap: \u00a73.4 models linear DAG pipelines only \u2014 "
+            "cyclic/agentic architectures (ReAct, LangGraph) with self-correction loops are unaddressed"
+        )
+    # Check if spec addresses policy/compliance error class
+    if "ERR_POLICY" not in text and "ERR_COMPLIANCE" not in text:
+        warnings.append(
+            "Scope gap: no ERR_POLICY/ERR_COMPLIANCE class for outputs that are "
+            "correct and well-formed but violate business/safety guardrails"
+        )
+    # Check if contract block has PALS_LAW_VERSION field
+    for artifact in schema.artifacts:
+        if artifact.artifact_id == "contract_block" and not artifact.contains_spec_version_field:
+            warnings.append(
+                "Contract block (\u00a79.1) missing PALS_LAW_VERSION field \u2014 "
+                "contracts become stale as the specification evolves"
+            )
+
     report = AuditReport(
         document_version=schema.version,
         content_hash=schema.content_hash,

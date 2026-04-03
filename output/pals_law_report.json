@@ -1,6 +1,6 @@
 {
-  "document_version": "1.5.2",
-  "content_hash": "22e89f2ba9ef6223",
+  "document_version": "1.5.3",
+  "content_hash": "788fd62216843629",
   "references": [
     {
       "ref_id": "ji_2023",
@@ -18,6 +18,7 @@
       "section_cited_in": [
         "\u00a74"
       ],
+      "publication_type": "peer-reviewed",
       "verification_status": "partial",
       "fetched_title": null,
       "fetched_url": "https://doi.org/10.1145/3571730",
@@ -39,6 +40,7 @@
       "section_cited_in": [
         "\u00a74"
       ],
+      "publication_type": "peer-reviewed",
       "verification_status": "verified",
       "fetched_title": "On Faithfulness and Factuality in Abstractive Summarization - ACL Anthology",
       "fetched_url": "https://aclanthology.org/2020.acl-main.173/",
@@ -60,6 +62,7 @@
       "section_cited_in": [
         "\u00a74"
       ],
+      "publication_type": "preprint",
       "verification_status": "verified",
       "fetched_title": "[2109.07958] TruthfulQA: Measuring How Models Mimic Human Falsehoods",
       "fetched_url": "https://arxiv.org/abs/2109.07958",
@@ -85,6 +88,7 @@
         "\u00a76.2",
         "\u00a76.3"
       ],
+      "publication_type": "preprint",
       "verification_status": "verified",
       "fetched_title": "[2207.05221] Language Models (Mostly) Know What They Know",
       "fetched_url": "https://arxiv.org/abs/2207.05221",
@@ -106,6 +110,7 @@
       "section_cited_in": [
         "\u00a74"
       ],
+      "publication_type": "preprint",
       "verification_status": "verified",
       "fetched_title": "[2212.09251] Discovering Language Model Behaviors with Model-Written Evaluations",
       "fetched_url": "https://arxiv.org/abs/2212.09251",
@@ -127,6 +132,7 @@
       "section_cited_in": [
         "\u00a74"
       ],
+      "publication_type": "preprint",
       "verification_status": "verified",
       "fetched_title": "[2310.13548] Towards Understanding Sycophancy in Language Models",
       "fetched_url": "https://arxiv.org/abs/2310.13548",
@@ -149,9 +155,32 @@
       "section_cited_in": [
         "\u00a74"
       ],
+      "publication_type": "preprint",
       "verification_status": "verified",
       "fetched_title": "[2309.12288] The Reversal Curse: LLMs trained on A is B fail to learn B is A ",
       "fetched_url": "https://arxiv.org/abs/2309.12288",
+      "fetch_error": null
+    },
+    {
+      "ref_id": "zhou_2023",
+      "authors": "Zhou, J., et al",
+      "year": 2023,
+      "title": "Instruction-Following Evaluation for Large Language Models.",
+      "venue": "arXiv:2311.07911",
+      "doi": null,
+      "arxiv_id": "2311.07911",
+      "relevance": "IFEval: benchmark measuring instruction-following accuracy across 25 verifiable constraint types (format, length, keyword inclusion/exclusion, language). No model achieves 100% compliance. Directly grounds `ERR_INSTRUCTION` \u2014 explicit constraint violations are measurable and non-negligible even for frontier models.",
+      "error_classes_supported": [
+        "ERR_INSTRUCTION"
+      ],
+      "confidence_note": "High confidence \u2014 adopted by LMSYS, Open LLM Leaderboard v2; results independently reproducible.",
+      "section_cited_in": [
+        "\u00a74"
+      ],
+      "publication_type": "preprint",
+      "verification_status": "verified",
+      "fetched_title": "[2311.07911] Instruction-Following Evaluation for Large Language Models",
+      "fetched_url": "https://arxiv.org/abs/2311.07911",
       "fetch_error": null
     },
     {
@@ -170,6 +199,7 @@
       "section_cited_in": [
         "\u00a74"
       ],
+      "publication_type": "peer-reviewed",
       "verification_status": "partial",
       "fetched_title": null,
       "fetched_url": "https://doi.org/10.1145/3618260.3649777",
@@ -191,6 +221,7 @@
       "section_cited_in": [
         "\u00a74"
       ],
+      "publication_type": "preprint",
       "verification_status": "verified",
       "fetched_title": "[2401.11817] Hallucination is Inevitable: An Innate Limitation of Large Language Models",
       "fetched_url": "https://arxiv.org/abs/2401.11817",
@@ -212,6 +243,7 @@
       "section_cited_in": [
         "\u00a74"
       ],
+      "publication_type": "preprint",
       "verification_status": "verified",
       "fetched_title": "[2506.06382] On the Fundamental Impossibility of Hallucination Control in Large Language Models",
       "fetched_url": "https://arxiv.org/abs/2506.06382",
@@ -240,6 +272,7 @@
         "\u00a77.5",
         "\u00a77.6"
       ],
+      "publication_type": "preprint",
       "verification_status": "verified",
       "fetched_title": "[2502.12187] Hallucinations are inevitable but can be made statistically negligible. The innate inevitability of hallucinations cannot explain practical LLM issues",
       "fetched_url": "https://arxiv.org/abs/2502.12187",
@@ -337,6 +370,15 @@
       "detail": "For p_i \u2208 (0,1) \u2200i: ln(\u220f(1-p_i)) = \u03a3ln(1-p_i). Since ln(1-p_i) < 0 for p_i > 0, the partial sums diverge to -\u221e iff \u03a3p_i = \u221e (which holds when p_i \u2265 \u03b4 > 0 for all i). Therefore \u220f(1-p_i) \u2192 0, so P(at least one error) \u2192 1. NOTE: requires independence assumption (flagged in \u00a73.4 caveat and \u00a77.3)."
     },
     {
+      "check_id": "CHK_CONVERGENCE_CONDITION",
+      "target_blocks": [
+        "math_3.4_2"
+      ],
+      "description": "Pipeline limit requires \u03a3p_i = \u221e (e.g. uniform lower bound p_i \u2265 \u03b4 > 0); p_i > 0 alone is insufficient (counterexample: p_i = 2^{-i})",
+      "status": "pass",
+      "detail": "Uniform bound stated in formula: True. Divergence condition noted in text: False. The operative form guarantees p_i \u2265 \u03b4 > 0 for each step, which implies \u03a3p_i = \u221e and validates the limit. If this condition is not explicit in the spec, it should be."
+    },
+    {
       "check_id": "CHK_AUTOREGRESSIVE_FACTORIZATION",
       "target_blocks": [
         "math_6.1_1"
@@ -429,7 +471,9 @@
       "perez_2022",
       "sharma_2023"
     ],
-    "ERR_INSTRUCTION": [],
+    "ERR_INSTRUCTION": [
+      "zhou_2023"
+    ],
     "ERR_CALIBRATION": [
       "kadavath_2022"
     ],
@@ -439,11 +483,11 @@
     "ERR_SEMANTIC": []
   },
   "warnings": [
-    "Error classes with no direct empirical reference: ERR_OMISSION, ERR_SCHEMA, ERR_TRUNCATION, ERR_INSTRUCTION, ERR_SEMANTIC"
+    "Error classes with no direct empirical reference: ERR_OMISSION, ERR_SCHEMA, ERR_TRUNCATION, ERR_SEMANTIC"
   ],
-  "total_references": 11,
+  "total_references": 12,
   "total_math_blocks": 7,
-  "checks_passed": 9,
+  "checks_passed": 10,
   "checks_warned": 0,
   "checks_failed": 0,
   "_signature": {
@@ -451,9 +495,9 @@
     "algorithm": "sha256",
     "tool_id": "pals-check",
     "tool_version": "1.0.0",
-    "signed_at": "2026-04-03T00:28:03Z",
-    "source_document_hash": "22e89f2ba9ef6223",
-    "payload_digest": "778df40183916b7ff0b6820a6715fb448bc0a4576bbb4247f17c4d27818e99b3",
-    "seal": "be84bbf03706ce3156363ddf74645dde7cffde523a8de4d11eedc46723227aee"
+    "signed_at": "2026-04-03T01:01:46Z",
+    "source_document_hash": "788fd62216843629",
+    "payload_digest": "0031df730c6623e4d24273b0b3e114d5f5b16dd6910e27e6e064d4c206d47ece",
+    "seal": "a124be04ae5241a52fa0b49d14fc34c74724179304917072a209bdb5dbd689db"
   }
 }
