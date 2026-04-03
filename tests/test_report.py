@@ -44,7 +44,7 @@ class TestBuildReport:
 
     def test_build_report_real_document(self, real_md_text: str):
         report, schema = build_report(real_md_text, do_verify=False)
-        assert report.document_version == "1.5.0"
+        assert report.document_version == "1.5.4"
         assert report.total_references >= 8
         assert report.checks_passed >= 5
 

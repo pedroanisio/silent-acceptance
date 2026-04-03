@@ -13,7 +13,7 @@ PROJECT_ROOT = Path(__file__).parent.parent
 @pytest.fixture
 def real_md_text() -> str:
     """Load the actual PALS's LAW markdown document."""
-    md_path = PROJECT_ROOT / "PALS_LAW-v1.5.0.md"
+    md_path = PROJECT_ROOT / "PALS_LAW-v1.5.4.md"
     return md_path.read_text(encoding="utf-8")
 
 

@@ -12,7 +12,7 @@ disclaimer:
 
 Deterministic companion for **PALS's LAW**: a small Python CLI that audits the law's Markdown specification for reference integrity, math consistency, and formal schema structure.
 
-It takes the source document in [`PALS_LAW-v1.5.0.md`](/home/admin/codebases/pals-check/PALS_LAW-v1.5.0.md), runs a deterministic analysis pipeline, and writes machine-readable artifacts to [`output/`](/home/admin/codebases/pals-check/output).
+It takes the source document in [`PALS_LAW-v1.5.4.md`](/home/admin/codebases/pals-check/PALS_LAW-v1.5.4.md), runs a deterministic analysis pipeline, and writes machine-readable artifacts to [`output/`](/home/admin/codebases/pals-check/output).
 
 ## Disclaimer
 
@@ -33,7 +33,7 @@ This work is subject to the methodological caveats and commitments described in 
 
 For the current checked-in spec, the generated report summarizes:
 
-- `10` references
+- `12` references
 - `7` math blocks
 - `9` passed checks
 - `0` failed checks
@@ -42,7 +42,7 @@ For the current checked-in spec, the generated report summarizes:
 
 ```text
 .
-├── PALS_LAW-v1.5.0.md      # Source specification
+├── PALS_LAW-v1.5.4.md      # Source specification
 ├── pals_check/             # CLI and audit pipeline
 ├── tests/                  # Unit, property, and integration tests
 ├── output/                 # Generated report, schema, and certificate JSON
@@ -59,7 +59,7 @@ For the current checked-in spec, the generated report summarizes:
 ### Run from source
 
 ```bash
-python3 -m pals_check PALS_LAW-v1.5.0.md --no-verify
+python3 -m pals_check PALS_LAW-v1.5.4.md --no-verify
 ```
 
 This writes:
@@ -71,7 +71,7 @@ This writes:
 If you want live reference verification against DOI and arXiv URLs, omit `--no-verify`:
 
 ```bash
-python3 -m pals_check PALS_LAW-v1.5.0.md
+python3 -m pals_check PALS_LAW-v1.5.4.md
 ```
 
 ## CLI usage
@@ -140,7 +140,7 @@ python3 -m pals_check --check-sig output/pals_law_report.json
 python3 -m pals_check --check-sig output/pals_law_schema.json
 python3 -m pals_check --verify-cert \
   output/pals_law_certificate.json \
-  PALS_LAW-v1.5.0.md \
+  PALS_LAW-v1.5.4.md \
   output/pals_law_report.json \
   output/pals_law_schema.json
 ```

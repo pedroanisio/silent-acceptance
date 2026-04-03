@@ -441,13 +441,16 @@ class TestErrorClassesSpecContract:
     """
 
     def test_error_class_identifiers_match_spec_taxonomy(self, real_md_text: str):
-        """Every ERR_* identifier in §5's table must exist in the ErrorClass enum, and vice versa."""
-        # Extract ERR_* identifiers from the spec's §5 taxonomy table
+        """Every ERR_* identifier in §5's taxonomy table must exist in the ErrorClass enum, and vice versa."""
+        # Extract ERR_* identifiers only from taxonomy table rows (| ... |),
+        # not from scope notes or prose that may mention out-of-scope classes
         sec5_match = re.search(r'##\s+5\.\s+.*?\n(.*?)(?=\n---)', real_md_text, re.DOTALL)
         assert sec5_match, "Section 5 (error taxonomy) not found in spec"
         sec5_text = sec5_match.group(1)
 
-        spec_err_ids = set(re.findall(r'`(ERR_[A-Z_]+)`', sec5_text))
+        table_rows = [line for line in sec5_text.split('\n') if line.strip().startswith('|')]
+        table_text = '\n'.join(table_rows)
+        spec_err_ids = set(re.findall(r'`(ERR_[A-Z_]+)`', table_text))
         enum_err_ids = {ec.value for ec in ErrorClass}
 
         missing_from_enum = spec_err_ids - enum_err_ids
@@ -468,8 +471,11 @@ class TestErrorClassesSpecContract:
         assert sec5_match, "Section 5 not found"
         sec5_text = sec5_match.group(1)
 
-        # Count distinct ERR_ identifiers (some are cross-referenced in other rows' definitions)
-        spec_err_ids = set(re.findall(r'`(ERR_[A-Z_]+)`', sec5_text))
+        # Count distinct ERR_ identifiers only from taxonomy table rows,
+        # excluding scope notes that mention out-of-scope classes
+        table_rows = [line for line in sec5_text.split('\n') if line.strip().startswith('|')]
+        table_text = '\n'.join(table_rows)
+        spec_err_ids = set(re.findall(r'`(ERR_[A-Z_]+)`', table_text))
         spec_count = len(spec_err_ids)
         enum_count = len(ErrorClass)
         builder_count = len(_build_error_classes())

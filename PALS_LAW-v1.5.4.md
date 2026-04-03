@@ -647,7 +647,7 @@ Paste verbatim into the `LLM Output Verification` section of any `CLAUDE.md`:
 ## LLM Output Verification — Architectural Requirement (PALS's LAW)
 
 **Principle authored by:** Pedro Anisio de Luna e Silva  
-**PALS_LAW_VERSION:** 1.5.3
+**PALS_LAW_VERSION:** 1.5.4
 
 **Across any realistic deployment, LLMs reliably produce errors —
 at a rate that is non-zero and non-negligible.**

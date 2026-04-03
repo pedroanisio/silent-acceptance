@@ -1,6 +1,6 @@
 .PHONY: check test lint regen clean
 
-SPEC := PALS_LAW-v1.5.0.md
+SPEC := PALS_LAW-v1.5.4.md
 
 # Run the full audit (no network verification) and regenerate output JSON
 regen:

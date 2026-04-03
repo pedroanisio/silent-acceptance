@@ -41,7 +41,7 @@ class TestBuildSchema:
 
     def test_build_schema_real_document(self, real_md_text: str):
         schema = build_schema(real_md_text)
-        assert schema.version == "1.5.0"
+        assert schema.version == "1.5.4"
 
 
 # --- _build_symbols ---
