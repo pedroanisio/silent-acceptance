@@ -1,6 +1,6 @@
 {
-  "document_version": "1.5.3",
-  "content_hash": "788fd62216843629",
+  "document_version": "1.5.4",
+  "content_hash": "540e4824f60dc21d",
   "references": [
     {
       "ref_id": "ji_2023",
@@ -19,10 +19,10 @@
         "\u00a74"
       ],
       "publication_type": "peer-reviewed",
-      "verification_status": "partial",
+      "verification_status": "unverified",
       "fetched_title": null,
-      "fetched_url": "https://doi.org/10.1145/3571730",
-      "fetch_error": "HTTP 403: Forbidden"
+      "fetched_url": null,
+      "fetch_error": null
     },
     {
       "ref_id": "maynez_2020",
@@ -41,9 +41,9 @@
         "\u00a74"
       ],
       "publication_type": "peer-reviewed",
-      "verification_status": "verified",
-      "fetched_title": "On Faithfulness and Factuality in Abstractive Summarization - ACL Anthology",
-      "fetched_url": "https://aclanthology.org/2020.acl-main.173/",
+      "verification_status": "unverified",
+      "fetched_title": null,
+      "fetched_url": null,
       "fetch_error": null
     },
     {
@@ -63,9 +63,9 @@
         "\u00a74"
       ],
       "publication_type": "preprint",
-      "verification_status": "verified",
-      "fetched_title": "[2109.07958] TruthfulQA: Measuring How Models Mimic Human Falsehoods",
-      "fetched_url": "https://arxiv.org/abs/2109.07958",
+      "verification_status": "unverified",
+      "fetched_title": null,
+      "fetched_url": null,
       "fetch_error": null
     },
     {
@@ -83,15 +83,12 @@
       "confidence_note": "High confidence.",
       "section_cited_in": [
         "\u00a74",
-        "\u00a76",
-        "\u00a76.1",
-        "\u00a76.2",
         "\u00a76.3"
       ],
       "publication_type": "preprint",
-      "verification_status": "verified",
-      "fetched_title": "[2207.05221] Language Models (Mostly) Know What They Know",
-      "fetched_url": "https://arxiv.org/abs/2207.05221",
+      "verification_status": "unverified",
+      "fetched_title": null,
+      "fetched_url": null,
       "fetch_error": null
     },
     {
@@ -111,9 +108,9 @@
         "\u00a74"
       ],
       "publication_type": "preprint",
-      "verification_status": "verified",
-      "fetched_title": "[2212.09251] Discovering Language Model Behaviors with Model-Written Evaluations",
-      "fetched_url": "https://arxiv.org/abs/2212.09251",
+      "verification_status": "unverified",
+      "fetched_title": null,
+      "fetched_url": null,
       "fetch_error": null
     },
     {
@@ -133,9 +130,9 @@
         "\u00a74"
       ],
       "publication_type": "preprint",
-      "verification_status": "verified",
-      "fetched_title": "[2310.13548] Towards Understanding Sycophancy in Language Models",
-      "fetched_url": "https://arxiv.org/abs/2310.13548",
+      "verification_status": "unverified",
+      "fetched_title": null,
+      "fetched_url": null,
       "fetch_error": null
     },
     {
@@ -148,17 +145,16 @@
       "arxiv_id": "2309.12288",
       "relevance": "Demonstrates a specific, reproducible instance of `ERR_REASONING`: models trained on directional factual associations (A\u2192B) fail to generalize to the reverse (B\u2192A), even when both facts are individually encoded. The failure is compositional \u2014 the model has the correct facts but cannot reverse the inference chain. Confirms reasoning failure as a distinct class from hallucination (the facts are not fabricated; their relational composition is broken).",
       "error_classes_supported": [
-        "ERR_REASONING",
-        "ERR_HALLUCINATION"
+        "ERR_REASONING"
       ],
       "confidence_note": "High confidence \u2014 verified via arXiv; v4 dated May 2024.",
       "section_cited_in": [
         "\u00a74"
       ],
       "publication_type": "preprint",
-      "verification_status": "verified",
-      "fetched_title": "[2309.12288] The Reversal Curse: LLMs trained on A is B fail to learn B is A ",
-      "fetched_url": "https://arxiv.org/abs/2309.12288",
+      "verification_status": "unverified",
+      "fetched_title": null,
+      "fetched_url": null,
       "fetch_error": null
     },
     {
@@ -178,9 +174,9 @@
         "\u00a74"
       ],
       "publication_type": "preprint",
-      "verification_status": "verified",
-      "fetched_title": "[2311.07911] Instruction-Following Evaluation for Large Language Models",
-      "fetched_url": "https://arxiv.org/abs/2311.07911",
+      "verification_status": "unverified",
+      "fetched_title": null,
+      "fetched_url": null,
       "fetch_error": null
     },
     {
@@ -200,10 +196,10 @@
         "\u00a74"
       ],
       "publication_type": "peer-reviewed",
-      "verification_status": "partial",
+      "verification_status": "unverified",
       "fetched_title": null,
-      "fetched_url": "https://doi.org/10.1145/3618260.3649777",
-      "fetch_error": "HTTP 403: Forbidden"
+      "fetched_url": null,
+      "fetch_error": null
     },
     {
       "ref_id": "xu_2024",
@@ -222,9 +218,9 @@
         "\u00a74"
       ],
       "publication_type": "preprint",
-      "verification_status": "verified",
-      "fetched_title": "[2401.11817] Hallucination is Inevitable: An Innate Limitation of Large Language Models",
-      "fetched_url": "https://arxiv.org/abs/2401.11817",
+      "verification_status": "unverified",
+      "fetched_title": null,
+      "fetched_url": null,
       "fetch_error": null
     },
     {
@@ -244,9 +240,9 @@
         "\u00a74"
       ],
       "publication_type": "preprint",
-      "verification_status": "verified",
-      "fetched_title": "[2506.06382] On the Fundamental Impossibility of Hallucination Control in Large Language Models",
-      "fetched_url": "https://arxiv.org/abs/2506.06382",
+      "verification_status": "unverified",
+      "fetched_title": null,
+      "fetched_url": null,
       "fetch_error": null
     },
     {
@@ -264,18 +260,12 @@
       "confidence_note": "High confidence \u2014 verified via arXiv.",
       "section_cited_in": [
         "\u00a74",
-        "\u00a77",
-        "\u00a77.1",
-        "\u00a77.2",
-        "\u00a77.3",
-        "\u00a77.4",
-        "\u00a77.5",
         "\u00a77.6"
       ],
       "publication_type": "preprint",
-      "verification_status": "verified",
-      "fetched_title": "[2502.12187] Hallucinations are inevitable but can be made statistically negligible. The innate inevitability of hallucinations cannot explain practical LLM issues",
-      "fetched_url": "https://arxiv.org/abs/2502.12187",
+      "verification_status": "unverified",
+      "fetched_title": null,
+      "fetched_url": null,
       "fetch_error": null
     }
   ],
@@ -458,7 +448,6 @@
       "ji_2023",
       "maynez_2020",
       "lin_2022",
-      "berglund_2023",
       "kalai_2024",
       "xu_2024",
       "karpowicz_2025",
@@ -495,9 +484,9 @@
     "algorithm": "sha256",
     "tool_id": "pals-check",
     "tool_version": "1.0.0",
-    "signed_at": "2026-04-03T01:01:46Z",
-    "source_document_hash": "788fd62216843629",
-    "payload_digest": "0031df730c6623e4d24273b0b3e114d5f5b16dd6910e27e6e064d4c206d47ece",
-    "seal": "a124be04ae5241a52fa0b49d14fc34c74724179304917072a209bdb5dbd689db"
+    "signed_at": "2026-04-03T01:34:27Z",
+    "source_document_hash": "540e4824f60dc21d",
+    "payload_digest": "f7e28cacebd3bb03d3989e01e7627880e84cd9ac632a512d124873f7035a12ef",
+    "seal": "17ce77bae0d9bd5058a8c4288e4a1def430403fb4c6cd3074b2c173aae93a724"
   }
 }

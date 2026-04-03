@@ -1,6 +1,6 @@
 {
-  "version": "1.5.3",
-  "content_hash": "788fd62216843629",
+  "version": "1.5.4",
+  "content_hash": "540e4824f60dc21d",
   "symbols": [
     {
       "name": "M_class",
@@ -89,8 +89,8 @@
     {
       "name": "p_i",
       "latex": "p_i",
-      "type_signature": "p_i \u2208 (0, 1)",
-      "definition": "Per-step error probability: P(\u03b5(M_i(x_i), x_i) = 1)",
+      "type_signature": "p_i \u2208 [\u03b4, 1)",
+      "definition": "Per-step error probability: P(\u03b5(M_i(x_i), x_i) = 1) \u2265 \u03b4 > 0 (uniform lower bound from \u00a73.2)",
       "section_defined": "3.4"
     },
     {
@@ -257,14 +257,14 @@
       "section": "8",
       "status": "corollary",
       "latex": "",
-      "natural_language": "Prior correct outputs do not reduce E[\u03b5] on the next call for different inputs",
+      "natural_language": "Observing correct outputs on x_1..x_k provides no guarantee about P(\u03b5=1) on a new input x_{k+1} not in {x_1..x_k}. The operative form's bound is unconditional \u2014 no finite sample inductively lowers it.",
       "depends_on": [
         "OPERATIVE"
       ],
       "supported_by": [],
       "caveats": [],
       "is_falsifiable": true,
-      "falsification_method": "Show that a sequence of correct outputs Bayesian-updates E[\u03b5] toward zero."
+      "falsification_method": "Show that observing correct outputs on a finite set of inputs provides a provable bound on P(\u03b5=1) for unseen inputs."
     },
     {
       "claim_id": "COR3",
@@ -492,9 +492,9 @@
     "algorithm": "sha256",
     "tool_id": "pals-check",
     "tool_version": "1.0.0",
-    "signed_at": "2026-04-03T01:01:46Z",
-    "source_document_hash": "788fd62216843629",
-    "payload_digest": "4c17e1b6ef3176a07811a93d1fdfc0cc0cb391f0221d8d6ef66e5ccbe9823e39",
-    "seal": "0cee2e9fbfad1daf9d49f3e7affe9948dde13dc954fb7f549e7fe94590910e8f"
+    "signed_at": "2026-04-03T01:34:27Z",
+    "source_document_hash": "540e4824f60dc21d",
+    "payload_digest": "fba4ddefe91714bd743af3584d2ac9c886ae02fea73d418ac33a80cdb4c8d6ef",
+    "seal": "dfc6748630ed479b65a4737081ebae7c4b5553f8b4d5bd8d873473a8aa30f4cd"
   }
 }

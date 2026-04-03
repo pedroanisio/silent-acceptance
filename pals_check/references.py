@@ -64,10 +64,11 @@ def extract_references(text: str) -> list[Reference]:
         r'[\s,]*\((\d{4})\)'
     )
     cited_locations: dict[str, list[str]] = {}
-    for section_match in re.finditer(r'##\s+([\d.]+)\.?\s', text):
+    for section_match in re.finditer(r'#{2,4}\s+([\d.]+)\.?\s', text):
         section_id = section_match.group(1).rstrip('.')
         start = section_match.end()
-        next_section = re.search(r'\n##\s+\d', text[start:])
+        # Delimit by the next heading at ANY level (##, ###, ####)
+        next_section = re.search(r'\n#{2,4}\s+[\d.]', text[start:])
         end = start + next_section.start() if next_section else len(text)
         section_text = text[start:end]
 
@@ -123,13 +124,25 @@ def _parse_formal_reference(raw: str, relevance: str, confidence: str) -> Option
     kw_map = {
         "hallucination": "ERR_HALLUCINATION",
         "faithfulness": "ERR_HALLUCINATION",
-        "factual": "ERR_HALLUCINATION",
+        "factual error": "ERR_HALLUCINATION",
+        "factual accuracy": "ERR_HALLUCINATION",
         "sycophancy": "ERR_SYCOPHANCY",
         "calibration": "ERR_CALIBRATION",
         "confidence": "ERR_CALIBRATION",
+        "instruction-following": "ERR_INSTRUCTION",
+        "instruction following": "ERR_INSTRUCTION",
     }
+    combined_lower = (relevance + " " + raw).lower()
+    # Negative-context patterns: keyword near "distinct from", "not", "separate from"
+    negation_pattern = re.compile(
+        r'(?:distinct\s+(?:class\s+)?from|separate\s+from|not\s+(?:a\s+)?|rather\s+than)\s+\w*'
+    )
+    negated_text = " ".join(negation_pattern.findall(combined_lower))
     for kw, ec in kw_map.items():
-        if kw in (relevance + " " + raw).lower() and ec not in error_classes:
+        if kw in combined_lower and ec not in error_classes:
+            # Skip if keyword only appears in negation context
+            if kw in negated_text and combined_lower.count(kw) == negated_text.count(kw):
+                continue
             error_classes.append(ec)
 
     first_author = authors.split(",")[0].strip().lower().replace(" ", "_")

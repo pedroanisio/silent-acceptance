@@ -139,8 +139,8 @@ def _build_symbols() -> list[Symbol]:
                "Non-negligible lower bound on expected error rate", "3.2"),
         Symbol("P_pipeline", r"\mathcal{P}", "(M_1, ..., M_n)",
                "Pipeline of n sequential LLM calls", "3.4"),
-        Symbol("p_i", r"p_i", "p_i \u2208 (0, 1)",
-               "Per-step error probability: P(\u03b5(M_i(x_i), x_i) = 1)", "3.4"),
+        Symbol("p_i", r"p_i", "p_i \u2208 [\u03b4, 1)",
+               "Per-step error probability: P(\u03b5(M_i(x_i), x_i) = 1) \u2265 \u03b4 > 0 (uniform lower bound from \u00a73.2)", "3.4"),
         Symbol("D_c", r"D_c(M)", "\u211d\u207a",
                "Detection difficulty of error class c for model M", "8"),
         Symbol("C_M", r"C(M)", "\u211d\u207a",
@@ -282,12 +282,19 @@ def _build_claims() -> list[FormalClaim]:
             section="8",
             status=ClaimStatus.COROLLARY.value,
             latex="",
-            natural_language="Prior correct outputs do not reduce E[\u03b5] on the next call for different inputs",
+            natural_language=(
+                "Observing correct outputs on x_1..x_k provides no guarantee about "
+                "P(\u03b5=1) on a new input x_{k+1} not in {x_1..x_k}. The operative form's "
+                "bound is unconditional — no finite sample inductively lowers it."
+            ),
             depends_on=["OPERATIVE"],
             supported_by=[],
             caveats=[],
             is_falsifiable=True,
-            falsification_method="Show that a sequence of correct outputs Bayesian-updates E[\u03b5] toward zero.",
+            falsification_method=(
+                "Show that observing correct outputs on a finite set of inputs "
+                "provides a provable bound on P(\u03b5=1) for unseen inputs."
+            ),
         ),
         FormalClaim(
             claim_id="COR3",

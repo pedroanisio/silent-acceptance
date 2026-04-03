@@ -14,7 +14,7 @@ disclaimer:
 ### A Formal Specification of LLM Output Unreliability as an Architectural Invariant
 
 **Author of the principle:** Pedro Anisio de Luna e Silva (PALS)  
-**Document version:** 1.5.3  
+**Document version:** 1.5.4  
 **Status:** Draft — peer review pending  
 **Changelog:**
 - v1.1.0 — Demoted unestablished strong form; elevated practical form as operative claim; removed QED markers from informal arguments; cut §9 (invocation without application); expanded Corollary 5.
@@ -26,6 +26,7 @@ disclaimer:
 - v1.5.1 — Completed Corollary 5 partition: added `ERR_OMISSION` to structural set (∂D_c/∂C ≤ 0) and `ERR_CALIBRATION` to semantic set (∂D_c/∂C > 0), achieving exhaustive 9-class coverage. Fixed prose–formula resolution inconsistency in Corollary 5 text (prose listed 2+4 classes, formula listed 4+5).
 - v1.5.2 — Added Berglund et al. (2023) to §4 as empirical anchor for `ERR_REASONING`; updated coverage note (four of nine classes now have dedicated references).
 - v1.5.3 — Multi-model review feedback pass: (1) corrected §3.4 pipeline limit to require uniform lower bound p_i ≥ δ > 0 (Σp_i = ∞ convergence condition; counterexample: p_i = 2^{-i} gives convergent product); (2) added `PALS_LAW_VERSION:` field to §9.1 contract block and §9.4 CLAUDE.md block for contract-staleness tracking; (3) added §5 scope note on `ERR_POLICY`/`ERR_COMPLIANCE` as explicit out-of-scope acknowledgement; (4) added Zhou et al. (2023) IFEval to §4 as empirical anchor for `ERR_INSTRUCTION`; updated coverage note (five of nine classes now have dedicated references).
+- v1.5.4 — Assessment feedback pass: (1) fixed footer version (v1.5.2→v1.5.3 redaction artifact); (2) added explicit dom(Σ) restriction to operative form §3.2 — expectation applies only to inputs where ground truth is defined; (3) tightened Corollary 2 to state the no-inductive-guarantee claim precisely (finite correct outputs provide no guarantee on unseen inputs) rather than the trivially-true unconditional expectation statement; (4) added §5 scope note on multimodal/agentic error classes (`ERR_TOOL_USE`) and verification cost model as acknowledged future extensions; (5) updated `PALS_LAW_VERSION` in §9.1 and §9.4 to v1.5.4.
 
 ---
 
@@ -102,7 +103,12 @@ $$
 $$
 
 where $\delta$ is non-negligible — measurably above zero for any extant model
-on any realistic task distribution.
+on any realistic task distribution. The expectation is implicitly restricted to
+$x \in \text{dom}(\Sigma)$ — inputs for which a ground-truth specification exists.
+When $\Sigma(x)$ is undefined (e.g., creative or subjective prompts),
+$\varepsilon(y,x)$ is undefined and the expectation does not apply. The
+"realistic distribution" working definition below operationalizes this
+restriction.
 
 > **Working definition — "realistic distribution":** A distribution $\mathcal{D}$
 > over $\mathcal{X}$ is *realistic* if it has non-negligible probability mass on
@@ -294,6 +300,19 @@ first-class architectural concern rather than a single post-processing step.
 > is a distinct architectural layer that should be designed and tested
 > independently of the verification boundary defined here.
 
+> **Scope note — multimodal and agentic error classes:** The formalization
+> assumes $\mathcal{X}$ is a space of text prompts and $\mathcal{Y}$ is a space
+> of text output sequences. As LLMs increasingly process images, audio, and
+> structured tool calls, the error taxonomy may require extension — notably an
+> `ERR_TOOL_USE` class for agentic deployments where the model selects the wrong
+> tool, fabricates tool output, or misinterprets tool results. The existing
+> prompt-injection scope note (above) addresses the *extrinsic* agentic threat;
+> `ERR_TOOL_USE` would address *intrinsic* tool-selection errors. Additionally,
+> the verification cost model is unaddressed: for some error classes (e.g.,
+> `ERR_HALLUCINATION` requiring source retrieval), verification cost may exceed
+> generation cost. These are acknowledged as out of scope for v1.5 but are
+> expected to be relevant for future extensions.
+
 ---
 
 ## 6. Argument Sketch
@@ -450,9 +469,11 @@ for runtime verification in production.
 
 ### Corollary 2 — Trust accumulation is prohibited
 
-No sequence of correct LLM outputs raises $\mathbb{E}[\varepsilon]$ to zero on
-the next call. Prior correctness is not evidence of future correctness on
-different inputs.
+Observing correct outputs on inputs $x_1, \ldots, x_k$ provides no guarantee
+about $P(\varepsilon = 1)$ on a new input $x_{k+1} \notin \{x_1, \ldots, x_k\}$.
+The operative form's bound holds unconditionally over the distribution — it is
+not conditioned on history. No finite sequence of correct outputs can inductively
+lower the expected error rate on unseen inputs.
 
 **Practical implication:** A system must not relax its verification layer after
 observing a run of correct outputs.
@@ -565,7 +586,7 @@ For any function that invokes an LLM:
  *   when model capability changes. This contract is valid only for the pinned
  *   model. A model swap without contract review is an architectural regression.
  *
- * PALS_LAW_VERSION: 1.5.3
+ * PALS_LAW_VERSION: 1.5.4
  *   ↑ REQUIRED. Spec version this contract was authored against. A spec update
  *   without contract review may introduce new error classes or change
  *   verification requirements.
@@ -658,4 +679,4 @@ Full specification: [PALS_LAW.md](./PALS_LAW.md)
 
 ---
 
-*End of document — PALS's LAW v1.5.3*
+*End of document — PALS's LAW v1.5.4*
