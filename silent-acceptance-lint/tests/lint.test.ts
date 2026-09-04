@@ -28,11 +28,12 @@ test("undeclared call site is a no-boundary error", () => {
   assert.match(f.callSite, /chat\.completions\.create/);
 });
 
-test("all-unchecked checklist with placeholder mitigation is empty-boundary, and placeholder MODEL_VERSION warns", () => {
+test("all-unchecked checklist is empty-boundary, and a placeholder SOLVER_CONFIGURATION_ID warns", () => {
   const findings = lintPaths([join(FIXTURES, "bad-empty-checklist.ts")]);
-  assert.deepEqual(rules(findings), ["empty-boundary", "missing-model-version"]);
+  assert.deepEqual(rules(findings),
+    ["empty-boundary", "missing-acceptance-authority", "missing-solver-configuration"]);
   assert.equal(findings.find((f) => f.rule === "empty-boundary")?.severity, "error");
-  assert.equal(findings.find((f) => f.rule === "missing-model-version")?.severity, "warning");
+  assert.equal(findings.find((f) => f.rule === "missing-solver-configuration")?.severity, "warning");
 });
 
 test("file-level declaration in a Python docstring covers every call in the file", () => {
@@ -60,7 +61,10 @@ test("a declaration outside the window does not cover the call", () => {
     "const r = await client.messages.create({});",
   ].join("\n");
   assert.deepEqual(rules(lintSource("x.ts", src, { window: 5 })), ["no-boundary"]);
-  assert.deepEqual(rules(lintSource("x.ts", src, { window: 20 })), []);
+  // window 20 finds the declaration; it is the legacy v2.0.0 form, so the
+  // deprecation and missing-authority warnings are the expected result.
+  assert.deepEqual(rules(lintSource("x.ts", src, { window: 20 })),
+    ["deprecated-model-version", "missing-acceptance-authority"]);
 });
 
 test("commented-out call sites are not counted", () => {
@@ -75,7 +79,10 @@ test("one finding per line even if several patterns match", () => {
 
 test("legacy PALS_LAW_VERSION marker is still honored", () => {
   const src = "// PALS_LAW_VERSION: 1.5.4\n// MODEL_VERSION: m\nconst r = await client.messages.create({});";
-  assert.deepEqual(lintSource("x.ts", src), []);
+  // The legacy marker still anchors a declaration (no no-boundary finding);
+  // the legacy MODEL_VERSION field is now a deprecation warning.
+  assert.deepEqual(rules(lintSource("x.ts", src)),
+    ["deprecated-model-version", "missing-acceptance-authority"]);
 });
 
 test("provider patterns: bedrock, ollama, google, vercel, mistral, cohere", () => {
@@ -97,9 +104,9 @@ test("provider patterns: bedrock, ollama, google, vercel, mistral, cohere", () =
 test("summarize counts by severity", () => {
   const findings = lintPaths([FIXTURES]);
   const s = summarize(findings, 5);
-  assert.equal(s.files, 5);
-  assert.equal(s.errors, 3); // no-boundary, empty-boundary, ignore-without-reason
-  assert.equal(s.warnings, 1);
+  assert.equal(s.files, 5); // the count summarize() was given
+  assert.equal(s.errors, 4); // no-boundary, 2x empty-boundary (S = 0), ignore-without-reason
+  assert.equal(s.warnings, 2); // missing-solver-configuration, missing-acceptance-authority
 });
 
 test("parseArgs handles options and defaults", () => {
@@ -118,8 +125,8 @@ test("run returns exit 1 on errors, 0 with --warn-only, and valid JSON", () => {
   const r = run([FIXTURES, "--format", "json"], HERE);
   assert.equal(r.exitCode, 1);
   const parsed = JSON.parse(r.output) as { summary: { errors: number }; findings: Finding[] };
-  assert.equal(parsed.summary.errors, 3);
-  assert.equal(parsed.findings.length, 4);
+  assert.equal(parsed.summary.errors, 4);
+  assert.equal(parsed.findings.length, 6);
 
   const warnOnly = run([FIXTURES, "--warn-only"], HERE);
   assert.equal(warnOnly.exitCode, 0);

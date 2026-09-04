@@ -105,7 +105,9 @@ Rules:
   no-boundary            error    call site with no boundary declaration in scope
   empty-boundary         error    declaration leaves all ERR_ classes unchecked, no MITIGATION
   ignore-without-reason  error    silent-acceptance-ignore without a reason
-  missing-model-version  warning  declaration has no MODEL_VERSION pin
+  missing-solver-configuration   warning  declaration has no SOLVER_CONFIGURATION_ID
+  deprecated-model-version       warning  declaration still pins MODEL_VERSION (v2.0.0 field)
+  missing-acceptance-authority   warning  declaration names no ACCEPTANCE_AUTHORITY
 `;
 
 export function formatText(findings: readonly Finding[], cwd: string): string {

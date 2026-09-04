@@ -1,6 +1,6 @@
 {
-  "document_version": "1.5.0",
-  "content_hash": "d1d1f8d3f8015a00",
+  "document_version": "2.0.0",
+  "content_hash": "b997ecbf349b7d12",
   "references": [
     {
       "ref_id": "ji_2023",
@@ -76,7 +76,7 @@
       "venue": "arXiv:2207.05221",
       "doi": null,
       "arxiv_id": "2207.05221",
-      "relevance": "Addresses the gap between internal belief and expressed confidence (`ERR_CALIBRATION`). Note: the paper's overall finding is optimistic \u2014 the gap narrows with scale. This *strengthens* the law's framing: even a narrowing gap is a non-zero gap, and better calibration makes residual miscalibration harder to detect (see Corollary 5).",
+      "relevance": "Addresses the gap between internal belief and expressed confidence (`ERR_CALIBRATION`). Note: the paper's overall finding is optimistic \u2014 the gap narrows with scale. This *strengthens* the framing: even a narrowing gap is a non-zero gap, and better calibration makes residual miscalibration harder to detect (see \u00a77).",
       "error_classes_supported": [
         "ERR_CALIBRATION"
       ],
@@ -126,6 +126,51 @@
         "ERR_SYCOPHANCY"
       ],
       "confidence_note": "High confidence \u2014 confirmed by reviewer with Semantic Scholar and arXiv pointers.",
+      "section_cited_in": [
+        "\u00a74",
+        "\u00a711.6"
+      ],
+      "publication_type": "preprint",
+      "verification_status": "unverified",
+      "fetched_title": null,
+      "fetched_url": null,
+      "fetch_error": null
+    },
+    {
+      "ref_id": "berglund_2023",
+      "authors": "Berglund, L., et al",
+      "year": 2023,
+      "title": "The Reversal Curse: LLMs trained on 'A is B' fail to learn 'B is A'.",
+      "venue": "arXiv:2309.12288",
+      "doi": null,
+      "arxiv_id": "2309.12288",
+      "relevance": "Demonstrates a specific, reproducible instance of `ERR_REASONING`: models trained on directional factual associations (A\u2192B) fail to generalize to the reverse (B\u2192A), even when both facts are individually encoded. The failure is compositional \u2014 the model has the correct facts but cannot reverse the inference chain. Confirms reasoning failure as a distinct class from hallucination (the facts are not fabricated; their relational composition is broken).",
+      "error_classes_supported": [
+        "ERR_REASONING"
+      ],
+      "confidence_note": "High confidence \u2014 verified via arXiv; v4 dated May 2024.",
+      "section_cited_in": [
+        "\u00a74"
+      ],
+      "publication_type": "preprint",
+      "verification_status": "unverified",
+      "fetched_title": null,
+      "fetched_url": null,
+      "fetch_error": null
+    },
+    {
+      "ref_id": "zhou_2023",
+      "authors": "Zhou, J., et al",
+      "year": 2023,
+      "title": "Instruction-Following Evaluation for Large Language Models.",
+      "venue": "arXiv:2311.07911",
+      "doi": null,
+      "arxiv_id": "2311.07911",
+      "relevance": "IFEval: benchmark measuring instruction-following accuracy across 25 verifiable constraint types (format, length, keyword inclusion/exclusion, language). No model achieves 100% compliance. Directly grounds `ERR_INSTRUCTION` \u2014 explicit constraint violations are measurable and non-negligible even for frontier models.",
+      "error_classes_supported": [
+        "ERR_INSTRUCTION"
+      ],
+      "confidence_note": "High confidence \u2014 adopted by LMSYS, Open LLM Leaderboard v2; results independently reproducible.",
       "section_cited_in": [
         "\u00a74"
       ],
@@ -209,16 +254,101 @@
       "venue": "arXiv:2502.12187",
       "doi": null,
       "arxiv_id": "2502.12187",
-      "relevance": "Proves the complementary positive result: while hallucination-triggering inputs are infinite, their probability mass under a realistic distribution can be made arbitrarily small with sufficient training data quality and quantity. This is the principal counterpoint to the operative form \u2014 see \u00a77.6 for discussion.",
+      "relevance": "Proves the complementary positive result: while hallucination-triggering inputs are infinite, their probability mass under a realistic distribution can be made arbitrarily small with sufficient training data quality and quantity. This is the principal counterpoint to the operative form \u2014 see \u00a78.6 for discussion.",
       "error_classes_supported": [
         "ERR_HALLUCINATION"
       ],
       "confidence_note": "High confidence \u2014 verified via arXiv.",
       "section_cited_in": [
         "\u00a74",
-        "\u00a77.6"
+        "\u00a78.6"
       ],
       "publication_type": "preprint",
+      "verification_status": "unverified",
+      "fetched_title": null,
+      "fetched_url": null,
+      "fetch_error": null
+    },
+    {
+      "ref_id": "lewis_2026",
+      "authors": "Lewis, S",
+      "year": 2026,
+      "title": "Same Model, Different Harness: Different Coding-Agent Results.",
+      "venue": "arXiv:2608.26218",
+      "doi": null,
+      "arxiv_id": "2608.26218",
+      "relevance": "Holds model and task fixed and changes only the harness's context policy (mechanically shortening older tool results as the window fills). On a 169-task SWE-bench Verified cohort with a 20,480-token window, mean per-task fail-to-pass fraction moved from 28 percent to 49 percent and complete solutions from 43 to 72; the treatment transferred to three further models without retuning. A twenty-one point move from a policy change exceeds the gap ordinarily used to separate model generations, so the error rate that a boundary governs is a property of the model-harness pair.",
+      "error_classes_supported": [],
+      "confidence_note": "High confidence \u2014 verified via arXiv abstract on 2026-09-03. Single study; coding tasks only (see \u00a78.7).",
+      "section_cited_in": [
+        "\u00a74",
+        "\u00a78.7"
+      ],
+      "publication_type": "preprint",
+      "verification_status": "unverified",
+      "fetched_title": null,
+      "fetched_url": null,
+      "fetch_error": null
+    },
+    {
+      "ref_id": "wang_2026",
+      "authors": "Wang, X., Zhang, X., & Shao, J",
+      "year": 2026,
+      "title": "Auditing Harness Tampering in Self-Improving Agents.",
+      "venue": "arXiv:2609.00069",
+      "doi": null,
+      "arxiv_id": "2609.00069",
+      "relevance": "Agents that edit their own harness make misaligned edits that manufacture apparent gains or weaken integrity constraints (authorization, provenance, completeness); the edits occur consistently in real runs and persist in the lineage of the best-performing agent. Selection on the measured score rewards an edit that weakens the measurement exactly as it rewards an edit that improves the work. Grounds Corollary 6 (\u00a79.7).",
+      "error_classes_supported": [],
+      "confidence_note": "High confidence \u2014 verified via arXiv abstract on 2026-09-03.",
+      "section_cited_in": [
+        "\u00a74",
+        "\u00a79.7"
+      ],
+      "publication_type": "preprint",
+      "verification_status": "unverified",
+      "fetched_title": null,
+      "fetched_url": null,
+      "fetch_error": null
+    },
+    {
+      "ref_id": "guo_2026",
+      "authors": "Guo, D., et al",
+      "year": 2026,
+      "title": "Self-Authored Verification Is Unreliable in Heuristic Self-Improving Agents.",
+      "venue": "arXiv:2607.24300",
+      "doi": null,
+      "arxiv_id": "2607.24300",
+      "relevance": "When the agent controls both the optimized object and its verifier, self-assigned scores stay near perfect while sealed deployment performance degrades (the verifier\u2013deployment gap). The proposed remedy, a Sealed Exogenous Acceptance Loop, keeps self-authored tests but adds a fixed harness-side audit the agent cannot author or inspect; the authors conclude that reliable self-improvement requires at least one acceptance signal outside the agent's control. Grounds Corollary 6 (\u00a79.7).",
+      "error_classes_supported": [],
+      "confidence_note": "High confidence \u2014 verified via arXiv abstract on 2026-09-03.",
+      "section_cited_in": [
+        "\u00a74",
+        "\u00a79.7"
+      ],
+      "publication_type": "preprint",
+      "verification_status": "unverified",
+      "fetched_title": null,
+      "fetched_url": null,
+      "fetch_error": null
+    },
+    {
+      "ref_id": "_p_theta_2024",
+      "authors": "} P_\\theta",
+      "year": 2024,
+      "title": "Unknown",
+      "venue": "[Informal argument. The cardinality claim below uses pigeonhole reasoning;\na rigorous formalization would require defining a mapping from parameter\nconfigurations to representable propositions and bounding its image, which\nis not done here. Xu, Jain & Kankanhalli (2024), cited in \u00a74.1, provide the\nrigorous version via computability-theoretic diagonalization.]",
+      "doi": null,
+      "arxiv_id": null,
+      "relevance": "\\theta",
+      "error_classes_supported": [],
+      "confidence_note": "$ is finite. The set of true factual propositions\nover which $\\Sigma$ is defined is effectively unbounded (and dynamic \u2014 facts\nchange). The number of distinct representable belief states in $\\theta$ is\nbounded by the model's capacity. Given that the set of true propositions is\nunbounded, there exist true propositions that are either unrepresented or\nmisrepresented in $\\theta$. On inputs that invoke those propositions,\n$P(\\varepsilon = 1) > 0$ by construction.\n\n### 6.3 Evaluation is not generation\n\n*[Informal argument \u2014 empirical grounding in Kadavath et al. (2022), cited in \u00a74.]*\n\nEven if $M$ has encoded a correct belief about $\\Sigma(x)$, the sampling process\nthat produces $y$ may not faithfully surface that belief. This is precisely the\ncalibration failure class (`ERR_CALIBRATION`) and is empirically documented in\nthe LLM literature (Kadavath et al., 2022, cited in \u00a74).\n\n---\n\n## 7. The Capability-Detection Asymmetry\n\n*[Labeled hypothesis \u2014 not derived formally. This section states the claim, gives\nthe operational definitions that make it measurable, and specifies the experiment\nthat would test it. Until that experiment is run, the asymmetry is a hypothesis\nwith a concrete supporting observation, not a result.]*\n\n### 7.1 Statement\n\nAs model capability $C(M)$ increases, two things happen simultaneously and in\nopposite directions:\n\n1. **Low-stakes error classes become easier to detect.** `ERR_OMISSION`,\n   `ERR_SCHEMA`, `ERR_TRUNCATION`, and `ERR_INSTRUCTION` failures tend to be\n   structurally obvious. More capable models make these errors less frequently,\n   and the errors they do make remain detectable by simple structural checks\n   (missing fields, broken schemas, truncated output, violated constraints).\n\n2. **High-stakes error classes become harder to detect.** `ERR_HALLUCINATION`,\n   `ERR_SYCOPHANCY`, `ERR_SEMANTIC`, `ERR_CALIBRATION`, and `ERR_REASONING`\n   failures become *more plausible* as model capability grows. A less capable\n   model hallucinating a citation produces a nonsensical author name, a fake\n   journal, and a malformed DOI \u2014 trivially detectable. A more capable model\n   hallucinating a citation produces a real author name, a real journal, a\n   plausible DOI, and an abstract that reads like the paper it should be.\n   Detection now requires independently retrieving and reading the source \u2014 a\n   fundamentally higher-cost operation. The same dynamic applies to calibration\n   (confident errors become indistinguishable from confident correctness) and\n   reasoning (multi-step inferences become harder to audit as the steps become\n   individually more plausible).\n\nLet $D_c(M)$ denote the detection difficulty of error class $c$ for model $M$,\nand $C(M)$ denote model capability. For structural classes ($c \\in$ {`ERR_OMISSION`,\n`ERR_SCHEMA`, `ERR_TRUNCATION`, `ERR_INSTRUCTION`}), $D_c$ is approximately\nconstant or decreasing in $C(M)$. For semantic/epistemic classes ($c \\in$\n{`ERR_HALLUCINATION`, `ERR_SEMANTIC`, `ERR_SYCOPHANCY`, `ERR_CALIBRATION`,\n`ERR_REASONING`}), $D_c$ is increasing in $C(M)$.\n\n**Hypothesis (Capability-Detection Asymmetry):**\n\n$$\n\\frac{\\partial D_c}{\\partial C} \\leq 0\n\\quad \\text{for } c \\in \\bigl\\{\\texttt{ERR\\_OMISSION},\\ \\texttt{ERR\\_SCHEMA},\\ \\texttt{ERR\\_TRUNCATION},\\ \\texttt{ERR\\_INSTRUCTION}\\bigr\\}\n$$\n\n$$\n\\frac{\\partial D_c}{\\partial C} > 0\n\\quad \\text{for } c \\in \\bigl\\{\\texttt{ERR\\_HALLUCINATION},\\ \\texttt{ERR\\_SEMANTIC},\\ \\texttt{ERR\\_SYCOPHANCY},\\ \\texttt{ERR\\_CALIBRATION},\\ \\texttt{ERR\\_REASONING}\\bigr\\}\n$$\n\nThe supporting observation is qualitative but concrete: a less capable model\nproducing a nonsensical citation (detectable by inspection) vs. a more capable\nmodel producing a plausible-but-fabricated citation with real metadata\n(detectable only by source retrieval). The derivative is positive by construction\nin that progression \u2014 the rigorous test requires the operationalization below.\n\n### 7.2 Operational Definitions\n\nBoth functions are defined relative to fixed, versioned instruments, so that a\nchange in the measurement cannot be mistaken for a change in the model.\n\n- **Capability.** $C(M) \\in [0, 1]$ is the score of $M$ on a fixed, versioned\n  benchmark suite $\\mathcal{S}$ whose tasks lie in $\\text{dom}(\\Sigma)$ (for example,\n  a pinned subset of SWE-bench Verified or a pinned IFEval snapshot). The suite,\n  its version, and the harness configuration used to run it (\u00a74.2) are part of the\n  definition; a score without them is not a value of $C$.\n- **Detectability.** For a class $c$, fix a reference verifier $V_c^{*}$ and hold\n  it constant across every model compared. Then\n  $D_c(M) := 1 - R_c(V_c^{*}, M, \\mathcal{D})$, the miss rate of the fixed verifier\n  on class-$c$ errors produced by $M$ (recall $R_c$ as defined in \u00a73.1). A class\n  becomes *harder to detect* exactly when a verifier that used to catch its errors\n  catches fewer of them.\n\n- **Prevalence.** $\\pi_c(M)$ is the rate at which class-$c$ errors occur in $M$'s\n  output on $\\mathcal{D}$ \u2014 how often the error is made, as distinct from how often\n  it is caught.\n- **Severity.** $\\mathrm{sev}_c$ is the consequence weight of an escaped class-$c$\n  error for the declared consumer.\n- **Escaped risk.** $\\rho_c(M) := \\pi_c(M)\\,\\bigl(1 - R_c(V_c^{*}, M, \\mathcal{D})\\bigr)\\,\\mathrm{sev}_c$\n  \u2014 the weighted rate at which class-$c$ errors reach a consumer. This, not\n  detectability alone, is the quantity an engineering decision turns on.\n\nThe partial derivatives in \u00a77.1 are then finite differences across a sequence of\nmodels ordered by $C$; the hypothesis predicts the sign of those differences per\nclass. The hypothesis is about $D_c$ only. It says nothing on its own about\n$\\rho_c$, because a more capable configuration may make fewer class-$c$ errors\neven as a fixed verifier catches a smaller share of them.\n\n### 7.3 Experiment Protocol\n\n1. **Fix the instruments.** Choose a realistic $\\mathcal{D}$ (per the \u00a73.2 working\n   definition), a suite $\\mathcal{S}$, and one reference verifier $V_c^{*}$ per class.\n   Freeze their versions before any model is evaluated.\n2. **Fix the oracle.** Ground-truth labels $\\varepsilon_c(y, x)$ must come from an\n   oracle independent of both $M$ and $V_c^{*}$ \u2014 human adjudication or retrieval\n   against an external source \u2014 otherwise recall is measured against the verifier\n   itself.\n3. **Size the sample per class.** As $C$ rises, class-$c$ errors become rarer, so a\n   fixed number of prompts yields fewer positives for the recall estimate. Collect\n   at least $n_{\\min}$ labeled class-$c$ errors per model, with $n_{\\min}$ chosen so\n   that the confidence interval on $R_c$ is narrower than the effect size the test\n   is meant to detect. A recall estimated from a handful of positives is noise.\n4. **Estimate prevalence per class per model.** Measure $\\pi_c(M)$ on the same\n   labeled sample, so that escaped risk can be computed rather than inferred.\n5. **Estimate and test.** For each model, compute $C(M)$, $D_c(M)$ and\n   $\\rho_c(M)$ for every class. The detectability sign test is a rank correlation\n   of $D_c$ against $C$ per class, with sign predicted by \u00a77.1. **The reported\n   quantity is $\\rho_c$**; the sign test establishes the hypothesis, and $\\rho_c$\n   is what a boundary re-evaluation (\u00a79.6) acts on.\n\n**Falsification:** a semantic class for which $D_c$ decreases as $C$ increases\nunder a fixed verifier \u2014 that is, a more capable model whose hallucinations,\nsycophancy, semantic drift, calibration errors, or reasoning failures are *easier*\nfor the same verifier to catch \u2014 refutes the corresponding inequality. A structural\nclass for which $D_c$ increases refutes the other.\n\n### 7.4 Engineering Consequence\n\nIf the asymmetry holds, then **a verification system calibrated on outputs from a\nless capable model is not conservative when applied to a more capable model \u2014 it\nis blind in precisely the highest-risk dimensions.** The errors that slipped through\nthe old verifier were low-stakes. The errors that slip through the same verifier on\na new model are the ones that cause real damage.\n\nThis is the basis of Corollary 5 (\u00a79.6): treating the boundary as a stable\ncomponent across a solver-configuration change is an architectural regression, and\na boundary **re-evaluation** is the precondition. A verifier upgrade follows only\nwhere the re-evaluation shows escaped risk $\\rho_c$ rising \u2014 a more capable\nconfiguration can lower $\\rho_c$ while $D_c$ worsens, if prevalence $\\pi_c$ fell\nfaster.\n\n---\n\n## 8. Limitations\n\nThe following are honest limitations of the current formalization. They scope the\nspecification's precision without invalidating it. Readers should have these in view\nbefore applying the corollaries (\u00a79) or the practitioner artifacts (\u00a710).\n\n### 8.1 The error predicate $\\varepsilon$ is not computable in general\n\nFor `ERR_HALLUCINATION`, determining whether a claim is false requires access to\nground truth, which is not always available. The specification asserts the\n*existence* of errors, not a general algorithm for finding them.\n\n### 8.2 $\\delta_{M,\\mathcal{D}}$ is configuration-, task- and distribution-dependent\n\nThe operative form (\u00a73.2) asserts a measured bound for a given configuration and\ndistribution; it provides no universal constant. Calibrating\n$\\delta_{M,\\mathcal{D}}$ for a specific deployment requires:\n(a) a concrete characterization of the task distribution (see the working\ndefinition of \"realistic distribution\" in \u00a73.2), and (b) empirical measurement\non that distribution for the target solver configuration. Neither is provided\nby this document.\n\n### 8.3 The pipeline hazard condition is unestimated\n\n\u00a73.4 makes no independence assumption: it decomposes pipeline risk by the chain\nrule and states the bound under an explicit condition \u2014 that every conditional\nerror hazard $P(E_i \\mid E_1^{\\,c}, \\ldots, E_{i-1}^{\\,c})$ stays at or above\n$\\delta$. That condition is what a deployment must estimate, and this\nspecification does not estimate it for any pipeline.\n\nShared context moves the hazard in both directions. An upstream error that\ncorrupts downstream context raises it; a downstream verifier, a retry, or a\nself-correcting step lowers it, and a sufficiently fast decay leaves total\npipeline error bounded below 1. Where the condition is not established, \u00a73.4's\nlimit does not apply and residual risk must be measured directly rather than\ninferred from pipeline length.\n\n### 8.4 Verification coverage vs. verification depth is unresolved\n\nThe contract checklist (\u00a710.1) identifies *which error classes* a boundary\ncovers, but does not specify the detection power within each class. A schema\nverifier that checks only top-level key presence has lower recall on\n`ERR_SCHEMA` than one that performs full recursive type validation. The\nchecklist establishes scope; depth is a separate engineering question, and the\nrecall $R_c$ defined in \u00a73.1 is the quantity that would resolve it.\n\n### 8.5 The Boolean error predicate is a deliberate simplification\n\nThe predicate $\\varepsilon(y, x, z) \\in \\{0, 1\\}$ treats all errors as equivalent\nregardless of severity. Production verifiers almost always implement graded\nevaluation \u2014 a hallucinated statistic that is slightly off is a different risk\nlevel from a hallucinated statistic that inverts a safety-critical conclusion.\n\nThe binary choice is defensible for the specification's primary purpose: establishing\nthat verification boundaries are mandatory. The binary predicate is *conservative* \u2014 it\ncounts any unacceptability under $A$, however minor, as $\\varepsilon = 1$. For the architectural\nconclusion (silent acceptance is a design defect), this is\nsufficient. For quantifying $\\delta_{M,\\mathcal{D}}$ or designing severity-weighted\nverification systems, a graded predicate $\\varepsilon(y, x, z) \\in [0, 1]$ is the appropriate\nextension. The operative form (\u00a73.2) should then be read as a lower bound on\nexpected weighted error, with weighting scheme left to the deployment context.\nThis extension is not formalized here and is a known gap in the current\nspecification.\n\n### 8.6 Computability-theoretic impossibility vs. practical non-negligibility\n\nThe theoretical foundations cited in \u00a74.1 establish that the *set* of inputs on\nwhich any LLM must err is infinite. Suzuki et al. (2025) prove the complementary\nresult: the *probability mass* on those inputs, under a given distribution, can\nbe made arbitrarily small with sufficient training data quality and quantity.\nThese results are not contradictory \u2014 they operate at different levels of\nanalysis.\n\nThe operative form (\u00a73.2) is an *empirical* claim: \u03b4 is non-negligible for all\nextant models on all realistic distributions. It does not rest on the\ncomputability-theoretic impossibility. If future training regimes and data\nquality were to drive \u03b4 below any measurement threshold for a specific\nrestricted domain, the operative form would not apply to that domain under\nthat model \u2014 but the existential form (\u00a73.3) would still hold, and the\narchitectural prescription would remain justified as a conservative design\nprinciple (it is cheaper to verify than to prove negligibility).\n\nThe practical relevance of Suzuki et al.'s result depends on the closed-world\nassumption: the training distribution must adequately represent the deployment\ndistribution. Under the open-world assumption \u2014 where deployment inputs are\nnot bounded by training coverage \u2014 the probability mass on failure inputs\ncannot be driven arbitrarily low. Real deployments typically operate under\nmixed conditions, making the distinction between closed-world and open-world\na deployment-specific engineering judgment rather than a settled theoretical\nquestion.\n\n### 8.7 The asymmetry is untested and the harness evidence is narrow\n\nThe Capability-Detection Asymmetry (\u00a77) has not been measured under the protocol\nof \u00a77.3; its support is one qualitative progression. The harness-level evidence\nin \u00a74.2 is three studies: Lewis (2026) measures one context policy on coding tasks\nunder one context-window budget, and the two self-improvement studies measure\nagents that edit their own harness, which is a narrower setting than the general\ndeployment the Verification Boundary Principle addresses. Corollary 6 (\u00a79.7)\ngeneralizes from those settings by argument, not by measurement. A reader who\nneeds the corollary to hold in a specific system should treat it as a design\nprinciple to be verified there, not as an established result.\n\nThe asymmetry, if confirmed, does not by itself imply rising escaped risk. It is a\nclaim about $D_c$ under a fixed verifier; $\\rho_c$ also depends on prevalence\n$\\pi_c$, which a more capable configuration may reduce faster than detectability\ndegrades. Establishing the hypothesis would not establish that any deployed system\nbecame more dangerous.\n\n---\n\n## 9. The Verification Boundary Principle\n\n### 9.1 Statement\n\nEvery system that consumes LLM output MUST declare a verification boundary\n$B = (S, \\{V_c\\}_{c \\in S})$ (\u00a73.1) that the output crosses before it reaches any\nconsumer. The declaration MUST state:\n\n1. **Scope** \u2014 which error classes $S \\subseteq \\mathcal{C}$ are checked, and, for\n   every class in $\\mathcal{C} \\setminus S$, that it is an accepted risk (with a\n   mitigation note or a downstream boundary that covers it). $S = \\emptyset$ is\n   silent acceptance and no mitigation note excuses it (\u00a710.1).\n2. **Mechanism** \u2014 what each verifier $V_c$ is, so that its recall can in principle\n   be measured (\u00a78.4).\n3. **Calibration** \u2014 the `SOLVER_CONFIGURATION_ID` the boundary was calibrated\n   against, because the boundary's adequacy is a function of $M$ (\u00a77).\n4. **Location** \u2014 where the verifier runs, and that no producer (the model, or any\n   agent it controls) can write to it (\u00a79.7).\n5. **Specificity** \u2014 the false-positive rate of each verifier alongside its recall.\n   Recall alone is inadequate: a verifier that rejects every output has recall 1\n   and is useless.\n6. **Failure behaviour** \u2014 what happens when a verifier rejects, per class: retry,\n   abstain, escalate, or fall back.\n7. **Oracle** \u2014 the evidence source each verifier checks against.\n8. **Severity and residual risk** \u2014 $\\mathrm{sev}_c$ per class, and the resulting\n   severity-weighted residual risk\n   $\\sum_{c} P(\\varepsilon_c)\\,(1 - R_c)\\,\\mathrm{sev}_c$.\n9. **Tolerated failure rate** \u2014 $\\tau$ for the declared consumer (\u00a73.2).\n10. **Ownership** \u2014 the boundary owner and the calibration date.\n\nA compliant boundary demonstrates, for the declared consumer and consequence,\nthat the residual risk of the output crossing it is acceptable. LLM output\nremains untrusted until that demonstration exists.\n\nThe declaration is an artifact (\u00a710), reviewable without running the system. A\nsystem without such a declaration exhibits silent acceptance and contains an\narchitectural defect, whatever its observed output quality.\n\nThe following corollaries are direct implications of the invariant (\u00a73), the\ntaxonomy (\u00a75), and the asymmetry (\u00a77). They are not recommendations \u2014 they are\nlogical consequences, with the epistemic status of the claims they rest on.\n\n### 9.2 Corollary 1 \u2014 Appearance of correctness is not correctness\n\nA system that validates LLM output by inspection on a finite test set has not\ndemonstrated error-freedom. It has demonstrated error-absence on the tested\ninputs. The unverified long tail of $\\mathcal{X}$ retains non-zero error\nprobability.\n\n**Practical implication:** Manual review during development does not substitute\nfor runtime verification in production.\n\n### 9.3 Corollary 2 \u2014 Trust accumulation is prohibited\n\nObserving correct outputs on inputs $x_1, \\ldots, x_k$ provides no guarantee\nabout $P(\\varepsilon = 1)$ on a new input $x_{k+1} \\notin \\{x_1, \\ldots, x_k\\}$.\nThe operative form's bound holds over the distribution, not over history. No\nfinite sequence of correct outputs establishes zero residual risk or justifies\nrelaxing a boundary outside a predefined statistical recalibration procedure.\nObserved successes may update an *estimate* of $\\delta_{M,\\mathcal{D}}$; they do\nnot remove the boundary.\n\n**Practical implication:** A boundary may be relaxed only through a\nrecalibration procedure defined in advance \u2014 a stated estimator, sample size and\nacceptance threshold \u2014 never by accumulated confidence from a run of correct\noutputs.\n\n### 9.4 Corollary 3 \u2014 Verification scope must match error taxonomy\n\nA verifier that checks only JSON schema conformance (`ERR_SCHEMA`) does not\ncover hallucination (`ERR_HALLUCINATION`) or sycophantic drift (`ERR_SYCOPHANCY`).\nPartial verification is better than none, but must be scoped honestly \u2014 a system\nclaiming \"verified output\" must declare *which error classes* its boundary covers.\n\n**Practical implication:** Verification claims must be scoped and documented,\nnot asserted globally. This is requirement 1 of \u00a79.1.\n\n### 9.5 Corollary 4 \u2014 Silent acceptance is an architectural defect\n\nAny production system that passes LLM output directly to downstream consumers\nwithout a declared verification boundary has an architectural omission. This\ndefect exists regardless of observed output quality and regardless of model\ncapability. It is structural, not runtime.\n\n**Practical implication:** Code review should treat silent acceptance as a\nblocking defect, equivalent to missing authentication on a sensitive endpoint.\nThe check is mechanical \u2014 a call site whose output flows to a consumer with no\nboundary declaration in scope \u2014 and can be automated (\u00a710.5).\n\n### 9.6 Corollary 5 \u2014 A boundary re-evaluation is a precondition for a solver-configuration change\n\nIf the Capability-Detection Asymmetry (\u00a77) holds, a boundary calibrated against\nconfiguration $M_1$ has lower recall on the semantic classes when applied to a\nmore capable $M_2$. Recall is not the reported quantity, however: what matters is\nescaped risk $\\rho_c(M) = \\pi_c(M)\\,(1 - R_c)\\,\\mathrm{sev}_c$ (\u00a77.2). A new\nconfiguration may *lower* $\\rho_c$ even while $R_c$ falls, because prevalence\n$\\pi_c$ fell faster. The consequence is therefore conditional, and an\nunconditional \"upgrade the verifier\" rule would be wrong.\n\n**Practical implication:** A boundary re-evaluation is a precondition for any\nsolver-configuration change. A verifier upgrade is required whenever that\nre-evaluation shows $\\rho_c$ rising for any class. Treating the boundary as a\nstable component across a configuration change is an architectural regression.\nThis is why the contract block (\u00a710.1) pins `SOLVER_CONFIGURATION_ID`.\n\n### 9.7 Corollary 6 \u2014 The acceptance authority must remain outside the producer's control domain\n\nA verifier $V_c$ that the model, or any agent the model controls, can modify is\nsubject to two failures at once. First, it inherits the model's error distribution:\nan edit to $V_c$ is itself LLM output, and by \u00a73.2 it is wrong with non-negligible\nprobability. Second, it is under optimization pressure: when acceptance is decided by\na score the system can influence, an edit that weakens the check is rewarded exactly\nas an edit that improves the work. Wang et al. (2026) observe such edits in real\nself-improving runs and find that they persist in the lineage of the best-performing\nagent; Guo et al. (2026) show self-authored verification scores staying near perfect\nwhile sealed deployment performance degrades, and find that at least one acceptance\nsignal outside the agent's control is required to close the gap (\u00a74.2).\n\n**Practical implication:** The boundary $B$ contains the verifiers, so the\nrequirement is not that they sit outside $B$ \u2014 it is that they sit outside the\n*producer's control domain*. No producer (the model, or any agent it controls)\nmay write to a verifier or to the record of its verdicts. In practice: a separate\nprocess or privilege domain, versioned and reviewed like production code, with\nverdicts appended where a party outside the runtime can check them. This is\nrequirement 4 of \u00a79.1, declared as `ACCEPTANCE_AUTHORITY` in \u00a710.1. A\n\"verification\" step the agent can rewrite is not a boundary; it is silent\nacceptance with extra steps.\n\n---\n\n## 10. Practitioner Artifacts\n\nCopy-paste artifacts for declaring a verification boundary at the function level\n(\u00a710.1\u201310.3), at the project level (\u00a710.4), and in continuous integration (\u00a710.5).\nAll artifacts in this section are released under CC0 1.0 so that they can be pasted\ninto any codebase without attribution.\n\n### 10.1 Full Contract Block\n\nFor any function that invokes an LLM:\n\n```typescript\n/**\n * \u26a0 VERIFICATION BOUNDARY \u2014 Silent Acceptance specification\n *\n * SILENT_ACCEPTANCE_VERSION: 2.1.0\n *   \u2191 REQUIRED. Spec version this boundary was declared against\n *   (concept DOI 10.5281/zenodo.19401266). A spec update without boundary\n *   review may introduce new error classes or change requirements.\n *\n * SOLVER_CONFIGURATION_ID: <model + harness + context policy + tools + prompts>\n *   \u2191 REQUIRED. \u00a77 (Capability-Detection Asymmetry) hypothesizes that\n *   verification requirements shift when capability changes, and \u00a74.2 shows the\n *   harness moves measured capability on fixed weights. This boundary is valid\n *   only for the pinned configuration; a configuration change without boundary\n *   re-evaluation is an architectural regression (\u00a79.6).\n *\n * VERIFIER_LOCATION: <module or service that runs the verifiers below>\n *   \u2191 REQUIRED. Must not be writable by the model or by any agent the model\n *   controls (\u00a79.7). If the verifier lives in the same process as an agent\n *   that can edit code, say so here and name the control that prevents edits.\n *\n * ACCEPTANCE_AUTHORITY: <where verdicts are recorded, outside the producer's\n *   control domain>\n *   \u2191 REQUIRED (\u00a79.7). An append-only record a party outside the runtime can\n *   read. If the producer can rewrite the verdict log, there is no boundary.\n *\n * TOLERATED_FAILURE_RATE: <\u03c4 for the declared consumer>\n * OWNER: <team or person accountable for this boundary>\n * CALIBRATED_ON: <YYYY-MM-DD>\n *   \u2191 REQUIRED (\u00a79.1 items 9-10).\n *\n * INVARIANT (operative form): for solver configuration M and realistic\n * distribution \ud835\udc9f, the measured error rate exceeds what the consumer tolerates:\n *\n *   \ud835\udd3c[\u03b5(y, x, z)] \u2265 \u03b4_{M,\ud835\udc9f} > \u03c4    (\u03b4_{M,\ud835\udc9f} is measured, not assumed)\n *\n * Existential form (formally establishable): \u2203 (x,z) such that P(\u03b5(y,x,z)=1) > 0\n *\n * For a pipeline of length n, by the chain rule and with no independence\n * assumption:\n *\n *   P(pipeline error-free) = \u220f P(E\u1d62\u1d9c",
+      "section_cited_in": [
+        "\u00a74",
+        "\u00a71",
+        "\u00a76.2"
+      ],
+      "publication_type": "unknown",
       "verification_status": "unverified",
       "fetched_title": null,
       "fetched_url": null,
@@ -229,28 +359,28 @@
     {
       "block_id": "math_3.2_1",
       "section": "3.2",
-      "latex": "\\forall M \\in \\mathcal{M},\\ \\forall \\text{ realistic } \\mathcal{D} \\text{ over } \\mathcal{X}:\n\\quad \\mathbb{E}_{x \\sim \\mathcal{D}}\\!\\bigl[\\varepsilon(M(x), x)\\bigr] \\geq \\delta > 0",
+      "latex": "\\forall M \\in \\mathcal{M},\\ \\forall \\text{ realistic } \\mathcal{D} \\text{ over } (\\mathcal{X}, \\mathcal{Z}):\n\\quad \\mathbb{E}_{(x,z) \\sim \\mathcal{D},\\, y \\sim P_\\theta(\\cdot \\mid x,z)}\\!\\bigl[\\varepsilon(y, x, z)\\bigr]\n\\geq \\delta_{M,\\mathcal{D}} > 0",
       "claim_status": "operative",
       "description": "Operative form \u2014 expected error lower bound"
     },
     {
       "block_id": "math_3.3_1",
       "section": "3.3",
-      "latex": "\\forall M \\in \\mathcal{M}:\\ \\exists\\, x \\in \\mathcal{X}\n\\text{ such that } P_\\theta\\!\\bigl(\\varepsilon(M(x), x) = 1\\bigr) > 0",
+      "latex": "\\forall M \\in \\mathcal{M}:\\ \\exists\\, x \\in \\mathcal{X}\n\\text{ such that } P_\\theta\\!\\bigl(\\varepsilon(y, x, z) = 1\\bigr) > 0",
       "claim_status": "existential",
       "description": "Existential form \u2014 existence of error-positive input"
     },
     {
       "block_id": "math_3.4_1",
       "section": "3.4",
-      "latex": "P(\\text{pipeline is error-free}) = \\prod_{i=1}^{n}(1 - p_i)",
+      "latex": "P(\\text{pipeline is error-free}) = \\prod_{i=1}^{n}\nP\\bigl(E_i^{\\,c} \\mid E_1^{\\,c}, \\ldots, E_{i-1}^{\\,c}\\bigr)",
       "claim_status": "corollary",
       "description": "Pipeline compounding \u2014 product formula for error-free probability"
     },
     {
       "block_id": "math_3.4_2",
       "section": "3.4",
-      "latex": "P(\\text{at least one error in pipeline}) = 1 - \\prod_{i=1}^{n}(1 - p_i)\n\\;\\xrightarrow{n \\to \\infty}\\; 1",
+      "latex": "P\\bigl(E_i \\mid E_1^{\\,c}, \\ldots, E_{i-1}^{\\,c}\\bigr) \\geq \\delta \\quad \\text{for all } i",
       "claim_status": "corollary",
       "description": "Pipeline compounding \u2014 product formula for error-free probability"
     },
@@ -262,15 +392,15 @@
       "description": "Autoregressive factorization of output probability"
     },
     {
-      "block_id": "math_8_1",
-      "section": "8",
+      "block_id": "math_7.1_1",
+      "section": "7.1",
       "latex": "\\frac{\\partial D_c}{\\partial C} \\leq 0\n\\quad \\text{for } c \\in \\bigl\\{\\texttt{ERR\\_OMISSION},\\ \\texttt{ERR\\_SCHEMA},\\ \\texttt{ERR\\_TRUNCATION},\\ \\texttt{ERR\\_INSTRUCTION}\\bigr\\}",
       "claim_status": "hypothesis",
       "description": "Capability-Detection Asymmetry \u2014 partial derivatives per error class"
     },
     {
-      "block_id": "math_8_2",
-      "section": "8",
+      "block_id": "math_7.1_2",
+      "section": "7.1",
       "latex": "\\frac{\\partial D_c}{\\partial C} > 0\n\\quad \\text{for } c \\in \\bigl\\{\\texttt{ERR\\_HALLUCINATION},\\ \\texttt{ERR\\_SEMANTIC},\\ \\texttt{ERR\\_SYCOPHANCY},\\ \\texttt{ERR\\_CALIBRATION},\\ \\texttt{ERR\\_REASONING}\\bigr\\}",
       "claim_status": "hypothesis",
       "description": "Capability-Detection Asymmetry \u2014 partial derivatives per error class"
@@ -303,8 +433,8 @@
         "math_3.4_2"
       ],
       "description": "Pipeline formula: P(error-free) = \u220f(1-p_i), P(\u22651 error) = 1 - \u220f(1-p_i)",
-      "status": "pass",
-      "detail": "{\"has_product_formula\": true, \"has_complement_formula\": true, \"has_limit_statement\": true}"
+      "status": "warn",
+      "detail": "{\"has_product_formula\": false, \"has_complement_formula\": false, \"has_limit_statement\": false}"
     },
     {
       "check_id": "CHK_PIPELINE_LIMIT",
@@ -313,7 +443,7 @@
       ],
       "description": "Limit: \u220f(1-p_i) \u2192 0 as n \u2192 \u221e when all p_i > 0 (hence 1 - \u220f \u2192 1)",
       "status": "pass",
-      "detail": "For p_i \u2208 (0,1) \u2200i: ln(\u220f(1-p_i)) = \u03a3ln(1-p_i). Since ln(1-p_i) < 0 for p_i > 0, the partial sums diverge to -\u221e iff \u03a3p_i = \u221e (which holds when p_i \u2265 \u03b4 > 0 for all i). Therefore \u220f(1-p_i) \u2192 0, so P(at least one error) \u2192 1. NOTE: requires independence assumption (flagged in \u00a73.4 caveat and \u00a77.3)."
+      "detail": "For p_i \u2208 (0,1) \u2200i: ln(\u220f(1-p_i)) = \u03a3ln(1-p_i). Since ln(1-p_i) < 0 for p_i > 0, the partial sums diverge to -\u221e iff \u03a3p_i = \u221e (which holds when p_i \u2265 \u03b4 > 0 for all i). Therefore \u220f(1-p_i) \u2192 0, so P(at least one error) \u2192 1. NOTE: requires independence assumption (flagged in \u00a73.4 caveat and \u00a78.3)."
     },
     {
       "check_id": "CHK_CONVERGENCE_CONDITION",
@@ -321,8 +451,8 @@
         "math_3.4_2"
       ],
       "description": "Pipeline limit requires \u03a3p_i = \u221e (e.g. uniform lower bound p_i \u2265 \u03b4 > 0); p_i > 0 alone is insufficient (counterexample: p_i = 2^{-i})",
-      "status": "warn",
-      "detail": "Uniform bound stated in formula: False. Divergence condition noted in text: False. The operative form guarantees p_i \u2265 \u03b4 > 0 for each step, which implies \u03a3p_i = \u221e and validates the limit. If this condition is not explicit in the spec, it should be."
+      "status": "pass",
+      "detail": "Uniform bound stated in formula: True. Divergence condition noted in text: False. The operative form guarantees p_i \u2265 \u03b4 > 0 for each step, which implies \u03a3p_i = \u221e and validates the limit. If this condition is not explicit in the spec, it should be."
     },
     {
       "check_id": "CHK_AUTOREGRESSIVE_FACTORIZATION",
@@ -336,8 +466,8 @@
     {
       "check_id": "CHK_COR5_SIGNS",
       "target_blocks": [
-        "math_8_1",
-        "math_8_2"
+        "math_7.1_1",
+        "math_7.1_2"
       ],
       "description": "Capability-Detection Asymmetry: \u2202D_c/\u2202C \u2264 0 for structural classes, > 0 for semantic classes",
       "status": "pass",
@@ -350,7 +480,7 @@
       ],
       "description": "All \u00a7N.M cross-references resolve to existing section headings",
       "status": "pass",
-      "detail": "{\n  \"existing_sections\": [\n    \"1\",\n    \"2\",\n    \"3\",\n    \"3.1\",\n    \"3.2\",\n    \"3.3\",\n    \"3.4\",\n    \"4\",\n    \"4.1\",\n    \"5\",\n    \"6\",\n    \"6.1\",\n    \"6.2\",\n    \"6.3\",\n    \"7\",\n    \"7.1\",\n    \"7.2\",\n    \"7.3\",\n    \"7.4\",\n    \"7.5\",\n    \"7.6\",\n    \"8\",\n    \"9\",\n    \"9.1\",\n    \"9.2\",\n    \"9.3\",\n    \"9.4\"\n  ],\n  \"referenced_sections\": [\n    \"3.1\",\n    \"3.2\",\n    \"3.3\",\n    \"3.4\",\n    \"4\",\n    \"4.1\",\n    \"5\",\n    \"6.2\",\n    \"7.2\",\n    \"7.3\",\n    \"7.6\",\n    \"8\",\n    \"9\",\n    \"9.1\",\n    \"9.4\"\n  ],\n  \"broken_references\": []\n}"
+      "detail": "{\n  \"existing_sections\": [\n    \"1\",\n    \"10\",\n    \"10.1\",\n    \"10.2\",\n    \"10.3\",\n    \"10.4\",\n    \"10.5\",\n    \"11\",\n    \"11.1\",\n    \"11.2\",\n    \"11.3\",\n    \"11.4\",\n    \"11.5\",\n    \"11.6\",\n    \"2\",\n    \"3\",\n    \"3.1\",\n    \"3.2\",\n    \"3.3\",\n    \"3.4\",\n    \"4\",\n    \"4.1\",\n    \"4.2\",\n    \"5\",\n    \"6\",\n    \"6.1\",\n    \"6.2\",\n    \"6.3\",\n    \"7\",\n    \"7.1\",\n    \"7.2\",\n    \"7.3\",\n    \"7.4\",\n    \"8\",\n    \"8.1\",\n    \"8.2\",\n    \"8.3\",\n    \"8.4\",\n    \"8.5\",\n    \"8.6\",\n    \"8.7\",\n    \"9\",\n    \"9.1\",\n    \"9.2\",\n    \"9.3\",\n    \"9.4\",\n    \"9.5\",\n    \"9.6\",\n    \"9.7\"\n  ],\n  \"referenced_sections\": [\n    \"10\",\n    \"10.1\",\n    \"10.4\",\n    \"10.5\",\n    \"11\",\n    \"11.1\",\n    \"11.2\",\n    \"11.5\",\n    \"3\",\n    \"3.1\",\n    \"3.2\",\n    \"3.3\",\n    \"3.4\",\n    \"4\",\n    \"4.1\",\n    \"4.2\",\n    \"5\",\n    \"6.1\",\n    \"6.2\",\n    \"7\",\n    \"7.1\",\n    \"7.2\",\n    \"7.3\",\n    \"8.2\",\n    \"8.3\",\n    \"8.4\",\n    \"8.6\",\n    \"8.7\",\n    \"9\",\n    \"9.1\",\n    \"9.5\",\n    \"9.6\",\n    \"9.7\"\n  ],\n  \"broken_references\": []\n}"
     },
     {
       "check_id": "CHK_EPSILON_DOMAIN",
@@ -359,32 +489,33 @@
       ],
       "description": "\u03b5(y,x) \u2208 {0,1} \u2014 Boolean predicate over Y \u00d7 X",
       "status": "pass",
-      "detail": "\u03b5: Y \u00d7 X \u2192 {0,1} is well-defined given \u03a3: X \u2192 Y (partial). \u03b5(y,x) = 1 iff y deviates from \u03a3(x). \u00a77.5 acknowledges this is a deliberate simplification; graded extension \u03b5 \u2208 [0,1] noted as known gap."
+      "detail": "\u03b5: Y \u00d7 X \u2192 {0,1} is well-defined given \u03a3: X \u2192 Y (partial). \u03b5(y,x) = 1 iff y deviates from \u03a3(x). \u00a78.5 acknowledges this is a deliberate simplification; graded extension \u03b5 \u2208 [0,1] noted as known gap."
     },
     {
       "check_id": "CHK_INDEPENDENCE_PROPAGATION",
       "target_blocks": [
         "math_3.4_*"
       ],
-      "description": "Independence caveat present at point of use (\u00a73.4) and full treatment (\u00a77.3)",
+      "description": "Independence caveat present at point of use (\u00a73.4) and full treatment (\u00a78.3)",
       "status": "pass",
-      "detail": "[\n  {\n    \"section\": \"3.4\",\n    \"has_independence_caveat\": true,\n    \"section_found\": true\n  },\n  {\n    \"section\": \"7.3\",\n    \"has_independence_caveat\": true,\n    \"section_found\": true\n  }\n]"
+      "detail": "[\n  {\n    \"section\": \"3.4\",\n    \"has_independence_caveat\": true,\n    \"section_found\": true\n  },\n  {\n    \"section\": \"8.3\",\n    \"has_independence_caveat\": true,\n    \"section_found\": true\n  }\n]"
     }
   ],
   "schema_summary": {
-    "total_symbols": 15,
-    "total_claims": 12,
+    "total_symbols": 25,
+    "total_claims": 15,
     "claims_by_status": {
       "definition": 1,
       "operative": 1,
       "existential": 1,
-      "corollary": 5,
+      "corollary": 7,
       "informal_arg": 3,
-      "hypothesis": 1
+      "hypothesis": 1,
+      "prescription": 1
     },
-    "falsifiable_claims": 6,
+    "falsifiable_claims": 8,
     "total_error_classes": 9,
-    "total_artifacts": 4,
+    "total_artifacts": 5,
     "structural_classes": [
       "ERR_OMISSION",
       "ERR_SCHEMA",
@@ -416,19 +547,22 @@
       "perez_2022",
       "sharma_2023"
     ],
-    "ERR_INSTRUCTION": [],
+    "ERR_INSTRUCTION": [
+      "zhou_2023"
+    ],
     "ERR_CALIBRATION": [
       "kadavath_2022"
     ],
-    "ERR_REASONING": [],
+    "ERR_REASONING": [
+      "berglund_2023"
+    ],
     "ERR_SEMANTIC": []
   },
   "warnings": [
-    "Error classes with no direct empirical reference: ERR_OMISSION, ERR_SCHEMA, ERR_TRUNCATION, ERR_INSTRUCTION, ERR_REASONING, ERR_SEMANTIC",
-    "Scope gap: no ERR_POLICY/ERR_COMPLIANCE class for outputs that are correct and well-formed but violate business/safety guardrails",
-    "Contract block (\u00a79.1) missing PALS_LAW_VERSION field \u2014 contracts become stale as the specification evolves"
+    "Error classes with no direct empirical reference: ERR_OMISSION, ERR_SCHEMA, ERR_TRUNCATION, ERR_SEMANTIC",
+    "Reference '_p_theta_2024' has no DOI or arXiv ID"
   ],
-  "total_references": 10,
+  "total_references": 16,
   "total_math_blocks": 7,
   "checks_passed": 9,
   "checks_warned": 1,
@@ -438,9 +572,9 @@
     "algorithm": "sha256",
     "tool_id": "pals-check",
     "tool_version": "1.0.0",
-    "signed_at": "2026-09-04T02:37:02Z",
-    "source_document_hash": "d1d1f8d3f8015a00",
-    "payload_digest": "938b335ee06ca698f61156dd7fde31b4d00afb92c06d3dc3fe0434a6fc7288a7",
-    "seal": "44250c8918295602faa8f9ccd3844a1cfd288787b0bb058f474c6240befd7b88"
+    "signed_at": "2026-09-04T03:15:46Z",
+    "source_document_hash": "b997ecbf349b7d12",
+    "payload_digest": "fbfd4d975189276be19152e7abdaf92065a5c8597935ea4db5ac54a2d9cd555f",
+    "seal": "f247e35a5fd3c63b260acdc22da5a014d2230802f09b491ae01b09c33b39baba"
   }
 }

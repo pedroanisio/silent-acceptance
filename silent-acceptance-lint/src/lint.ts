@@ -28,7 +28,9 @@ import {
 export type RuleId =
   | "no-boundary"
   | "empty-boundary"
-  | "missing-model-version"
+  | "missing-solver-configuration"
+  | "deprecated-model-version"
+  | "missing-acceptance-authority"
   | "ignore-without-reason";
 
 export type Severity = "error" | "warning";
@@ -37,7 +39,9 @@ export const RULE_SEVERITY: Readonly<Record<RuleId, Severity>> = {
   "no-boundary": "error",
   "empty-boundary": "error",
   "ignore-without-reason": "error",
-  "missing-model-version": "warning",
+  "missing-solver-configuration": "warning",
+  "deprecated-model-version": "warning",
+  "missing-acceptance-authority": "warning",
 };
 
 export interface Finding {
@@ -80,7 +84,14 @@ interface Declaration {
 }
 
 const PLACEHOLDER = /^<.*>$/;
+const SOLVER_CONFIG_RE = /SOLVER_CONFIGURATION_ID\s*:\s*(.*)$/;
+/** Deprecated alias, accepted with a warning (spec v2.1.0 §D3). */
 const MODEL_VERSION_RE = /MODEL_VERSION\s*:\s*(.*)$/;
+const ACCEPTANCE_AUTHORITY_RE = /ACCEPTANCE_AUTHORITY\s*:\s*(.*)$/;
+/** Per-class table rows: every class is COVERED or ACCEPTED_RISK (§10.1). */
+const CLASS_ROW_RE = /\bERR_[A-Z_]+\b/;
+const COVERED_RE = /\bCOVERED\b/;
+const ACCEPTED_RISK_RE = /\bACCEPTED_RISK\b/;
 const MITIGATION_RE = /MITIGATION\s*:\s*(.*)$/;
 const CHECKLIST_RE = /\[( |x|X)\]\s*ERR_[A-Z_]+/;
 
@@ -151,11 +162,22 @@ function ignoreReason(lines: readonly string[], site: CallSite): { ignored: bool
   return { ignored: false, reason: "" };
 }
 
-function inspectDeclaration(decl: Declaration): { emptyChecklist: boolean; missingModelVersion: boolean } {
+interface DeclarationCheck {
+  emptyChecklist: boolean;
+  missingSolverConfiguration: boolean;
+  deprecatedModelVersion: boolean;
+  missingAcceptanceAuthority: boolean;
+}
+
+function inspectDeclaration(decl: Declaration): DeclarationCheck {
   let checklistLines = 0;
   let checked = 0;
+  let solverConfig: string | undefined;
   let modelVersion: string | undefined;
+  let acceptanceAuthority: string | undefined;
   let mitigation: string | undefined;
+  let classRows = 0;
+  let coveredRows = 0;
   for (const raw of decl.block) {
     const line = raw.replace(/\*\/\s*$/, "");
     const cl = CHECKLIST_RE.exec(line);
@@ -163,16 +185,35 @@ function inspectDeclaration(decl: Declaration): { emptyChecklist: boolean; missi
       checklistLines++;
       if (cl[1] !== " ") checked++;
     }
+    const sc = SOLVER_CONFIG_RE.exec(line);
+    if (sc && solverConfig === undefined) solverConfig = (sc[1] ?? "").trim();
     const mv = MODEL_VERSION_RE.exec(line);
     if (mv && modelVersion === undefined) modelVersion = (mv[1] ?? "").trim();
+    const aa = ACCEPTANCE_AUTHORITY_RE.exec(line);
+    if (aa && acceptanceAuthority === undefined) acceptanceAuthority = (aa[1] ?? "").trim();
+    if (CLASS_ROW_RE.test(line) && !cl) {
+      classRows++;
+      if (COVERED_RE.test(line) && !ACCEPTED_RISK_RE.test(line)) coveredRows++;
+    }
     const mi = MITIGATION_RE.exec(line);
     if (mi && mitigation === undefined) mitigation = (mi[1] ?? "").trim();
   }
   const usable = (v: string | undefined): boolean =>
     v !== undefined && v.length > 0 && !PLACEHOLDER.test(v);
-  const emptyChecklist = checklistLines > 0 && checked === 0 && !usable(mitigation);
-  const missingModelVersion = !usable(modelVersion);
-  return { emptyChecklist, missingModelVersion };
+  // S = 0 is silent acceptance and has no mitigation escape (spec v2.1.0 §D1):
+  // legacy checkbox form, or a per-class table with no COVERED row.
+  const emptyChecklist =
+    (checklistLines > 0 && checked === 0 && !usable(mitigation)) ||
+    (classRows > 0 && coveredRows === 0);
+  const missingSolverConfiguration = !usable(solverConfig) && !usable(modelVersion);
+  const deprecatedModelVersion = !usable(solverConfig) && usable(modelVersion);
+  const missingAcceptanceAuthority = !usable(acceptanceAuthority);
+  return {
+    emptyChecklist,
+    missingSolverConfiguration,
+    deprecatedModelVersion,
+    missingAcceptanceAuthority,
+  };
 }
 
 function finding(
@@ -231,16 +272,32 @@ export function lintSource(file: string, source: string, options?: Partial<LintO
     if (inspection.emptyChecklist) {
       findings.push(finding(
         file, site, "empty-boundary",
-        `Boundary declared at line ${decl.index + 1} leaves every error class unchecked and ` +
-          "gives no MITIGATION note (spec §10.1: blocking defect).",
+        `Boundary declared at line ${decl.index + 1} covers no error class (S = 0). ` +
+          "Spec §10.1: with no COVERED row this is silent acceptance, and MITIGATION does not excuse it.",
         lines,
       ));
     }
-    if (inspection.missingModelVersion) {
+    if (inspection.missingSolverConfiguration) {
       findings.push(finding(
-        file, site, "missing-model-version",
-        `Boundary declared at line ${decl.index + 1} has no MODEL_VERSION pin (spec §9.6: ` +
-          "a model swap without boundary review is a regression).",
+        file, site, "missing-solver-configuration",
+        `Boundary declared at line ${decl.index + 1} has no SOLVER_CONFIGURATION_ID ` +
+          "(spec §9.6: a solver-configuration change without boundary re-evaluation is a regression).",
+        lines,
+      ));
+    }
+    if (inspection.deprecatedModelVersion) {
+      findings.push(finding(
+        file, site, "deprecated-model-version",
+        `Boundary declared at line ${decl.index + 1} pins MODEL_VERSION, which v2.1.0 ` +
+          "replaces with SOLVER_CONFIGURATION_ID (model, harness, context policy, tools, prompts).",
+        lines,
+      ));
+    }
+    if (inspection.missingAcceptanceAuthority) {
+      findings.push(finding(
+        file, site, "missing-acceptance-authority",
+        `Boundary declared at line ${decl.index + 1} names no ACCEPTANCE_AUTHORITY ` +
+          "(spec §9.7: verdicts must be recorded outside the producer's control domain).",
         lines,
       ));
     }

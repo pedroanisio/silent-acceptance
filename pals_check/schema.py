@@ -133,18 +133,20 @@ def _build_symbols(layout: SpecLayout = LAYOUT_V1) -> list[Symbol]:
     asym = layout.asymmetry if layout.name == "v1" else f"{layout.asymmetry}.1"
     symbols = [
         Symbol("M_class", r"\mathcal{M}", "Set", "Class of autoregressive transformer language models", d),
-        Symbol("M", r"M", "M ∈ M_class", "Any concrete model with parameter set θ", d),
+        Symbol("M", r"M", "M ∈ M_class", "Solver configuration (model, harness, context policy, tool set, prompt set), identified by SOLVER_CONFIGURATION_ID", d),
         Symbol("theta", r"\theta", "ℝ^d", "Parameter set of model M", d),
         Symbol("X", r"\mathcal{X}", "Set", "Space of all valid input prompts", d),
         Symbol("Y", r"\mathcal{Y}", "Set", "Space of all possible output sequences", d),
         Symbol("x", r"x", "x ∈ X", "Any specific prompt", d),
         Symbol("y", r"y", "y ∈ Y", "One sampled output: y ~ P_θ(·|x)", d),
-        Symbol("Sigma", r"\Sigma", "X ⇀ Y (partial function)", "Ground-truth semantic specification", d),
+        Symbol("Z", r"\mathcal{Z}", "Set", "Space of evaluation contexts: evidence, policy, history, declared preference, solver configuration", d),
+        Symbol("z", r"z", "z ∈ Z", "One evaluation context, what acceptability is judged against", d),
+        Symbol("A", r"A", "Y × X × Z → {0, 1}", "Acceptability predicate: A(y,x,z) = 1 when y is acceptable for x in context z", d),
         Symbol(
             "epsilon",
             r"\varepsilon",
-            "Y × X → {0, 1}",
-            "Boolean error predicate: ε(y,x) = 1 iff y deviates from Σ(x)",
+            "Y × X × Z → {0, 1}",
+            "Boolean error predicate: ε(y,x,z) = 1 − A(y,x,z)",
             d,
         ),
         Symbol(
@@ -154,7 +156,14 @@ def _build_symbols(layout: SpecLayout = LAYOUT_V1) -> list[Symbol]:
             f"Realistic task distribution (see working definition §{layout.operative})",
             layout.operative,
         ),
-        Symbol("delta", r"\delta", "ℝ, δ > 0", "Non-negligible lower bound on expected error rate", layout.operative),
+        Symbol(
+            "delta_MD",
+            r"\delta_{M,\mathcal{D}}",
+            "ℝ, δ > 0",
+            "Measured error rate of solver configuration M on distribution D; not a universal constant",
+            layout.operative,
+        ),
+        Symbol("tau", r"\tau", "[0, 1]", "Tolerated failure rate for the declared consumer; a deployment parameter", layout.operative),
         Symbol("P_pipeline", r"\mathcal{P}", "(M_1, ..., M_n)", "Pipeline of n sequential LLM calls", layout.pipeline),
         Symbol(
             "p_i",
@@ -188,10 +197,31 @@ def _build_symbols(layout: SpecLayout = LAYOUT_V1) -> list[Symbol]:
                     d,
                 ),
                 Symbol(
+                    "pi_c",
+                    r"\pi_c",
+                    "[0, 1]",
+                    "Prevalence: rate at which class-c errors occur in M's output on D",
+                    layout.asymmetry,
+                ),
+                Symbol(
+                    "sev_c",
+                    r"\mathrm{sev}_c",
+                    "ℝ⁺",
+                    "Severity weight of an escaped class-c error for the declared consumer",
+                    layout.asymmetry,
+                ),
+                Symbol(
+                    "rho_c",
+                    r"\rho_c",
+                    "ℝ⁺",
+                    "Escaped risk: ρ_c(M) = π_c(M)(1 − R_c)·sev_c — the weighted rate at which class-c errors reach a consumer",
+                    layout.asymmetry,
+                ),
+                Symbol(
                     "R_c",
                     r"R_c",
                     "[0, 1]",
-                    "Recall of verifier V_c against model M on distribution D: P(V_c(y,x) = 1 | ε_c(y,x) = 1)",
+                    "Recall of verifier V_c against configuration M on D: P(V_c(y,x) = 1 | ε_c(y,x,z) = 1)",
                     d,
                 ),
             ]
