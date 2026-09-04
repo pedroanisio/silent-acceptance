@@ -19,8 +19,8 @@ import type { DepositionMetadataInput } from "../src/types.js";
 
 const ROOT = resolve(import.meta.dirname, "../..");
 
-/** Latest published version of the concept record (v2.0.0, record 22290451). */
-const LATEST_RECORD_ID = 22290451;
+/** Latest published version of the concept record (v2.1.0, record 22308202). Bump with SPEC_VERSION. */
+const LATEST_RECORD_ID = 22308202;
 const CONCEPT_DOI = "10.5281/zenodo.19401266";
 
 const SPEC_VERSION = "2.1.0";

@@ -35,7 +35,7 @@ This work is subject to the methodological caveats and commitments described in 
 
 | Path | What it is |
 |---|---|
-| `SILENT_ACCEPTANCE-v2.1.0.md` | The current specification. All versions share the Zenodo concept DOI [10.5281/zenodo.19401266](https://doi.org/10.5281/zenodo.19401266). |
+| `SILENT_ACCEPTANCE-v2.1.0.md` | The current specification, Zenodo record [10.5281/zenodo.22308202](https://doi.org/10.5281/zenodo.22308202). All versions share the concept DOI [10.5281/zenodo.19401266](https://doi.org/10.5281/zenodo.19401266), which resolves to the latest. |
 | `SILENT_ACCEPTANCE-v2.0.0.md` | The v2.0.0 release, Zenodo record [10.5281/zenodo.22290451](https://doi.org/10.5281/zenodo.22290451). |
 | `PALS_LAW-v1.5.*.md` | Prior versions under the former name. Kept for the published Zenodo records. |
 | `pals_check/` | Spec audit CLI: references, math checks, formal schema, signing, certificates. |
