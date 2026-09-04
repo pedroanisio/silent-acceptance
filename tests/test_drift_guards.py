@@ -1,9 +1,11 @@
 """Contract tests that guard against spec-code drift.
 
-These tests parse both published specification layouts (PALS's LAW v1.5.4 and
-Silent Acceptance v2.0.0) and assert that the hardcoded Python structures match
-each one. If a spec changes, these tests fail — converting silent drift into a
-loud test failure. The ``spec_doc`` fixture supplies ``(text, layout)`` pairs.
+These tests parse every published specification (PALS's LAW v1.5.4, Silent
+Acceptance v2.0.0, and v2.1.0) and assert that the hardcoded Python structures
+match each one. If a spec changes, these tests fail — converting silent drift
+into a loud test failure. The ``spec_doc`` fixture supplies ``(text, layout)``
+pairs; claims and symbols are read through ``build_schema`` so that vocabulary
+gated on the document's exact version is checked for the document that has it.
 """
 
 from __future__ import annotations
@@ -19,9 +21,7 @@ from pals_check.math_checker import (
 )
 from pals_check.schema import (
     _build_artifacts,
-    _build_claims,
     _build_error_classes,
-    _build_symbols,
     build_schema,
 )
 
@@ -89,7 +89,7 @@ class TestClaimsAndSymbolsContract:
         """Every claim's section field must point to an existing heading."""
         text, layout = spec_doc
         existing = _existing_sections(text)
-        for c in _build_claims(layout):
+        for c in build_schema(text, layout).claims:
             assert c.section in existing or any(s.startswith(c.section) for s in existing), (
                 f"Claim {c.claim_id} references section {c.section} which doesn't exist in {layout.name}"
             )
@@ -98,7 +98,7 @@ class TestClaimsAndSymbolsContract:
         """Every symbol's section_defined field must point to an existing heading."""
         text, layout = spec_doc
         existing = _existing_sections(text)
-        for s in _build_symbols(layout):
+        for s in build_schema(text, layout).symbols:
             assert s.section_defined in existing or any(sec.startswith(s.section_defined) for sec in existing), (
                 f"Symbol {s.name} references section {s.section_defined} which doesn't exist in {layout.name}"
             )
@@ -107,7 +107,7 @@ class TestClaimsAndSymbolsContract:
         """Every caveat section a claim cites must exist (they are limitation subsections)."""
         text, layout = spec_doc
         existing = _existing_sections(text)
-        for c in _build_claims(layout):
+        for c in build_schema(text, layout).claims:
             for caveat in c.caveats:
                 assert caveat in existing, (
                     f"Claim {c.claim_id} cites caveat §{caveat} which doesn't exist in {layout.name}"
@@ -115,8 +115,8 @@ class TestClaimsAndSymbolsContract:
 
     def test_claim_dependencies_are_valid(self, spec_doc: tuple[str, SpecLayout]):
         """Every claim's depends_on must reference another valid claim_id."""
-        _, layout = spec_doc
-        claims = _build_claims(layout)
+        text, layout = spec_doc
+        claims = build_schema(text, layout).claims
         all_ids = {c.claim_id for c in claims}
         for c in claims:
             for dep in c.depends_on:
@@ -221,7 +221,7 @@ class TestClaimsContentContract:
     def test_every_claim_with_display_math_has_matching_spec_block(self, spec_doc: tuple[str, SpecLayout]):
         """Each claim with display math must share key LaTeX fragments with a spec math block."""
         text, layout = spec_doc
-        claims = _build_claims(layout)
+        claims = build_schema(text, layout).claims
         math_blocks = extract_math_blocks(text, layout)
         blocks_by_section: dict[str, list[str]] = {}
         for b in math_blocks:
@@ -262,7 +262,7 @@ class TestClaimsContentContract:
         from pals_check.math_checker import _get_section_text
 
         text, layout = spec_doc
-        for c in _build_claims(layout):
+        for c in build_schema(text, layout).claims:
             if not c.latex:
                 continue
             section_text = _get_section_text(text, c.section)
@@ -281,7 +281,7 @@ class TestClaimsContentContract:
         text, layout = spec_doc
         math_blocks = extract_math_blocks(text, layout)
         sections_with_math = {b.section for b in math_blocks}
-        claim_sections = {c.section for c in _build_claims(layout)}
+        claim_sections = {c.section for c in build_schema(text, layout).claims}
 
         uncovered = set()
         for sec in sections_with_math:
@@ -301,7 +301,7 @@ class TestClaimsContentContract:
         refs = extract_references(text)
         valid_ref_ids = {r.ref_id for r in refs}
 
-        claims = _build_claims(layout)
+        claims = build_schema(text, layout).claims
         all_claim_ids = {c.claim_id for c in claims}
 
         for c in claims:
@@ -320,9 +320,14 @@ class TestSymbolsContentContract:
     """Verify that _build_symbols() content matches the actual spec."""
 
     def test_symbol_count_matches_spec_definitions(self, spec_doc: tuple[str, SpecLayout]):
-        """Each symbol declared in the definitions section must appear in its inline math."""
+        """Each symbol declared in the definitions section must appear in its inline math.
+
+        Symbols come from build_schema(), not _build_symbols(layout), so the v2.1.0
+        vocabulary (gated on the document's own version) is checked against v2.1.0
+        and not claimed for v2.0.0.
+        """
         text, layout = spec_doc
-        symbols = _build_symbols(layout)
+        symbols = build_schema(text, layout).symbols
 
         by_section: dict[str, list] = {}
         for s in symbols:
@@ -348,7 +353,7 @@ class TestSymbolsContentContract:
     def test_symbol_latex_appears_in_spec_section(self, spec_doc: tuple[str, SpecLayout]):
         """Each symbol's LaTeX must appear somewhere in its declared section."""
         text, layout = spec_doc
-        for s in _build_symbols(layout):
+        for s in build_schema(text, layout).symbols:
             sec_pattern = rf"###?\s+{re.escape(s.section_defined)}\b"
             sec_match = re.search(sec_pattern, text)
             assert sec_match, (

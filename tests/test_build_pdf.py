@@ -87,7 +87,7 @@ class TestSplitTitleBlock:
         tb = split_title_block(body)
         assert tb.title == "Silent Acceptance"
         assert tb.author == "Pedro Anisio de Luna e Silva"
-        assert tb.date_line.startswith("Preprint, v2.0.0")
+        assert tb.date_line.startswith("Preprint, v2.1.0")
         assert "peer review pending" not in real_md_text
 
 

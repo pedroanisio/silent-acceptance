@@ -19,12 +19,13 @@ import type { DepositionMetadataInput } from "../src/types.js";
 
 const ROOT = resolve(import.meta.dirname, "../..");
 
-/** Latest published version of the concept record (v1.5.4, frontmatter-stripped upload). */
-const LATEST_RECORD_ID = 19401530;
+/** Latest published version of the concept record (v2.0.0, record 22290451). */
+const LATEST_RECORD_ID = 22290451;
 const CONCEPT_DOI = "10.5281/zenodo.19401266";
 
-const SPEC_NAME = "SILENT_ACCEPTANCE-v2.0.0.md";
-const PDF_NAME = "SILENT_ACCEPTANCE-v2.0.0.pdf";
+const SPEC_VERSION = "2.1.0";
+const SPEC_NAME = `SILENT_ACCEPTANCE-v${SPEC_VERSION}.md`;
+const PDF_NAME = `SILENT_ACCEPTANCE-v${SPEC_VERSION}.pdf`;
 
 const mode = process.argv.includes("--publish")
   ? "publish"
@@ -59,18 +60,22 @@ export function buildMetadata(publicationDate: string): DepositionMetadataInput 
       "names that defect, states the invariant that makes it a defect (LLM output error is " +
       "a statistical invariant of the model class, not an exceptional condition), and " +
       "prescribes the boundary that removes it: the Verification Boundary Principle.</p>" +
-      "<p>Version 2.0.0 renames the specification (versions 1.x were published as " +
-      "<em>PALS's Law</em> under this concept DOI), promotes the Capability-Detection " +
-      "Asymmetry to a section with operational definitions and an experiment protocol, adds " +
-      "harness-level evidence and a sixth corollary (the verifier must sit outside the " +
-      "boundary it verifies), makes the practitioner artifacts tool-agnostic (AGENTS.md " +
-      "block, CI check), and ships a code-side linter.</p>" +
+      "<p>Version 2.1.0 applies a structured review of v2.0.0: the semantic specification is " +
+      "replaced by an acceptability predicate A(y, x, z) over an evaluation context; the " +
+      "operative bound is indexed to solver configuration and distribution and given an " +
+      "operational threshold τ; the pipeline corollary uses a conditional-hazard " +
+      "decomposition instead of an independence product; the unit of analysis is the solver " +
+      "configuration (model, harness, context policy, tools, prompts); the boundary " +
+      "declaration has ten fields and a per-class table; and Corollary 6 becomes a " +
+      "control-domain requirement on the acceptance authority. Versions 1.x were published as " +
+      "<em>PALS's Law</em> under this concept DOI; v2.0.0 introduced the current name and " +
+      "structure.</p>" +
       "<p>Contents: formal operative and existential claims, a 9-class error taxonomy, the " +
-      "pipeline compounding corollary, the Capability-Detection Asymmetry, six architectural " +
-      "corollaries, copy-paste practitioner artifacts, and 15 references, each resolved by the " +
-      "companion audit with the outcome recorded per reference in the included report. " +
-      "The provenance section (§11) states what was verified and how. " +
-      "Machine-readable schema, report, and certificate JSON are included.</p>",
+      "pipeline corollary, the Capability-Detection Asymmetry with an experiment protocol, six " +
+      "architectural corollaries, copy-paste practitioner artifacts, a code-side linter, and " +
+      "15 references, each resolved by the companion audit with the outcome recorded per " +
+      "reference in the included report. The provenance section (§11) states what was " +
+      "verified and how. Machine-readable schema, report, and certificate JSON are included.</p>",
     creators: [
       {
         name: "de Luna e Silva, Pedro Anisio",
@@ -106,7 +111,7 @@ export function buildMetadata(publicationDate: string): DepositionMetadataInput 
       { identifier: "https://arxiv.org/abs/2609.00069", relation: "references" },
       { identifier: "https://arxiv.org/abs/2607.24300", relation: "references" },
     ],
-    version: "2.0.0",
+    version: SPEC_VERSION,
   };
 }
 

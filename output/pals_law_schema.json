@@ -1,6 +1,6 @@
 {
-  "version": "1.5.0",
-  "content_hash": "d1d1f8d3f8015a00",
+  "version": "2.1.0",
+  "content_hash": "3cd52356b6fd1b2e",
   "symbols": [
     {
       "name": "M_class",
@@ -13,7 +13,7 @@
       "name": "M",
       "latex": "M",
       "type_signature": "M \u2208 M_class",
-      "definition": "Any concrete model with parameter set \u03b8",
+      "definition": "Solver configuration (model, harness, context policy, tool set, prompt set), identified by SOLVER_CONFIGURATION_ID",
       "section_defined": "3.1"
     },
     {
@@ -52,17 +52,31 @@
       "section_defined": "3.1"
     },
     {
-      "name": "Sigma",
-      "latex": "\\Sigma",
-      "type_signature": "X \u21c0 Y (partial function)",
-      "definition": "Ground-truth semantic specification",
+      "name": "Z",
+      "latex": "\\mathcal{Z}",
+      "type_signature": "Set",
+      "definition": "Space of evaluation contexts: evidence, policy, history, declared preference, solver configuration",
+      "section_defined": "3.1"
+    },
+    {
+      "name": "z",
+      "latex": "z",
+      "type_signature": "z \u2208 Z",
+      "definition": "One evaluation context, what acceptability is judged against",
+      "section_defined": "3.1"
+    },
+    {
+      "name": "A",
+      "latex": "A",
+      "type_signature": "Y \u00d7 X \u00d7 Z \u2192 {0, 1}",
+      "definition": "Acceptability predicate: A(y,x,z) = 1 when y is acceptable for x in context z",
       "section_defined": "3.1"
     },
     {
       "name": "epsilon",
       "latex": "\\varepsilon",
-      "type_signature": "Y \u00d7 X \u2192 {0, 1}",
-      "definition": "Boolean error predicate: \u03b5(y,x) = 1 iff y deviates from \u03a3(x)",
+      "type_signature": "Y \u00d7 X \u00d7 Z \u2192 {0, 1}",
+      "definition": "Boolean error predicate: \u03b5(y,x,z) = 1 \u2212 A(y,x,z)",
       "section_defined": "3.1"
     },
     {
@@ -73,10 +87,17 @@
       "section_defined": "3.2"
     },
     {
-      "name": "delta",
-      "latex": "\\delta",
+      "name": "delta_MD",
+      "latex": "\\delta_{M,\\mathcal{D}}",
       "type_signature": "\u211d, \u03b4 > 0",
-      "definition": "Non-negligible lower bound on expected error rate",
+      "definition": "Measured error rate of solver configuration M on distribution D; not a universal constant",
+      "section_defined": "3.2"
+    },
+    {
+      "name": "tau",
+      "latex": "\\tau",
+      "type_signature": "[0, 1]",
+      "definition": "Tolerated failure rate for the declared consumer; a deployment parameter",
       "section_defined": "3.2"
     },
     {
@@ -87,10 +108,10 @@
       "section_defined": "3.4"
     },
     {
-      "name": "p_i",
-      "latex": "p_i",
-      "type_signature": "p_i \u2208 [\u03b4, 1)",
-      "definition": "Per-step error probability: P(\u03b5(M_i(x_i), x_i) = 1) \u2265 \u03b4 > 0 (uniform lower bound from \u00a73.2)",
+      "name": "E_i",
+      "latex": "E_i",
+      "type_signature": "event",
+      "definition": "Error event at pipeline step i; the corollary's condition is on the conditional hazard P(E_i | E_1^c, \u2026, E_{i-1}^c) \u2265 \u03b4, with no independence assumed",
       "section_defined": "3.4"
     },
     {
@@ -98,14 +119,63 @@
       "latex": "D_c(M)",
       "type_signature": "\u211d\u207a",
       "definition": "Detection difficulty of error class c for model M",
-      "section_defined": "8"
+      "section_defined": "7.1"
     },
     {
       "name": "C_M",
       "latex": "C(M)",
       "type_signature": "\u211d\u207a",
       "definition": "Model capability (requires operational definition)",
-      "section_defined": "8"
+      "section_defined": "7.1"
+    },
+    {
+      "name": "C_classes",
+      "latex": "\\mathcal{C}",
+      "type_signature": "Set",
+      "definition": "The set of error classes enumerated in the taxonomy",
+      "section_defined": "3.1"
+    },
+    {
+      "name": "V_c",
+      "latex": "V_c",
+      "type_signature": "Y \u00d7 X \u2192 {0, 1}",
+      "definition": "Verifier for error class c: an executable predicate distinct from M that returns 1 when it detects \u03b5_c(y,x) = 1",
+      "section_defined": "3.1"
+    },
+    {
+      "name": "B",
+      "latex": "B",
+      "type_signature": "(S, {V_c}_{c \u2208 S}), S \u2286 C_classes",
+      "definition": "Verification boundary: a declared subset of error classes with one verifier per class, applied before output reaches a consumer",
+      "section_defined": "3.1"
+    },
+    {
+      "name": "pi_c",
+      "latex": "\\pi_c",
+      "type_signature": "[0, 1]",
+      "definition": "Prevalence: rate at which class-c errors occur in M's output on D",
+      "section_defined": "7.2"
+    },
+    {
+      "name": "sev_c",
+      "latex": "\\mathrm{sev}_c",
+      "type_signature": "\u211d\u207a",
+      "definition": "Severity weight of an escaped class-c error for the declared consumer",
+      "section_defined": "7.2"
+    },
+    {
+      "name": "rho_c",
+      "latex": "\\rho_c",
+      "type_signature": "\u211d\u207a",
+      "definition": "Escaped risk: \u03c1_c(M) = \u03c0_c(M)(1 \u2212 R_c)\u00b7sev_c \u2014 the weighted rate at which class-c errors reach a consumer",
+      "section_defined": "7.2"
+    },
+    {
+      "name": "R_c",
+      "latex": "R_c",
+      "type_signature": "[0, 1]",
+      "definition": "Recall of verifier V_c against configuration M on D: P(V_c(y,x) = 1 | \u03b5_c(y,x,z) = 1)",
+      "section_defined": "3.1"
     }
   ],
   "claims": [
@@ -119,8 +189,8 @@
       "depends_on": [],
       "supported_by": [],
       "caveats": [
-        "7.1",
-        "7.5"
+        "8.1",
+        "8.5"
       ],
       "is_falsifiable": false,
       "falsification_method": null
@@ -145,10 +215,10 @@
         "kalai_2024"
       ],
       "caveats": [
-        "7.1",
-        "7.2",
-        "7.5",
-        "7.6"
+        "8.1",
+        "8.2",
+        "8.5",
+        "8.6"
       ],
       "is_falsifiable": true,
       "falsification_method": "Produce a model M and a realistic distribution D (per \u00a73.2 working definition) where E[\u03b5(M(x),x)] is zero or negligible (below measurement threshold). Requires operationalizing 'realistic' and 'negligible' for the test domain."
@@ -167,7 +237,7 @@
         "ARG_6.2"
       ],
       "caveats": [
-        "7.1"
+        "8.1"
       ],
       "is_falsifiable": true,
       "falsification_method": "Prove that a specific model M has P(\u03b5=1) = 0 for ALL x \u2208 X. This would require proving the model solves arbitrary NLU \u2014 equivalent to proving a finite-parameter system represents all computable functions."
@@ -177,17 +247,17 @@
       "name": "Pipeline corollary",
       "section": "3.4",
       "status": "corollary",
-      "latex": "P(\\text{error-free pipeline}) = \\prod_{i=1}^{n}(1-p_i) \\to 0 \\text{ as } n \\to \\infty",
-      "natural_language": "Unverified pipeline failure probability approaches 1 as pipeline length grows. Requires \u03a3p_i = \u221e (e.g. p_i \u2265 \u03b4 > 0 uniform lower bound); if p_i decreases fast enough (e.g. p_i = 2^{-i}), the product converges and pipeline error stays bounded below 1.",
+      "latex": "P(\\text{error-free pipeline}) = \\prod_{i=1}^{n} P(E_i^{c} \\mid E_1^{c}, \\ldots, E_{i-1}^{c}),\\ P(E_i \\mid E_1^{c}, \\ldots, E_{i-1}^{c}) \\geq \\delta \\Rightarrow P(\\geq 1 \\text{ error}) \\to 1",
+      "natural_language": "Chain-rule decomposition with no independence assumption: if every conditional error hazard given the earlier steps succeeded is at least \u03b4, unverified pipeline failure probability approaches 1 as pipeline length grows. The hazard condition must be estimated per deployment; hazards decaying fast enough (e.g. 2^{-i}) leave the product bounded away from zero.",
       "depends_on": [
         "OPERATIVE"
       ],
       "supported_by": [],
       "caveats": [
-        "7.3"
+        "8.3"
       ],
       "is_falsifiable": true,
-      "falsification_method": "Show that pipeline errors are so correlated (non-independent) that the product formula fundamentally mischaracterizes the risk direction, or that per-step error probabilities decrease fast enough (p_i = o(1/i)) for \u03a3p_i < \u221e, making the product converge to a positive value. \u00a77.3 already acknowledges the independence assumption is approximate."
+      "falsification_method": "Estimate the conditional hazards of a real pipeline and show they decay fast enough that the product of conditional survival probabilities stays bounded away from zero, so the hazard condition fails and the corollary does not apply. \u00a78.3 states the condition and its failure modes."
     },
     {
       "claim_id": "ARG_6.1",
@@ -237,9 +307,46 @@
       "falsification_method": "Show that sampling always faithfully surfaces encoded beliefs."
     },
     {
+      "claim_id": "ASYMMETRY",
+      "name": "Capability-Detection Asymmetry (Hypothesis)",
+      "section": "7",
+      "status": "hypothesis",
+      "latex": "\\frac{\\partial D_c}{\\partial C} \\leq 0 \\text{ (structural)}, > 0 \\text{ (semantic/epistemic)}",
+      "natural_language": "As model capability grows, structural errors get easier to detect while semantic errors get harder",
+      "depends_on": [
+        "OPERATIVE"
+      ],
+      "supported_by": [
+        "lin_2022"
+      ],
+      "caveats": [
+        "8.7"
+      ],
+      "is_falsifiable": true,
+      "falsification_method": "Run the protocol in \u00a77.3: fix a benchmark suite for C(M) and a reference verifier per class for D_c(M) = 1 \u2212 recall; a semantic class whose miss rate falls as C rises under the fixed verifier refutes the inequality."
+    },
+    {
+      "claim_id": "VBP",
+      "name": "Verification Boundary Principle",
+      "section": "9.1",
+      "status": "prescription",
+      "latex": "",
+      "natural_language": "Every system consuming LLM output must declare a verification boundary B = (S, {V_c}) stating scope, mechanism, calibration model, and location before the output reaches a consumer.",
+      "depends_on": [
+        "OPERATIVE",
+        "DEF_EPSILON"
+      ],
+      "supported_by": [],
+      "caveats": [
+        "8.4"
+      ],
+      "is_falsifiable": false,
+      "falsification_method": null
+    },
+    {
       "claim_id": "COR1",
       "name": "Appearance of correctness \u2260 correctness",
-      "section": "8",
+      "section": "9.2",
       "status": "corollary",
       "latex": "",
       "natural_language": "Finite test-set validation does not demonstrate error-freedom on unverified inputs",
@@ -254,7 +361,7 @@
     {
       "claim_id": "COR2",
       "name": "Trust accumulation prohibited",
-      "section": "8",
+      "section": "9.3",
       "status": "corollary",
       "latex": "",
       "natural_language": "Observing correct outputs on x_1..x_k provides no guarantee about P(\u03b5=1) on a new input x_{k+1} not in {x_1..x_k}. The operative form's bound is unconditional \u2014 no finite sample inductively lowers it.",
@@ -269,7 +376,7 @@
     {
       "claim_id": "COR3",
       "name": "Verification scope must match error taxonomy",
-      "section": "8",
+      "section": "9.4",
       "status": "corollary",
       "latex": "",
       "natural_language": "Partial verification (e.g. schema-only) does not cover other error classes",
@@ -279,7 +386,7 @@
       ],
       "supported_by": [],
       "caveats": [
-        "7.4"
+        "8.4"
       ],
       "is_falsifiable": false,
       "falsification_method": null
@@ -287,7 +394,7 @@
     {
       "claim_id": "COR4",
       "name": "Silent acceptance is an architectural defect",
-      "section": "8",
+      "section": "9.5",
       "status": "corollary",
       "latex": "",
       "natural_language": "Passing LLM output without a declared verification boundary is an architectural omission",
@@ -301,20 +408,40 @@
     },
     {
       "claim_id": "COR5",
-      "name": "Capability-Detection Asymmetry (Hypothesis)",
-      "section": "8",
-      "status": "hypothesis",
-      "latex": "\\frac{\\partial D_c}{\\partial C} \\leq 0 \\text{ (structural)}, > 0 \\text{ (semantic/epistemic)}",
-      "natural_language": "As model capability grows, structural errors get easier to detect while semantic errors get harder",
+      "name": "A verifier upgrade is a precondition for a model upgrade",
+      "section": "9.6",
+      "status": "corollary",
+      "latex": "",
+      "natural_language": "If the asymmetry holds, a boundary calibrated against M_1 has lower recall on semantic classes when applied to a more capable M_2, so the verifier must be upgraded before the model is.",
+      "depends_on": [
+        "ASYMMETRY"
+      ],
+      "supported_by": [],
+      "caveats": [
+        "8.7"
+      ],
+      "is_falsifiable": true,
+      "falsification_method": "Show, under the \u00a77.3 protocol, that a fixed verifier's recall on semantic classes does not fall across a capability upgrade."
+    },
+    {
+      "claim_id": "COR6",
+      "name": "The verifier must sit outside the boundary it verifies",
+      "section": "9.7",
+      "status": "corollary",
+      "latex": "",
+      "natural_language": "A verifier the model or its agent can modify inherits the model's error distribution and is under optimization pressure to weaken the check; verifiers must be immutable from the model's perspective and their verdicts externally checkable.",
       "depends_on": [
         "OPERATIVE"
       ],
       "supported_by": [
-        "lin_2022"
+        "wang_2026",
+        "guo_2026"
       ],
-      "caveats": [],
+      "caveats": [
+        "8.7"
+      ],
       "is_falsifiable": true,
-      "falsification_method": "Operationalize C(M) and D_c(M), then show \u2202D_c/\u2202C \u2264 0 for a semantic class (e.g. hallucination detection gets easier with more capable models)."
+      "falsification_method": "Show a self-modifying system whose agent-editable verifier retains its recall under selection on the score it produces."
     }
   ],
   "error_classes": [
@@ -395,19 +522,19 @@
     {
       "artifact_id": "contract_block",
       "name": "Full Contract Block",
-      "section": "9.1",
+      "section": "10.1",
       "scope": "function",
       "contains_operative_form": true,
       "contains_existential_form": true,
       "contains_pipeline_corollary": true,
       "contains_independence_caveat": true,
       "contains_error_checklist": true,
-      "contains_spec_version_field": false
+      "contains_spec_version_field": true
     },
     {
       "artifact_id": "short_form",
       "name": "Short-Form",
-      "section": "9.2",
+      "section": "10.2",
       "scope": "project",
       "contains_operative_form": true,
       "contains_existential_form": false,
@@ -419,7 +546,7 @@
     {
       "artifact_id": "inline_banner",
       "name": "Inline Banner",
-      "section": "9.3",
+      "section": "10.3",
       "scope": "inline",
       "contains_operative_form": false,
       "contains_existential_form": false,
@@ -429,16 +556,28 @@
       "contains_spec_version_field": false
     },
     {
-      "artifact_id": "claudemd_block",
-      "name": "CLAUDE.md Integration Block",
-      "section": "9.4",
+      "artifact_id": "agent_instruction_block",
+      "name": "Agent Instruction File Block",
+      "section": "10.4",
       "scope": "repository",
       "contains_operative_form": true,
       "contains_existential_form": false,
       "contains_pipeline_corollary": true,
       "contains_independence_caveat": true,
       "contains_error_checklist": false,
-      "contains_spec_version_field": false
+      "contains_spec_version_field": true
+    },
+    {
+      "artifact_id": "ci_check",
+      "name": "CI Check",
+      "section": "10.5",
+      "scope": "ci",
+      "contains_operative_form": false,
+      "contains_existential_form": false,
+      "contains_pipeline_corollary": false,
+      "contains_independence_caveat": false,
+      "contains_error_checklist": false,
+      "contains_spec_version_field": true
     }
   ],
   "dependency_graph": {
@@ -457,6 +596,13 @@
     ],
     "ARG_6.2": [],
     "ARG_6.3": [],
+    "ASYMMETRY": [
+      "OPERATIVE"
+    ],
+    "VBP": [
+      "OPERATIVE",
+      "DEF_EPSILON"
+    ],
     "COR1": [
       "OPERATIVE"
     ],
@@ -471,6 +617,9 @@
       "OPERATIVE"
     ],
     "COR5": [
+      "ASYMMETRY"
+    ],
+    "COR6": [
       "OPERATIVE"
     ]
   },
@@ -487,15 +636,15 @@
     "ERR_REASONING",
     "ERR_SEMANTIC"
   ],
-  "layout": "v1",
+  "layout": "v2",
   "_signature": {
     "signature_version": "1",
     "algorithm": "sha256",
     "tool_id": "pals-check",
     "tool_version": "1.0.0",
-    "signed_at": "2026-09-04T13:58:17Z",
-    "source_document_hash": "d1d1f8d3f8015a00",
-    "payload_digest": "0ff9172a7260f98f051f36a20a8db627482dec004606b4e6a250d8048034dffb",
-    "seal": "cccee8e4e464cace48ad05c9601b62b9276061ea279331cfeb5b1149d2c84cdc"
+    "signed_at": "2026-09-04T16:38:16Z",
+    "source_document_hash": "3cd52356b6fd1b2e",
+    "payload_digest": "2b42577b5be43cda96a7aa35307e609710ea6bc7944fd71f060d5440427c5cfc",
+    "seal": "68a76e001737488e39fb0b79e77cd7b268e713664a6cb66191ef33cbf1a4991f"
   }
 }

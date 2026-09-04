@@ -1,7 +1,7 @@
 ---
 disclaimer:
-  generated_by: "Pedro Anisio de Luna e Silva with Claude Fable 5.1 via Claude Code"
-  date: "2026-09-03"
+  generated_by: "Pedro Anisio de Luna e Silva with Claude Fable 5.1 (v2.0.0) and Claude Opus 5 (v2.1.0) via Claude Code"
+  date: "2026-09-04"
 ---
 
 # Silent Acceptance
@@ -1035,7 +1035,9 @@ taking any of them on trust.
 This document was drafted by the author with AI assistance. Versions 1.x were drafted
 with Claude Sonnet 4.6 via claude.ai and typeset with Claude Opus 4.6 (April 2026).
 Version 2.0.0 was drafted, restructured, and tooled with Claude Fable 5.1 via Claude
-Code on 2026-09-03. The author is responsible for every claim.
+Code on 2026-09-03. Version 2.1.0 was revised with Claude Opus 5 via Claude Code on
+2026-09-04, and its audit artifacts and PDF were regenerated with Claude Fable 5.1 the
+same day. The author is responsible for every claim.
 
 ### 11.3 On the name
 
@@ -1088,6 +1090,7 @@ All versions share the Zenodo concept DOI [10.5281/zenodo.19401266](https://doi.
 resolves to the latest version. Version 1.5.4 was uploaded three times on 2026-04-03;
 the last of them, Zenodo version 3, is record [10.5281/zenodo.19401530](https://doi.org/10.5281/zenodo.19401530) and carries the
 PDF and the audit artifacts (the earlier uploads are records 19401267 and 19401346).
+Version 2.0.0 is Zenodo version 4, record 10.5281/zenodo.22290451.
 The source, the spec audit tool `pals-check`, and the code-side linter
 `silent-acceptance-lint` are maintained at
 https://github.com/pedroanisio/silent-acceptance.

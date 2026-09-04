@@ -12,13 +12,20 @@ FIXTURES_DIR = Path(__file__).parent / "fixtures"
 PROJECT_ROOT = Path(__file__).parent.parent
 
 SPEC_V1_PATH = PROJECT_ROOT / "PALS_LAW-v1.5.4.md"
-SPEC_V2_PATH = PROJECT_ROOT / "SILENT_ACCEPTANCE-v2.0.0.md"
+SPEC_V20_PATH = PROJECT_ROOT / "SILENT_ACCEPTANCE-v2.0.0.md"
+SPEC_V21_PATH = PROJECT_ROOT / "SILENT_ACCEPTANCE-v2.1.0.md"
 
 
 @pytest.fixture
 def real_md_text() -> str:
-    """Load the current specification (Silent Acceptance v2.0.0)."""
-    return SPEC_V2_PATH.read_text(encoding="utf-8")
+    """Load the current specification (Silent Acceptance v2.1.0)."""
+    return SPEC_V21_PATH.read_text(encoding="utf-8")
+
+
+@pytest.fixture
+def real_v20_md_text() -> str:
+    """Load the v2.0.0 specification (Zenodo record 22290451), kept auditable."""
+    return SPEC_V20_PATH.read_text(encoding="utf-8")
 
 
 @pytest.fixture
@@ -27,11 +34,21 @@ def real_v1_md_text() -> str:
     return SPEC_V1_PATH.read_text(encoding="utf-8")
 
 
-@pytest.fixture(params=["v1", "v2"], ids=["pals-law-v1.5.4", "silent-acceptance-v2.0.0"])
-def spec_doc(request, real_v1_md_text: str, real_md_text: str) -> tuple[str, SpecLayout]:
-    """Both published layouts, as (text, layout) pairs, for contract tests."""
+@pytest.fixture(
+    params=["v1", "v20", "v21"],
+    ids=["pals-law-v1.5.4", "silent-acceptance-v2.0.0", "silent-acceptance-v2.1.0"],
+)
+def spec_doc(request, real_v1_md_text: str, real_v20_md_text: str, real_md_text: str) -> tuple[str, SpecLayout]:
+    """Every published spec, as (text, layout) pairs, for contract tests.
+
+    v2.0.0 and v2.1.0 share LAYOUT_V2 but not the same vocabulary: the schema
+    gates the v2.1.0 symbols on the document's own version, so both must be
+    exercised or drift in one of them goes unnoticed.
+    """
     if request.param == "v1":
         return real_v1_md_text, LAYOUT_V1
+    if request.param == "v20":
+        return real_v20_md_text, LAYOUT_V2
     return real_md_text, LAYOUT_V2
 
 

@@ -97,9 +97,9 @@ def build_schema(text: str, layout: SpecLayout | None = None) -> PALSLawSchema:
 
     # v2.1.0 introduced A/z, δ_{M,D}, τ, π_c, sev_c and ρ_c. detect_layout keys
     # on the major version only, so gate them on the document's own version.
-    v21 = tuple(int(n) for n in (version.split('.') + ['0', '0'])[:2]) >= (2, 1)
+    v21 = tuple(int(n) for n in (version.split(".") + ["0", "0"])[:2]) >= (2, 1)
     symbols = _build_symbols(layout, v21=v21)
-    claims = _build_claims(layout)
+    claims = _build_claims(layout, v21=v21)
     error_classes = _build_error_classes()
     artifacts = _build_artifacts(text, layout)
     dep_graph = _build_dependency_graph(claims)
@@ -137,10 +137,13 @@ def _build_symbols(layout: SpecLayout = LAYOUT_V1, *, v21: bool = False) -> list
     symbols = [
         Symbol("M_class", r"\mathcal{M}", "Set", "Class of autoregressive transformer language models", d),
         Symbol(
-            "M", r"M", "M ∈ M_class",
+            "M",
+            r"M",
+            "M ∈ M_class",
             "Solver configuration (model, harness, context policy, tool set, prompt set), "
             "identified by SOLVER_CONFIGURATION_ID"
-            if v21 else "Any concrete model with parameter set θ",
+            if v21
+            else "Any concrete model with parameter set θ",
             d,
         ),
         Symbol("theta", r"\theta", "ℝ^d", "Parameter set of model M", d),
@@ -150,9 +153,21 @@ def _build_symbols(layout: SpecLayout = LAYOUT_V1, *, v21: bool = False) -> list
         Symbol("y", r"y", "y ∈ Y", "One sampled output: y ~ P_θ(·|x)", d),
         *(
             [
-                Symbol("Z", r"\mathcal{Z}", "Set", "Space of evaluation contexts: evidence, policy, history, declared preference, solver configuration", d),
+                Symbol(
+                    "Z",
+                    r"\mathcal{Z}",
+                    "Set",
+                    "Space of evaluation contexts: evidence, policy, history, declared preference, solver configuration",
+                    d,
+                ),
                 Symbol("z", r"z", "z ∈ Z", "One evaluation context, what acceptability is judged against", d),
-                Symbol("A", r"A", "Y × X × Z → {0, 1}", "Acceptability predicate: A(y,x,z) = 1 when y is acceptable for x in context z", d),
+                Symbol(
+                    "A",
+                    r"A",
+                    "Y × X × Z → {0, 1}",
+                    "Acceptability predicate: A(y,x,z) = 1 when y is acceptable for x in context z",
+                    d,
+                ),
             ]
             if v21
             else [Symbol("Sigma", r"\Sigma", "X ⇀ Y (partial function)", "Ground-truth semantic specification", d)]
@@ -162,7 +177,8 @@ def _build_symbols(layout: SpecLayout = LAYOUT_V1, *, v21: bool = False) -> list
             r"\varepsilon",
             "Y × X × Z → {0, 1}" if v21 else "Y × X → {0, 1}",
             "Boolean error predicate: ε(y,x,z) = 1 − A(y,x,z)"
-            if v21 else "Boolean error predicate: ε(y,x) = 1 iff y deviates from Σ(x)",
+            if v21
+            else "Boolean error predicate: ε(y,x) = 1 iff y deviates from Σ(x)",
             d,
         ),
         Symbol(
@@ -174,19 +190,45 @@ def _build_symbols(layout: SpecLayout = LAYOUT_V1, *, v21: bool = False) -> list
         ),
         *(
             [
-                Symbol("delta_MD", r"\delta_{M,\mathcal{D}}", "ℝ, δ > 0",
-                       "Measured error rate of solver configuration M on distribution D; not a universal constant",
-                       layout.operative),
-                Symbol("tau", r"\tau", "[0, 1]",
-                       "Tolerated failure rate for the declared consumer; a deployment parameter",
-                       layout.operative),
+                Symbol(
+                    "delta_MD",
+                    r"\delta_{M,\mathcal{D}}",
+                    "ℝ, δ > 0",
+                    "Measured error rate of solver configuration M on distribution D; not a universal constant",
+                    layout.operative,
+                ),
+                Symbol(
+                    "tau",
+                    r"\tau",
+                    "[0, 1]",
+                    "Tolerated failure rate for the declared consumer; a deployment parameter",
+                    layout.operative,
+                ),
             ]
             if v21
-            else [Symbol("delta", r"\delta", "ℝ, δ > 0",
-                         "Non-negligible lower bound on expected error rate", layout.operative)]
+            else [
+                Symbol(
+                    "delta",
+                    r"\delta",
+                    "ℝ, δ > 0",
+                    "Non-negligible lower bound on expected error rate",
+                    layout.operative,
+                )
+            ]
         ),
         Symbol("P_pipeline", r"\mathcal{P}", "(M_1, ..., M_n)", "Pipeline of n sequential LLM calls", layout.pipeline),
+        # v2.1.0 states the pipeline corollary over error events E_i with conditional
+        # hazards P(E_i | E_1^c … E_{i-1}^c) ≥ δ; v1.x and v2.0.0 use per-step p_i.
         Symbol(
+            "E_i",
+            r"E_i",
+            "event",
+            "Error event at pipeline step i; the corollary's condition is on the conditional "
+            "hazard P(E_i | E_1^c, …, E_{i-1}^c) ≥ δ, with no independence assumed",
+            layout.pipeline,
+        )
+        if v21
+        else Symbol(
             "p_i",
             r"p_i",
             "p_i ∈ [δ, 1)",
@@ -217,34 +259,43 @@ def _build_symbols(layout: SpecLayout = LAYOUT_V1, *, v21: bool = False) -> list
                     "verifier per class, applied before output reaches a consumer",
                     d,
                 ),
-                *([] if not v21 else [Symbol(
-                    "pi_c",
-                    r"\pi_c",
-                    "[0, 1]",
-                    "Prevalence: rate at which class-c errors occur in M's output on D",
-                    layout.asymmetry,
+                *(
+                    []
+                    if not v21
+                    else [
+                        # Introduced in §7.2 (Operational Definitions), not in §7's lead-in.
+                        Symbol(
+                            "pi_c",
+                            r"\pi_c",
+                            "[0, 1]",
+                            "Prevalence: rate at which class-c errors occur in M's output on D",
+                            f"{layout.asymmetry}.2",
+                        ),
+                        Symbol(
+                            "sev_c",
+                            r"\mathrm{sev}_c",
+                            "ℝ⁺",
+                            "Severity weight of an escaped class-c error for the declared consumer",
+                            f"{layout.asymmetry}.2",
+                        ),
+                        Symbol(
+                            "rho_c",
+                            r"\rho_c",
+                            "ℝ⁺",
+                            "Escaped risk: ρ_c(M) = π_c(M)(1 − R_c)·sev_c — the weighted rate at which class-c errors reach a consumer",
+                            f"{layout.asymmetry}.2",
+                        ),
+                    ]
                 ),
-                Symbol(
-                    "sev_c",
-                    r"\mathrm{sev}_c",
-                    "ℝ⁺",
-                    "Severity weight of an escaped class-c error for the declared consumer",
-                    layout.asymmetry,
-                ),
-                Symbol(
-                    "rho_c",
-                    r"\rho_c",
-                    "ℝ⁺",
-                    "Escaped risk: ρ_c(M) = π_c(M)(1 − R_c)·sev_c — the weighted rate at which class-c errors reach a consumer",
-                    layout.asymmetry,
-                )]),
                 Symbol(
                     "R_c",
                     r"R_c",
                     "[0, 1]",
-                    ("Recall of verifier V_c against configuration M on D: P(V_c(y,x) = 1 | ε_c(y,x,z) = 1)"
-                     if v21 else
-                     "Recall of verifier V_c against model M on distribution D: P(V_c(y,x) = 1 | ε_c(y,x) = 1)"),
+                    (
+                        "Recall of verifier V_c against configuration M on D: P(V_c(y,x) = 1 | ε_c(y,x,z) = 1)"
+                        if v21
+                        else "Recall of verifier V_c against model M on distribution D: P(V_c(y,x) = 1 | ε_c(y,x) = 1)"
+                    ),
                     d,
                 ),
             ]
@@ -252,7 +303,10 @@ def _build_symbols(layout: SpecLayout = LAYOUT_V1, *, v21: bool = False) -> list
     return symbols
 
 
-def _build_claims(layout: SpecLayout = LAYOUT_V1) -> list[FormalClaim]:
+def _build_claims(layout: SpecLayout = LAYOUT_V1, *, v21: bool = False) -> list[FormalClaim]:
+    """Formal claims for a layout. ``v21`` selects the v2.1.0 statement of the
+    pipeline corollary (conditional-hazard form) over the independence product
+    that v1.x and v2.0.0 state."""
     v1 = layout.name == "v1"
     cor = layout.corollary_sections
     claims = [
@@ -325,9 +379,20 @@ def _build_claims(layout: SpecLayout = LAYOUT_V1) -> list[FormalClaim]:
             name="Pipeline corollary",
             section=layout.pipeline,
             status=ClaimStatus.COROLLARY.value,
-            latex=r"P(\text{error-free pipeline}) = \prod_{i=1}^{n}(1-p_i) \to 0 \text{ as } n \to \infty",
+            latex=(
+                r"P(\text{error-free pipeline}) = \prod_{i=1}^{n} P(E_i^{c} \mid E_1^{c}, \ldots, E_{i-1}^{c}),"
+                r"\ P(E_i \mid E_1^{c}, \ldots, E_{i-1}^{c}) \geq \delta \Rightarrow P(\geq 1 \text{ error}) \to 1"
+                if v21
+                else r"P(\text{error-free pipeline}) = \prod_{i=1}^{n}(1-p_i) \to 0 \text{ as } n \to \infty"
+            ),
             natural_language=(
-                "Unverified pipeline failure probability approaches 1 as pipeline length grows. "
+                "Chain-rule decomposition with no independence assumption: if every conditional "
+                "error hazard given the earlier steps succeeded is at least δ, unverified pipeline "
+                "failure probability approaches 1 as pipeline length grows. The hazard condition "
+                "must be estimated per deployment; hazards decaying fast enough (e.g. 2^{-i}) leave "
+                "the product bounded away from zero."
+                if v21
+                else "Unverified pipeline failure probability approaches 1 as pipeline length grows. "
                 "Requires Σp_i = ∞ (e.g. p_i ≥ δ > 0 uniform lower bound); "
                 "if p_i decreases fast enough (e.g. p_i = 2^{-i}), the product converges "
                 "and pipeline error stays bounded below 1."
@@ -337,7 +402,12 @@ def _build_claims(layout: SpecLayout = LAYOUT_V1) -> list[FormalClaim]:
             caveats=[layout.independence],
             is_falsifiable=True,
             falsification_method=(
-                "Show that pipeline errors are so correlated (non-independent) that "
+                "Estimate the conditional hazards of a real pipeline and show they decay fast "
+                "enough that the product of conditional survival probabilities stays bounded "
+                "away from zero, so the hazard condition fails and the corollary does not apply. "
+                f"§{layout.independence} states the condition and its failure modes."
+                if v21
+                else "Show that pipeline errors are so correlated (non-independent) that "
                 "the product formula fundamentally mischaracterizes the risk direction, "
                 "or that per-step error probabilities decrease fast enough (p_i = o(1/i)) "
                 "for Σp_i < ∞, making the product converge to a positive value. "
@@ -623,10 +693,13 @@ def _has_operative_form(sec: str) -> bool:
     """Detect operative form via Unicode, LaTeX, or keyword."""
     low = sec.lower()
     return (
-        "𝔼[ε(M(x), x)]" in sec  # Unicode
+        "𝔼[ε(M(x), x)]" in sec  # Unicode, v1.x / v2.0.0
+        or "𝔼[ε(y, x, z)]" in sec  # Unicode, v2.1.0 (acceptability predicate over a context)
         or r"\mathbb{E}" in sec  # LaTeX
         or "operative" in low
         or "non-negligible" in low
+        or "tolerated failure rate" in low  # v2.1.0 short form: measured rate exceeds τ
+        or "δ_{m,𝒟}" in low
     )
 
 

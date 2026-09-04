@@ -244,9 +244,7 @@ def check_math_consistency(blocks: list[MathBlock], text: str, layout: SpecLayou
         # is selected by what the document actually states rather than assumed.
         conditional = r"\mid" in b1 or "|" in b1
         has_chain_rule = r"\prod" in b1 and conditional and "E_" in b1_norm
-        has_hazard_condition = "E_" in b2_norm and (r"\geq" in b2 or "≥" in b2) and (
-            r"\delta" in b2 or "δ" in b2
-        )
+        has_hazard_condition = "E_" in b2_norm and (r"\geq" in b2 or "≥" in b2) and (r"\delta" in b2 or "δ" in b2)
 
         if has_chain_rule:
             checks.append(

@@ -2,29 +2,29 @@
   "certificate_version": "1",
   "tool_id": "pals-check",
   "tool_version": "1.0.0",
-  "generated_at": "2026-09-04T13:58:17Z",
+  "generated_at": "2026-09-04T16:38:16Z",
   "spec": {
     "algorithm": "sha256",
-    "digest": "d1d1f8d3f8015a0042276c8b9c737c5943c7db59531d9f195ce6012f2697a112"
+    "digest": "3cd52356b6fd1b2e1b24a44302ee458f87cf3519211ed01114a94433d87ebb43"
   },
   "report": {
     "algorithm": "sha256",
-    "digest": "938b335ee06ca698f61156dd7fde31b4d00afb92c06d3dc3fe0434a6fc7288a7",
-    "version": "1.5.0"
+    "digest": "3df677038bf1fae16ef21b53e62574865265d62af062464a1854ceb00125dd7d",
+    "version": "2.1.0"
   },
   "schema": {
     "algorithm": "sha256",
-    "digest": "0ff9172a7260f98f051f36a20a8db627482dec004606b4e6a250d8048034dffb",
-    "version": "1.5.0"
+    "digest": "2b42577b5be43cda96a7aa35307e609710ea6bc7944fd71f060d5440427c5cfc",
+    "version": "2.1.0"
   },
   "checks": {
-    "passed": 9,
-    "warned": 1,
+    "passed": 11,
+    "warned": 0,
     "failed": 0,
-    "total": 10
+    "total": 11
   },
   "binding": {
     "algorithm": "sha256",
-    "digest": "13ec0ec7f1da9e56a20d44304086c684fde7f51e7b003725f746366d9c4dda3b"
+    "digest": "bc0d97764961b5155808c43fcc9acfa030b335dcf640c91d0740da90ec2ba43f"
   }
 }

@@ -1,6 +1,6 @@
 {
-  "document_version": "1.5.0",
-  "content_hash": "d1d1f8d3f8015a00",
+  "document_version": "2.1.0",
+  "content_hash": "3cd52356b6fd1b2e",
   "references": [
     {
       "ref_id": "ji_2023",
@@ -19,10 +19,10 @@
         "\u00a74"
       ],
       "publication_type": "peer-reviewed",
-      "verification_status": "unverified",
+      "verification_status": "partial",
       "fetched_title": null,
-      "fetched_url": null,
-      "fetch_error": null
+      "fetched_url": "https://doi.org/10.1145/3571730",
+      "fetch_error": "HTTP 403: Forbidden"
     },
     {
       "ref_id": "maynez_2020",
@@ -41,9 +41,9 @@
         "\u00a74"
       ],
       "publication_type": "peer-reviewed",
-      "verification_status": "unverified",
-      "fetched_title": null,
-      "fetched_url": null,
+      "verification_status": "verified",
+      "fetched_title": "On Faithfulness and Factuality in Abstractive Summarization - ACL Anthology",
+      "fetched_url": "https://aclanthology.org/2020.acl-main.173/",
       "fetch_error": null
     },
     {
@@ -63,9 +63,9 @@
         "\u00a74"
       ],
       "publication_type": "preprint",
-      "verification_status": "unverified",
-      "fetched_title": null,
-      "fetched_url": null,
+      "verification_status": "verified",
+      "fetched_title": "[2109.07958] TruthfulQA: Measuring How Models Mimic Human Falsehoods",
+      "fetched_url": "https://arxiv.org/abs/2109.07958",
       "fetch_error": null
     },
     {
@@ -76,7 +76,7 @@
       "venue": "arXiv:2207.05221",
       "doi": null,
       "arxiv_id": "2207.05221",
-      "relevance": "Addresses the gap between internal belief and expressed confidence (`ERR_CALIBRATION`). Note: the paper's overall finding is optimistic \u2014 the gap narrows with scale. This *strengthens* the law's framing: even a narrowing gap is a non-zero gap, and better calibration makes residual miscalibration harder to detect (see Corollary 5).",
+      "relevance": "Addresses the gap between internal belief and expressed confidence (`ERR_CALIBRATION`). Note: the paper's overall finding is optimistic \u2014 the gap narrows with scale. This *strengthens* the framing: even a narrowing gap is a non-zero gap, and better calibration makes residual miscalibration harder to detect (see \u00a77).",
       "error_classes_supported": [
         "ERR_CALIBRATION"
       ],
@@ -86,9 +86,9 @@
         "\u00a76.3"
       ],
       "publication_type": "preprint",
-      "verification_status": "unverified",
-      "fetched_title": null,
-      "fetched_url": null,
+      "verification_status": "verified",
+      "fetched_title": "[2207.05221] Language Models (Mostly) Know What They Know",
+      "fetched_url": "https://arxiv.org/abs/2207.05221",
       "fetch_error": null
     },
     {
@@ -108,9 +108,9 @@
         "\u00a74"
       ],
       "publication_type": "preprint",
-      "verification_status": "unverified",
-      "fetched_title": null,
-      "fetched_url": null,
+      "verification_status": "verified",
+      "fetched_title": "[2212.09251] Discovering Language Model Behaviors with Model-Written Evaluations",
+      "fetched_url": "https://arxiv.org/abs/2212.09251",
       "fetch_error": null
     },
     {
@@ -127,12 +127,57 @@
       ],
       "confidence_note": "High confidence \u2014 confirmed by reviewer with Semantic Scholar and arXiv pointers.",
       "section_cited_in": [
+        "\u00a74",
+        "\u00a711.6"
+      ],
+      "publication_type": "preprint",
+      "verification_status": "verified",
+      "fetched_title": "[2310.13548] Towards Understanding Sycophancy in Language Models",
+      "fetched_url": "https://arxiv.org/abs/2310.13548",
+      "fetch_error": null
+    },
+    {
+      "ref_id": "berglund_2023",
+      "authors": "Berglund, L., et al",
+      "year": 2023,
+      "title": "The Reversal Curse: LLMs trained on 'A is B' fail to learn 'B is A'.",
+      "venue": "arXiv:2309.12288",
+      "doi": null,
+      "arxiv_id": "2309.12288",
+      "relevance": "Demonstrates a specific, reproducible instance of `ERR_REASONING`: models trained on directional factual associations (A\u2192B) fail to generalize to the reverse (B\u2192A), even when both facts are individually encoded. The failure is compositional \u2014 the model has the correct facts but cannot reverse the inference chain. Confirms reasoning failure as a distinct class from hallucination (the facts are not fabricated; their relational composition is broken).",
+      "error_classes_supported": [
+        "ERR_REASONING"
+      ],
+      "confidence_note": "High confidence \u2014 verified via arXiv; v4 dated May 2024.",
+      "section_cited_in": [
         "\u00a74"
       ],
       "publication_type": "preprint",
-      "verification_status": "unverified",
-      "fetched_title": null,
-      "fetched_url": null,
+      "verification_status": "verified",
+      "fetched_title": "[2309.12288] The Reversal Curse: LLMs trained on A is B fail to learn B is A ",
+      "fetched_url": "https://arxiv.org/abs/2309.12288",
+      "fetch_error": null
+    },
+    {
+      "ref_id": "zhou_2023",
+      "authors": "Zhou, J., et al",
+      "year": 2023,
+      "title": "Instruction-Following Evaluation for Large Language Models.",
+      "venue": "arXiv:2311.07911",
+      "doi": null,
+      "arxiv_id": "2311.07911",
+      "relevance": "IFEval: benchmark measuring instruction-following accuracy across 25 verifiable constraint types (format, length, keyword inclusion/exclusion, language). No model achieves 100% compliance. Directly grounds `ERR_INSTRUCTION` \u2014 explicit constraint violations are measurable and non-negligible even for frontier models.",
+      "error_classes_supported": [
+        "ERR_INSTRUCTION"
+      ],
+      "confidence_note": "High confidence \u2014 adopted by LMSYS, Open LLM Leaderboard v2; results independently reproducible.",
+      "section_cited_in": [
+        "\u00a74"
+      ],
+      "publication_type": "preprint",
+      "verification_status": "verified",
+      "fetched_title": "[2311.07911] Instruction-Following Evaluation for Large Language Models",
+      "fetched_url": "https://arxiv.org/abs/2311.07911",
       "fetch_error": null
     },
     {
@@ -152,10 +197,10 @@
         "\u00a74"
       ],
       "publication_type": "peer-reviewed",
-      "verification_status": "unverified",
+      "verification_status": "partial",
       "fetched_title": null,
-      "fetched_url": null,
-      "fetch_error": null
+      "fetched_url": "https://doi.org/10.1145/3618260.3649777",
+      "fetch_error": "HTTP 403: Forbidden"
     },
     {
       "ref_id": "xu_2024",
@@ -174,9 +219,9 @@
         "\u00a74"
       ],
       "publication_type": "preprint",
-      "verification_status": "unverified",
-      "fetched_title": null,
-      "fetched_url": null,
+      "verification_status": "verified",
+      "fetched_title": "[2401.11817] Hallucination is Inevitable: An Innate Limitation of Large Language Models",
+      "fetched_url": "https://arxiv.org/abs/2401.11817",
       "fetch_error": null
     },
     {
@@ -196,9 +241,9 @@
         "\u00a74"
       ],
       "publication_type": "preprint",
-      "verification_status": "unverified",
-      "fetched_title": null,
-      "fetched_url": null,
+      "verification_status": "verified",
+      "fetched_title": "[2506.06382] On the Fundamental Impossibility of Hallucination Control in Large Language Models",
+      "fetched_url": "https://arxiv.org/abs/2506.06382",
       "fetch_error": null
     },
     {
@@ -209,19 +254,82 @@
       "venue": "arXiv:2502.12187",
       "doi": null,
       "arxiv_id": "2502.12187",
-      "relevance": "Proves the complementary positive result: while hallucination-triggering inputs are infinite, their probability mass under a realistic distribution can be made arbitrarily small with sufficient training data quality and quantity. This is the principal counterpoint to the operative form \u2014 see \u00a77.6 for discussion.",
+      "relevance": "Proves the complementary positive result: while hallucination-triggering inputs are infinite, their probability mass under a realistic distribution can be made arbitrarily small with sufficient training data quality and quantity. This is the principal counterpoint to the operative form \u2014 see \u00a78.6 for discussion.",
       "error_classes_supported": [
         "ERR_HALLUCINATION"
       ],
       "confidence_note": "High confidence \u2014 verified via arXiv.",
       "section_cited_in": [
         "\u00a74",
-        "\u00a77.6"
+        "\u00a78.6"
       ],
       "publication_type": "preprint",
-      "verification_status": "unverified",
-      "fetched_title": null,
-      "fetched_url": null,
+      "verification_status": "verified",
+      "fetched_title": "[2502.12187] Hallucinations are inevitable but can be made statistically negligible",
+      "fetched_url": "https://arxiv.org/abs/2502.12187",
+      "fetch_error": null
+    },
+    {
+      "ref_id": "lewis_2026",
+      "authors": "Lewis, S",
+      "year": 2026,
+      "title": "Same Model, Different Harness: Different Coding-Agent Results.",
+      "venue": "arXiv:2608.26218",
+      "doi": null,
+      "arxiv_id": "2608.26218",
+      "relevance": "Holds model and task fixed and changes only the harness's context policy (mechanically shortening older tool results as the window fills). On a 169-task SWE-bench Verified cohort with a 20,480-token window, mean per-task fail-to-pass fraction moved from 28 percent to 49 percent and complete solutions from 43 to 72; the treatment transferred to three further models without retuning. A twenty-one point move from a policy change exceeds the gap ordinarily used to separate model generations, so the error rate that a boundary governs is a property of the model-harness pair.",
+      "error_classes_supported": [],
+      "confidence_note": "High confidence \u2014 verified via arXiv abstract on 2026-09-03. Single study; coding tasks only (see \u00a78.7).",
+      "section_cited_in": [
+        "\u00a74",
+        "\u00a78.7"
+      ],
+      "publication_type": "preprint",
+      "verification_status": "verified",
+      "fetched_title": "[2608.26218] Same Model, Different Harness: Different Coding-Agent Results",
+      "fetched_url": "https://arxiv.org/abs/2608.26218",
+      "fetch_error": null
+    },
+    {
+      "ref_id": "wang_2026",
+      "authors": "Wang, X., Zhang, X., & Shao, J",
+      "year": 2026,
+      "title": "Auditing Harness Tampering in Self-Improving Agents.",
+      "venue": "arXiv:2609.00069",
+      "doi": null,
+      "arxiv_id": "2609.00069",
+      "relevance": "Agents that edit their own harness make misaligned edits that manufacture apparent gains or weaken integrity constraints (authorization, provenance, completeness); the edits occur consistently in real runs and persist in the lineage of the best-performing agent. Selection on the measured score rewards an edit that weakens the measurement exactly as it rewards an edit that improves the work. Grounds Corollary 6 (\u00a79.7).",
+      "error_classes_supported": [],
+      "confidence_note": "High confidence \u2014 verified via arXiv abstract on 2026-09-03.",
+      "section_cited_in": [
+        "\u00a74",
+        "\u00a79.7"
+      ],
+      "publication_type": "preprint",
+      "verification_status": "verified",
+      "fetched_title": "[2609.00069] Auditing Harness Tampering in Self-Improving Agents",
+      "fetched_url": "https://arxiv.org/abs/2609.00069",
+      "fetch_error": null
+    },
+    {
+      "ref_id": "guo_2026",
+      "authors": "Guo, D., et al",
+      "year": 2026,
+      "title": "Self-Authored Verification Is Unreliable in Heuristic Self-Improving Agents.",
+      "venue": "arXiv:2607.24300",
+      "doi": null,
+      "arxiv_id": "2607.24300",
+      "relevance": "When the agent controls both the optimized object and its verifier, self-assigned scores stay near perfect while sealed deployment performance degrades (the verifier\u2013deployment gap). The proposed remedy, a Sealed Exogenous Acceptance Loop, keeps self-authored tests but adds a fixed harness-side audit the agent cannot author or inspect; the authors conclude that reliable self-improvement requires at least one acceptance signal outside the agent's control. Grounds Corollary 6 (\u00a79.7).",
+      "error_classes_supported": [],
+      "confidence_note": "High confidence \u2014 verified via arXiv abstract on 2026-09-03.",
+      "section_cited_in": [
+        "\u00a74",
+        "\u00a79.7"
+      ],
+      "publication_type": "preprint",
+      "verification_status": "verified",
+      "fetched_title": "[2607.24300] Self-Authored Verification Is Unreliable in Heuristic Self-Improving Agents",
+      "fetched_url": "https://arxiv.org/abs/2607.24300",
       "fetch_error": null
     }
   ],
@@ -229,28 +337,28 @@
     {
       "block_id": "math_3.2_1",
       "section": "3.2",
-      "latex": "\\forall M \\in \\mathcal{M},\\ \\forall \\text{ realistic } \\mathcal{D} \\text{ over } \\mathcal{X}:\n\\quad \\mathbb{E}_{x \\sim \\mathcal{D}}\\!\\bigl[\\varepsilon(M(x), x)\\bigr] \\geq \\delta > 0",
+      "latex": "\\forall M \\in \\mathcal{M},\\ \\forall \\text{ realistic } \\mathcal{D} \\text{ over } (\\mathcal{X}, \\mathcal{Z}):\n\\quad \\mathbb{E}_{(x,z) \\sim \\mathcal{D},\\, y \\sim P_\\theta(\\cdot \\mid x,z)}\\!\\bigl[\\varepsilon(y, x, z)\\bigr]\n\\geq \\delta_{M,\\mathcal{D}} > 0",
       "claim_status": "operative",
       "description": "Operative form \u2014 expected error lower bound"
     },
     {
       "block_id": "math_3.3_1",
       "section": "3.3",
-      "latex": "\\forall M \\in \\mathcal{M}:\\ \\exists\\, x \\in \\mathcal{X}\n\\text{ such that } P_\\theta\\!\\bigl(\\varepsilon(M(x), x) = 1\\bigr) > 0",
+      "latex": "\\forall M \\in \\mathcal{M}:\\ \\exists\\, x \\in \\mathcal{X}\n\\text{ such that } P_\\theta\\!\\bigl(\\varepsilon(y, x, z) = 1\\bigr) > 0",
       "claim_status": "existential",
       "description": "Existential form \u2014 existence of error-positive input"
     },
     {
       "block_id": "math_3.4_1",
       "section": "3.4",
-      "latex": "P(\\text{pipeline is error-free}) = \\prod_{i=1}^{n}(1 - p_i)",
+      "latex": "P(\\text{pipeline is error-free}) = \\prod_{i=1}^{n}\nP\\bigl(E_i^{\\,c} \\mid E_1^{\\,c}, \\ldots, E_{i-1}^{\\,c}\\bigr)",
       "claim_status": "corollary",
       "description": "Pipeline compounding \u2014 product formula for error-free probability"
     },
     {
       "block_id": "math_3.4_2",
       "section": "3.4",
-      "latex": "P(\\text{at least one error in pipeline}) = 1 - \\prod_{i=1}^{n}(1 - p_i)\n\\;\\xrightarrow{n \\to \\infty}\\; 1",
+      "latex": "P\\bigl(E_i \\mid E_1^{\\,c}, \\ldots, E_{i-1}^{\\,c}\\bigr) \\geq \\delta \\quad \\text{for all } i",
       "claim_status": "corollary",
       "description": "Pipeline compounding \u2014 product formula for error-free probability"
     },
@@ -262,16 +370,16 @@
       "description": "Autoregressive factorization of output probability"
     },
     {
-      "block_id": "math_8_1",
-      "section": "8",
+      "block_id": "math_7.1_1",
+      "section": "7.1",
       "latex": "\\frac{\\partial D_c}{\\partial C} \\leq 0\n\\quad \\text{for } c \\in \\bigl\\{\\texttt{ERR\\_OMISSION},\\ \\texttt{ERR\\_SCHEMA},\\ \\texttt{ERR\\_TRUNCATION},\\ \\texttt{ERR\\_INSTRUCTION}\\bigr\\}",
       "claim_status": "hypothesis",
       "description": "Capability-Detection Asymmetry \u2014 partial derivatives per error class"
     },
     {
-      "block_id": "math_8_2",
-      "section": "8",
-      "latex": "\\frac{\\partial D_c}{\\partial C} > 0\n\\quad \\text{for } c \\in \\bigl\\{\\texttt{ERR\\_HALLUCINATION},\\ \\texttt{ERR\\_SEMANTIC},\\ \\texttt{ERR\\_SYCOPHANCY},\\ \\texttt{ERR\\_CALIBRATION},\\ \\texttt{ERR\\_REASONING}\\bigr\\}",
+      "block_id": "math_7.1_2",
+      "section": "7.1",
+      "latex": "\\begin{gathered}\n\\frac{\\partial D_c}{\\partial C} > 0 \\quad \\text{for } c \\in \\bigl\\{\n\\texttt{ERR\\_HALLUCINATION},\\ \\texttt{ERR\\_SEMANTIC},\\ \\texttt{ERR\\_SYCOPHANCY}, \\\\\n\\texttt{ERR\\_CALIBRATION},\\ \\texttt{ERR\\_REASONING} \\bigr\\}\n\\end{gathered}",
       "claim_status": "hypothesis",
       "description": "Capability-Detection Asymmetry \u2014 partial derivatives per error class"
     }
@@ -297,23 +405,32 @@
       "detail": "Operative quantifies over all realistic D; Existential only claims \u2203x with P(\u03b5=1)>0. Existential has \u2203x: True, lacks \u2200D: True"
     },
     {
-      "check_id": "CHK_PIPELINE_ALGEBRA",
+      "check_id": "CHK_PIPELINE_CHAINRULE",
       "target_blocks": [
         "math_3.4_1",
         "math_3.4_2"
       ],
-      "description": "Pipeline formula: P(error-free) = \u220f(1-p_i), P(\u22651 error) = 1 - \u220f(1-p_i)",
+      "description": "Pipeline decomposition is exact: P(error-free) = \u220f P(E\u1d62\u1d9c | E\u2081\u1d9c \u2026 E\u1d62\u208b\u2081\u1d9c), no independence assumed",
       "status": "pass",
-      "detail": "{\"has_product_formula\": true, \"has_complement_formula\": true, \"has_limit_statement\": true}"
+      "detail": "{\"has_chain_rule\": true, \"conditions_on_history\": true, \"assumes_independence\": false}"
+    },
+    {
+      "check_id": "CHK_PIPELINE_HAZARD",
+      "target_blocks": [
+        "math_3.4_2"
+      ],
+      "description": "Hazard condition stated: P(E\u1d62 | E\u2081\u1d9c \u2026 E\u1d62\u208b\u2081\u1d9c) \u2265 \u03b4 for all i",
+      "status": "pass",
+      "detail": "The bound P(\u22651 error) \u2265 1 - (1-\u03b4)\u207f \u2192 1 holds only under this condition. Shared context can raise or lower the conditional hazard, so a deployment must estimate it rather than assume independence. Condition present: True"
     },
     {
       "check_id": "CHK_PIPELINE_LIMIT",
       "target_blocks": [
         "math_3.4_2"
       ],
-      "description": "Limit: \u220f(1-p_i) \u2192 0 as n \u2192 \u221e when all p_i > 0 (hence 1 - \u220f \u2192 1)",
+      "description": "Limit: P(\u22651 error) \u2265 1 - (1-\u03b4)\u207f \u2192 1 as n \u2192 \u221e under the hazard condition",
       "status": "pass",
-      "detail": "For p_i \u2208 (0,1) \u2200i: ln(\u220f(1-p_i)) = \u03a3ln(1-p_i). Since ln(1-p_i) < 0 for p_i > 0, the partial sums diverge to -\u221e iff \u03a3p_i = \u221e (which holds when p_i \u2265 \u03b4 > 0 for all i). Therefore \u220f(1-p_i) \u2192 0, so P(at least one error) \u2192 1. NOTE: requires independence assumption (flagged in \u00a73.4 caveat and \u00a77.3)."
+      "detail": "Under the chain-rule decomposition, if every conditional hazard P(E\u1d62 | E\u2081\u1d9c \u2026 E\u1d62\u208b\u2081\u1d9c) \u2265 \u03b4 > 0, then P(error-free) \u2264 (1-\u03b4)\u207f \u2192 0, so P(at least one error) \u2192 1. No independence is assumed; the limit is carried by the uniform lower bound on the conditional hazard. A hazard decaying fast enough leaves the product bounded away from zero \u2014 see \u00a73.4 and \u00a78.3."
     },
     {
       "check_id": "CHK_CONVERGENCE_CONDITION",
@@ -321,8 +438,8 @@
         "math_3.4_2"
       ],
       "description": "Pipeline limit requires \u03a3p_i = \u221e (e.g. uniform lower bound p_i \u2265 \u03b4 > 0); p_i > 0 alone is insufficient (counterexample: p_i = 2^{-i})",
-      "status": "warn",
-      "detail": "Uniform bound stated in formula: False. Divergence condition noted in text: False. The operative form guarantees p_i \u2265 \u03b4 > 0 for each step, which implies \u03a3p_i = \u221e and validates the limit. If this condition is not explicit in the spec, it should be."
+      "status": "pass",
+      "detail": "Uniform bound stated in formula: True. Divergence condition noted in text: False. The operative form guarantees p_i \u2265 \u03b4 > 0 for each step, which implies \u03a3p_i = \u221e and validates the limit. If this condition is not explicit in the spec, it should be."
     },
     {
       "check_id": "CHK_AUTOREGRESSIVE_FACTORIZATION",
@@ -336,8 +453,8 @@
     {
       "check_id": "CHK_COR5_SIGNS",
       "target_blocks": [
-        "math_8_1",
-        "math_8_2"
+        "math_7.1_1",
+        "math_7.1_2"
       ],
       "description": "Capability-Detection Asymmetry: \u2202D_c/\u2202C \u2264 0 for structural classes, > 0 for semantic classes",
       "status": "pass",
@@ -350,7 +467,7 @@
       ],
       "description": "All \u00a7N.M cross-references resolve to existing section headings",
       "status": "pass",
-      "detail": "{\n  \"existing_sections\": [\n    \"1\",\n    \"2\",\n    \"3\",\n    \"3.1\",\n    \"3.2\",\n    \"3.3\",\n    \"3.4\",\n    \"4\",\n    \"4.1\",\n    \"5\",\n    \"6\",\n    \"6.1\",\n    \"6.2\",\n    \"6.3\",\n    \"7\",\n    \"7.1\",\n    \"7.2\",\n    \"7.3\",\n    \"7.4\",\n    \"7.5\",\n    \"7.6\",\n    \"8\",\n    \"9\",\n    \"9.1\",\n    \"9.2\",\n    \"9.3\",\n    \"9.4\"\n  ],\n  \"referenced_sections\": [\n    \"3.1\",\n    \"3.2\",\n    \"3.3\",\n    \"3.4\",\n    \"4\",\n    \"4.1\",\n    \"5\",\n    \"6.2\",\n    \"7.2\",\n    \"7.3\",\n    \"7.6\",\n    \"8\",\n    \"9\",\n    \"9.1\",\n    \"9.4\"\n  ],\n  \"broken_references\": []\n}"
+      "detail": "{\n  \"existing_sections\": [\n    \"1\",\n    \"10\",\n    \"10.1\",\n    \"10.2\",\n    \"10.3\",\n    \"10.4\",\n    \"10.5\",\n    \"11\",\n    \"11.1\",\n    \"11.2\",\n    \"11.3\",\n    \"11.4\",\n    \"11.5\",\n    \"11.6\",\n    \"2\",\n    \"3\",\n    \"3.1\",\n    \"3.2\",\n    \"3.3\",\n    \"3.4\",\n    \"4\",\n    \"4.1\",\n    \"4.2\",\n    \"5\",\n    \"6\",\n    \"6.1\",\n    \"6.2\",\n    \"6.3\",\n    \"7\",\n    \"7.1\",\n    \"7.2\",\n    \"7.3\",\n    \"7.4\",\n    \"8\",\n    \"8.1\",\n    \"8.2\",\n    \"8.3\",\n    \"8.4\",\n    \"8.5\",\n    \"8.6\",\n    \"8.7\",\n    \"9\",\n    \"9.1\",\n    \"9.2\",\n    \"9.3\",\n    \"9.4\",\n    \"9.5\",\n    \"9.6\",\n    \"9.7\"\n  ],\n  \"referenced_sections\": [\n    \"10\",\n    \"10.1\",\n    \"10.4\",\n    \"10.5\",\n    \"11\",\n    \"11.1\",\n    \"11.2\",\n    \"11.4\",\n    \"11.5\",\n    \"3\",\n    \"3.1\",\n    \"3.2\",\n    \"3.3\",\n    \"3.4\",\n    \"4\",\n    \"4.1\",\n    \"4.2\",\n    \"5\",\n    \"6.1\",\n    \"6.2\",\n    \"7\",\n    \"7.1\",\n    \"7.2\",\n    \"7.3\",\n    \"8.2\",\n    \"8.3\",\n    \"8.4\",\n    \"8.6\",\n    \"8.7\",\n    \"9\",\n    \"9.1\",\n    \"9.5\",\n    \"9.6\",\n    \"9.7\"\n  ],\n  \"broken_references\": []\n}"
     },
     {
       "check_id": "CHK_EPSILON_DOMAIN",
@@ -359,32 +476,33 @@
       ],
       "description": "\u03b5(y,x) \u2208 {0,1} \u2014 Boolean predicate over Y \u00d7 X",
       "status": "pass",
-      "detail": "\u03b5: Y \u00d7 X \u2192 {0,1} is well-defined given \u03a3: X \u2192 Y (partial). \u03b5(y,x) = 1 iff y deviates from \u03a3(x). \u00a77.5 acknowledges this is a deliberate simplification; graded extension \u03b5 \u2208 [0,1] noted as known gap."
+      "detail": "\u03b5: Y \u00d7 X \u2192 {0,1} is well-defined given \u03a3: X \u2192 Y (partial). \u03b5(y,x) = 1 iff y deviates from \u03a3(x). \u00a78.5 acknowledges this is a deliberate simplification; graded extension \u03b5 \u2208 [0,1] noted as known gap."
     },
     {
       "check_id": "CHK_INDEPENDENCE_PROPAGATION",
       "target_blocks": [
         "math_3.4_*"
       ],
-      "description": "Independence caveat present at point of use (\u00a73.4) and full treatment (\u00a77.3)",
+      "description": "Independence caveat present at point of use (\u00a73.4) and full treatment (\u00a78.3)",
       "status": "pass",
-      "detail": "[\n  {\n    \"section\": \"3.4\",\n    \"has_independence_caveat\": true,\n    \"section_found\": true\n  },\n  {\n    \"section\": \"7.3\",\n    \"has_independence_caveat\": true,\n    \"section_found\": true\n  }\n]"
+      "detail": "[\n  {\n    \"section\": \"3.4\",\n    \"has_independence_caveat\": true,\n    \"section_found\": true\n  },\n  {\n    \"section\": \"8.3\",\n    \"has_independence_caveat\": true,\n    \"section_found\": true\n  }\n]"
     }
   ],
   "schema_summary": {
-    "total_symbols": 15,
-    "total_claims": 12,
+    "total_symbols": 25,
+    "total_claims": 15,
     "claims_by_status": {
       "definition": 1,
       "operative": 1,
       "existential": 1,
-      "corollary": 5,
+      "corollary": 7,
       "informal_arg": 3,
-      "hypothesis": 1
+      "hypothesis": 1,
+      "prescription": 1
     },
-    "falsifiable_claims": 6,
+    "falsifiable_claims": 8,
     "total_error_classes": 9,
-    "total_artifacts": 4,
+    "total_artifacts": 5,
     "structural_classes": [
       "ERR_OMISSION",
       "ERR_SCHEMA",
@@ -416,31 +534,33 @@
       "perez_2022",
       "sharma_2023"
     ],
-    "ERR_INSTRUCTION": [],
+    "ERR_INSTRUCTION": [
+      "zhou_2023"
+    ],
     "ERR_CALIBRATION": [
       "kadavath_2022"
     ],
-    "ERR_REASONING": [],
+    "ERR_REASONING": [
+      "berglund_2023"
+    ],
     "ERR_SEMANTIC": []
   },
   "warnings": [
-    "Error classes with no direct empirical reference: ERR_OMISSION, ERR_SCHEMA, ERR_TRUNCATION, ERR_INSTRUCTION, ERR_REASONING, ERR_SEMANTIC",
-    "Scope gap: no ERR_POLICY/ERR_COMPLIANCE class for outputs that are correct and well-formed but violate business/safety guardrails",
-    "Contract block (\u00a79.1) missing PALS_LAW_VERSION field \u2014 contracts become stale as the specification evolves"
+    "Error classes with no direct empirical reference: ERR_OMISSION, ERR_SCHEMA, ERR_TRUNCATION, ERR_SEMANTIC"
   ],
-  "total_references": 10,
+  "total_references": 15,
   "total_math_blocks": 7,
-  "checks_passed": 9,
-  "checks_warned": 1,
+  "checks_passed": 11,
+  "checks_warned": 0,
   "checks_failed": 0,
   "_signature": {
     "signature_version": "1",
     "algorithm": "sha256",
     "tool_id": "pals-check",
     "tool_version": "1.0.0",
-    "signed_at": "2026-09-04T13:58:17Z",
-    "source_document_hash": "d1d1f8d3f8015a00",
-    "payload_digest": "938b335ee06ca698f61156dd7fde31b4d00afb92c06d3dc3fe0434a6fc7288a7",
-    "seal": "0cb8c5069e93798806fbb27725a7c41600e1a95a184b4a1c1bb9f914e82da6dc"
+    "signed_at": "2026-09-04T16:38:16Z",
+    "source_document_hash": "3cd52356b6fd1b2e",
+    "payload_digest": "3df677038bf1fae16ef21b53e62574865265d62af062464a1854ceb00125dd7d",
+    "seal": "93ab4ade195f734f2ce5a2b5369cbc618ce7876cef646865ea0397b3bd368b2c"
   }
 }

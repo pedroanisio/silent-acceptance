@@ -17,7 +17,7 @@ structure, and `silent-acceptance-lint`, a TypeScript linter that checks *code* 
 the defect the specification names. The repository was renamed from `pals-check` with
 v2.0.0; GitHub redirects the old URL, and the audit tool keeps the old name.
 
-The audit takes the source document in [`SILENT_ACCEPTANCE-v2.0.0.md`](./SILENT_ACCEPTANCE-v2.0.0.md),
+The audit takes the source document in [`SILENT_ACCEPTANCE-v2.1.0.md`](./SILENT_ACCEPTANCE-v2.1.0.md),
 runs a deterministic analysis pipeline, and writes machine-readable artifacts to
 [`output/`](./output). The v1.x sources (`PALS_LAW-v1.5.*.md`) stay in the repository
 and remain auditable, because the Zenodo records for those versions carry reports
@@ -35,7 +35,8 @@ This work is subject to the methodological caveats and commitments described in 
 
 | Path | What it is |
 |---|---|
-| `SILENT_ACCEPTANCE-v2.0.0.md` | The current specification. Published on Zenodo under concept DOI [10.5281/zenodo.19401266](https://doi.org/10.5281/zenodo.19401266). |
+| `SILENT_ACCEPTANCE-v2.1.0.md` | The current specification. All versions share the Zenodo concept DOI [10.5281/zenodo.19401266](https://doi.org/10.5281/zenodo.19401266). |
+| `SILENT_ACCEPTANCE-v2.0.0.md` | The v2.0.0 release, Zenodo record [10.5281/zenodo.22290451](https://doi.org/10.5281/zenodo.22290451). |
 | `PALS_LAW-v1.5.*.md` | Prior versions under the former name. Kept for the published Zenodo records. |
 | `pals_check/` | Spec audit CLI: references, math checks, formal schema, signing, certificates. |
 | `silent-acceptance-lint/` | Code-side linter: flags LLM call sites with no declared verification boundary (spec §10.5). See its [README](./silent-acceptance-lint/README.md). |
@@ -57,7 +58,7 @@ For the current checked-in spec, the generated report summarizes:
 
 - `15` references
 - `7` math blocks
-- `10` passed checks
+- `11` passed checks
 - `0` failed checks
 
 ### Two layouts, one checker
@@ -66,8 +67,13 @@ The spec was restructured in v2.0.0 (asymmetry moved to §7, corollaries to §9,
 artifacts to §10). Every section identifier the checker relies on lives in a
 `SpecLayout` in [`pals_check/constants.py`](./pals_check/constants.py); the layout
 is chosen from the document's major version, so `python -m pals_check PALS_LAW-v1.5.4.md`
-and `python -m pals_check SILENT_ACCEPTANCE-v2.0.0.md` both audit cleanly. The
-contract tests in `tests/test_drift_guards.py` run against both layouts.
+and `python -m pals_check SILENT_ACCEPTANCE-v2.1.0.md` both audit cleanly. The
+v2.1.0 vocabulary (acceptability predicate, $\tau$, conditional-hazard pipeline form)
+is gated on the document's exact version. The contract tests in
+`tests/test_drift_guards.py` run against both layouts.
+
+The test suite never writes into the repository's `output/`; an integration test
+asserts the committed artifacts are byte-identical before and after the CLI run.
 
 ## Quickstart
 
@@ -80,7 +86,7 @@ contract tests in `tests/test_drift_guards.py` run against both layouts.
 ### Run the spec audit from source
 
 ```bash
-python3 -m pals_check SILENT_ACCEPTANCE-v2.0.0.md --no-verify
+python3 -m pals_check SILENT_ACCEPTANCE-v2.1.0.md --no-verify
 ```
 
 This writes:
@@ -95,7 +101,7 @@ consumers and the Zenodo records stay stable across the rename.
 If you want live reference verification against DOI and arXiv URLs, omit `--no-verify`:
 
 ```bash
-python3 -m pals_check SILENT_ACCEPTANCE-v2.0.0.md
+python3 -m pals_check SILENT_ACCEPTANCE-v2.1.0.md
 ```
 
 ### Run the code linter
@@ -165,7 +171,7 @@ python3 -m pals_check --check-sig output/pals_law_report.json
 python3 -m pals_check --check-sig output/pals_law_schema.json
 python3 -m pals_check --verify-cert \
   output/pals_law_certificate.json \
-  SILENT_ACCEPTANCE-v2.0.0.md \
+  SILENT_ACCEPTANCE-v2.1.0.md \
   output/pals_law_report.json \
   output/pals_law_schema.json
 ```
@@ -184,7 +190,7 @@ Common commands are exposed through [`Makefile`](./Makefile):
 ```bash
 make regen         # regenerate output JSON without network fetches
 make regen-verify  # regenerate output JSON with DOI/arXiv verification
-make pdf           # render the spec to output/SILENT_ACCEPTANCE-v2.0.0.pdf
+make pdf           # render the spec to output/SILENT_ACCEPTANCE-v2.1.0.pdf
 make lint          # run ruff checks
 make test          # run pytest with coverage
 make lint-code     # run the silent-acceptance-lint test suite
@@ -193,7 +199,7 @@ make check         # lint, test, regenerate, and detect output drift
 
 The repository currently includes:
 
-- `293` passing Python tests, run against both spec layouts
+- `324` passing Python tests, run against both spec layouts
 - a Node test suite for the linter (`node --test`)
 - strict `ruff` linting configuration
 - `mypy` settings in [`pyproject.toml`](./pyproject.toml)

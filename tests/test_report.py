@@ -44,8 +44,9 @@ class TestBuildReport:
 
     def test_build_report_real_document(self, real_md_text: str):
         report, schema = build_report(real_md_text, do_verify=False)
-        assert report.document_version == "2.0.0"
-        assert report.total_references >= 15
+        assert report.document_version == "2.1.0"
+        assert report.total_references == 15
+        assert all(r["doi"] or r["arxiv_id"] for r in report.references), "phantom reference in report"
         assert report.checks_passed >= 5
         assert report.checks_failed == 0
 

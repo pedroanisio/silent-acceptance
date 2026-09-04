@@ -10,7 +10,6 @@ with ~30 local edits will not be checked reliably by eye.
 Exit 0 when every criterion passes.
 """
 
-import json
 import re
 import sys
 from pathlib import Path
@@ -25,8 +24,10 @@ FORBIDDEN = [
     (r"ε\s*\(\s*y\s*,\s*x\s*\)(?!\s*,)", "two-argument ε(y,x) — now ε(y,x,z) (A1)"),
     (r"\bmigrate\b", "'migrate' — §7 is restricted to detectability (C4)"),
     (r"§\s*7\s+establishes", "'§7 establishes' — it hypothesizes (D1)"),
-    (r"MODEL_VERSION", "MODEL_VERSION — now SOLVER_CONFIGURATION_ID (A4); "
-                       "permitted only in the linter as a deprecated alias"),
+    (
+        r"MODEL_VERSION",
+        "MODEL_VERSION — now SOLVER_CONFIGURATION_ID (A4); permitted only in the linter as a deprecated alias",
+    ),
     (r"lower-bound motivation, not a deployable risk model", "deleted phrase (A3)"),
     (r"ERROR CLASSES NOT COVERED", "checkbox list replaced by a per-class table (D1)"),
 ]
@@ -54,8 +55,11 @@ REQUIRED = [
     (r"residual risk of the output crossing", "assurance-case sentence in 9.1 (C1)"),
     (r"specificity", "specificity alongside recall (C2)"),
     (r"September 2026 review", "the review recorded in 11.4 (E2)"),
-    (r"Preprint,\s*v2\.1\.0", "document header declares v2.1.0 (E3) — "
-     "matching anywhere in the file gave a false pass while the header said 2.0.0"),
+    (
+        r"Preprint,\s*v2\.1\.0",
+        "document header declares v2.1.0 (E3) — "
+        "matching anywhere in the file gave a false pass while the header said 2.0.0",
+    ),
     (r"\*\*SILENT_ACCEPTANCE_VERSION:\*\*\s*2\.1\.0", "§10.4 agent block bumped (D2)"),
 ]
 
@@ -81,9 +85,14 @@ def check_doc(text):
             lines = body.splitlines()
             # The exemption phrase can land on the next line when a sentence
             # wraps, so look at the line and its successor.
-            hits = [ln for i, ln in enumerate(lines) if re.search(pat, ln)
-                    and not any(ok in ln + " " + (lines[i + 1] if i + 1 < len(lines) else "")
-                                for ok in LEGITIMATE_MODEL_VERSION)]
+            hits = [
+                ln
+                for i, ln in enumerate(lines)
+                if re.search(pat, ln)
+                and not any(
+                    ok in ln + " " + (lines[i + 1] if i + 1 < len(lines) else "") for ok in LEGITIMATE_MODEL_VERSION
+                )
+            ]
         else:
             hits = re.findall(pat, text)
         if hits:
@@ -96,8 +105,7 @@ def check_doc(text):
     if m:
         numbered = re.findall(r"^\s*(\d{1,2})\.\s+\S", m.group(1), re.M)
         if len(set(numbered)) < 10:
-            fails.append(("structure", f"§9.1 lists {len(set(numbered))} declaration "
-                                       "fields, needs 10 (C2)"))
+            fails.append(("structure", f"§9.1 lists {len(set(numbered))} declaration fields, needs 10 (C2)"))
     else:
         fails.append(("structure", "could not locate §9.1 to count declaration fields"))
     return fails
@@ -124,12 +132,14 @@ def check_artifacts():
     schema = read(HERE / "output" / "pals_law_schema.json")
     if schema:
         # Symbols are stored as LaTeX in the artifact, so accept either form.
-        for label, forms in (("SOLVER_CONFIGURATION_ID", ("SOLVER_CONFIGURATION_ID",)),
-                             ("rho_c", ("rho_c", "\\\\rho_c", "ρ")),
-                             ("pi_c", ("pi_c", "\\\\pi_c", "π")),
-                             ("tau", ("tau", "\\\\tau", "τ")),
-                             ("A(y,x,z)", ("\"name\": \"A\"",)),
-                             ("sev_c", ("sev_c",))):
+        for label, forms in (
+            ("SOLVER_CONFIGURATION_ID", ("SOLVER_CONFIGURATION_ID",)),
+            ("rho_c", ("rho_c", "\\\\rho_c", "ρ")),
+            ("pi_c", ("pi_c", "\\\\pi_c", "π")),
+            ("tau", ("tau", "\\\\tau", "τ")),
+            ("A(y,x,z)", ('"name": "A"',)),
+            ("sev_c", ("sev_c",)),
+        ):
             if not any(f in schema for f in forms):
                 fails.append(("artifact", f"pals_law_schema.json missing {label} (F6)"))
     else:
@@ -148,9 +158,7 @@ def main():
         print("(run against SILENT_ACCEPTANCE-v2.0.0.md for a baseline)")
         return 2
 
-    groups = [("document", check_doc(text)),
-              ("linter", check_linter()),
-              ("artifacts", check_artifacts())]
+    groups = [("document", check_doc(text)), ("linter", check_linter()), ("artifacts", check_artifacts())]
     total = sum(len(f) for _, f in groups)
     print(f"acceptance check — {target.name}\n")
     for name, fails in groups:

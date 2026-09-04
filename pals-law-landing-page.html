@@ -363,7 +363,7 @@
 <!-- ════ Hero ════════════════════════════════════════════ -->
 <header class="hero">
   <div class="hero-inner">
-    <span class="version-badge">Preprint · v2.0.0 · September 2026</span>
+    <span class="version-badge">Preprint · v2.1.0 · September 2026</span>
     <h1><span class="accent">Silent</span> Acceptance</h1>
     <p class="subtitle">
       LLM Output Error as an Architectural Invariant
@@ -407,18 +407,19 @@
 <h2>The Operative Claim</h2>
 
 <p>
-  For every autoregressive transformer language model and every realistic
-  task distribution, the expected error rate is bounded below by a
-  non-negligible constant:
+  For every solver configuration <em>M</em> (model, harness, context policy,
+  tools, prompts) and every realistic distribution over inputs and their
+  evaluation contexts, the measured error rate is bounded below by a positive
+  constant indexed to that configuration and distribution:
 </p>
 
 <div class="math-block" id="math-operative"></div>
 
 <p>
-  The value of δ is task- and model-dependent but is <em>never zero</em>.
-  Published benchmarks place it well above machine-epsilon for every model
-  tested to date. No individual call is guaranteed to fail; the
-  <em>distribution</em> over calls guarantees failure at scale.
+  δ<sub>M,𝒟</sub> is <em>measured, not assumed</em>, and a boundary is
+  required wherever it exceeds the failure rate τ the consumer tolerates.
+  No individual call is guaranteed to fail; the <em>distribution</em> over
+  calls guarantees failure at scale.
 </p>
 
 <!-- ── Taxonomy ────────────────────────────────────────── -->
@@ -465,24 +466,28 @@
   A less capable model fabricates a citation with a nonsensical author and a
   malformed DOI. A more capable model fabricates one with a real author, a real
   journal, and a plausible abstract. The verifier that caught the first is blind
-  to the second — so a verifier held constant across a model upgrade is a
-  regression, not a conservative default.
+  to the second — so a boundary calibrated to one configuration must be
+  re-evaluated for the next. How much that matters for a class depends on how
+  prevalent its errors are: the escaped risk ρ<sub>c</sub> is conditional on
+  prevalence, not on detectability alone.
 </p>
 
 <!-- ── Pipeline ────────────────────────────────────────── -->
 <h2>Pipeline Compounding</h2>
 
 <p>
-  For a pipeline of <em>n</em> LLM calls, each with error probability
-  p<sub>i</sub> ≥ δ > 0, the probability of at least one error
-  approaches 1 monotonically:
+  For a pipeline of <em>n</em> calls, with no independence assumption, the
+  chain rule gives the probability that every step is error-free:
 </p>
 
 <div class="math-block" id="math-pipeline"></div>
 
 <p>
-  Multi-step agentic pipelines without per-step verification have
-  failure probability that approaches certainty as pipeline length grows.
+  If every conditional hazard is at least δ given the earlier steps
+  succeeded, the probability of at least one error approaches 1 as
+  <em>n</em> grows. The hazard condition is what a deployment must estimate;
+  multi-step agentic pipelines without per-step verification have failure
+  probability that approaches certainty as pipeline length grows.
 </p>
 
 <!-- ── Principle ───────────────────────────────────────── -->
@@ -490,10 +495,10 @@
 
 <p>
   Every system that consumes LLM output must declare a verification boundary
-  before the output reaches a consumer: which error classes are checked
-  (<em>scope</em>), by what (<em>mechanism</em>), against which model version
-  (<em>calibration</em>), and where the verifier runs and who cannot modify it
-  (<em>location</em>). Six corollaries follow.
+  before the output reaches a consumer, in ten fields: scope, mechanism,
+  calibration to a pinned solver configuration, location, specificity,
+  failure behaviour, oracle, severity and residual risk, tolerated failure
+  rate, and ownership. Six corollaries follow.
 </p>
 
 <div class="corollary">
@@ -517,13 +522,13 @@
 </div>
 
 <div class="corollary">
-  <div class="corollary-title">Corollary 5 · Verifier Upgrade Precedes Model Upgrade</div>
-  <p>If the asymmetry holds, a boundary calibrated on the old model is blind exactly where the new model's residual errors concentrate.</p>
+  <div class="corollary-title">Corollary 5 · Boundary Re-evaluation Precedes a Configuration Change</div>
+  <p>A boundary is calibrated to one solver configuration. Changing the model, harness, context policy, tools, or prompts is a boundary re-evaluation, not a config change.</p>
 </div>
 
 <div class="corollary">
-  <div class="corollary-title">Corollary 6 · The Verifier Sits Outside the Boundary</div>
-  <p>A verifier the model or its agent can edit inherits the model's error distribution and is under pressure to weaken the check. Harness-tampering audits find exactly that. A verifier the agent can rewrite is silent acceptance with extra steps.</p>
+  <div class="corollary-title">Corollary 6 · The Acceptance Authority Stays Outside the Producer's Control Domain</div>
+  <p>Verdicts are recorded where the producing agent cannot rewrite them, readable from outside the runtime. A verifier or verdict log the agent can edit is silent acceptance with extra steps; harness-tampering audits find exactly that.</p>
 </div>
 
 <hr>
@@ -532,34 +537,36 @@
 <h2>Quick Start</h2>
 
 <h3>Inline banner</h3>
-<pre>// ⚠ VERIFICATION BOUNDARY: LLM output is untrusted by default. Verify before use. (Silent Acceptance v2.0.0)</pre>
+<pre>// ⚠ VERIFICATION BOUNDARY: LLM output is untrusted by default.
+// Verify before use; S = ∅ is silent acceptance. (Silent Acceptance v2.1.0)</pre>
 
-<h3>Contract block (TypeScript)</h3>
+<h3>Contract block (TypeScript, condensed; full form in §10.1)</h3>
 <pre>/**
  * ⚠ VERIFICATION BOUNDARY — Silent Acceptance specification
- * SILENT_ACCEPTANCE_VERSION: 2.0.0
- * MODEL_VERSION: &lt;pinned model&gt;
- * VERIFIER_LOCATION: &lt;module the model cannot write to&gt;
+ * SILENT_ACCEPTANCE_VERSION: 2.1.0
+ * SOLVER_CONFIGURATION_ID: &lt;model + harness + context policy + tools + prompts&gt;
+ * VERIFIER_LOCATION: &lt;module the producer cannot write to&gt;
+ * ACCEPTANCE_AUTHORITY: &lt;append-only verdict record outside the producer's control domain&gt;
+ * TOLERATED_FAILURE_RATE: &lt;τ for the declared consumer&gt;
+ * OWNER: &lt;accountable team&gt;   CALIBRATED_ON: &lt;YYYY-MM-DD&gt;
  *
- * ERROR CLASSES NOT COVERED BY THIS BOUNDARY:
- *   [ ] ERR_HALLUCINATION
- *   [ ] ERR_OMISSION
- *   [ ] ERR_SCHEMA
- *   [ ] ERR_TRUNCATION
- *   [ ] ERR_SYCOPHANCY
- *   [ ] ERR_INSTRUCTION
- *   [ ] ERR_CALIBRATION
- *   [ ] ERR_SEMANTIC
- *   [ ] ERR_REASONING
+ * PER-CLASS BOUNDARY TABLE — status is COVERED or ACCEPTED_RISK: &lt;reason&gt;
+ *  class             | verifier | oracle | rec/spec | on reject | status
+ *  ERR_HALLUCINATION |          |        |          |           |
+ *  ERR_OMISSION      |          |        |          |           |
+ *  ...               one row per error class, nine in all
  *
- * MITIGATION: &lt;downstream boundary or accepted-risk note per unchecked class&gt;
+ * If no row is COVERED then S = ∅. That is silent acceptance, and no
+ * mitigation note excuses it — the linter reports it as an error.
  */</pre>
 
 <h3>CI check</h3>
 <p>
   The linter flags every LLM call site with no boundary declaration in scope,
-  every declaration whose checklist is entirely unchecked with no mitigation,
-  and every declaration with no model pin. Zero dependencies; Node 24.
+  every declaration in which no class is COVERED, every declaration with no
+  acceptance authority, and every declaration with no solver-configuration pin
+  (the v2.0.0 <code>MODEL_VERSION</code> field is accepted with a deprecation
+  warning). Zero dependencies; Node 24.
 </p>
 <pre>node silent-acceptance-lint/src/cli.ts src/</pre>
 
@@ -619,10 +626,10 @@
   title        = {Silent Acceptance: {LLM} Output Error as an
                   Architectural Invariant},
   year         = {2026},
-  version      = {2.0.0},
+  version      = {2.1.0},
   doi          = {10.5281/zenodo.19401266},
   note         = {Formerly published as PALS's Law (v1.x).
-                  Version 2.0.0, September 2026}
+                  Version 2.1.0, September 2026}
 }</pre>
 
 </main>
@@ -648,7 +655,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   const opts = { displayMode: true, throwOnError: false };
   katex.render(
-    String.raw`\forall M \in \mathcal{M},\ \forall \text{ realistic } \mathcal{D}:\quad \mathbb{E}_{x \sim \mathcal{D}}\!\bigl[\varepsilon(M(x), x)\bigr] \geq \delta > 0`,
+    String.raw`\forall M \in \mathcal{M},\ \forall \text{ realistic } \mathcal{D} \text{ over } (\mathcal{X}, \mathcal{Z}):\quad \mathbb{E}_{(x,z) \sim \mathcal{D},\, y \sim P_\theta(\cdot \mid x,z)}\!\bigl[\varepsilon(y, x, z)\bigr] \geq \delta_{M,\mathcal{D}} > 0`,
     document.getElementById('math-operative'), opts
   );
   katex.render(
@@ -660,7 +667,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('math-asym-semantic'), opts
   );
   katex.render(
-    String.raw`P(\text{at least one error}) = 1 - \prod_{i=1}^{n}(1 - p_i) \;\xrightarrow{n \to \infty}\; 1`,
+    String.raw`P(\text{pipeline is error-free}) = \prod_{i=1}^{n} P\bigl(E_i^{\,c} \mid E_1^{\,c}, \ldots, E_{i-1}^{\,c}\bigr), \qquad P\bigl(E_i \mid E_1^{\,c}, \ldots, E_{i-1}^{\,c}\bigr) \geq \delta \;\Rightarrow\; P(\text{at least one error}) \xrightarrow{n \to \infty} 1`,
     document.getElementById('math-pipeline'), opts
   );
 });

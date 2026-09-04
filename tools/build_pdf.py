@@ -123,8 +123,9 @@ def substitute_glyphs(body: str) -> str:
 DOCUMENT_METADATA = r"\DocumentMetadata{testphase={phase-III}}"
 
 
-def latex_header(running_title: str, *, title: str = "", author: str = "",
-                 subject: str = "", keywords: str = "") -> str:
+def latex_header(
+    running_title: str, *, title: str = "", author: str = "", subject: str = "", keywords: str = ""
+) -> str:
     """Preamble additions: running head, code-block wrapping, PDF metadata."""
     return rf"""
 \usepackage{{fancyhdr}}
@@ -191,33 +192,48 @@ def build(spec_path: Path, pdf_path: Path) -> None:
         header_file = tmp_dir / "header.tex"
         md_file.write_text(md, encoding="utf-8")
         header_file.write_text(
-            latex_header(running_title, title=tb.title, author=author,
-                         subject=subject, keywords=keywords),
+            latex_header(running_title, title=tb.title, author=author, subject=subject, keywords=keywords),
             encoding="utf-8",
         )
 
         tex_file = tmp_dir / "spec.tex"
         common = [
-            "-f", "markdown+pipe_tables+tex_math_dollars+raw_attribute+autolink_bare_uris",
-            "--toc", "--toc-depth=2",
-            "-V", f"title={tb.title}",
-            "-V", f"subtitle={tb.subtitle}",
-            "-V", f"author={author}",
-            "-V", f"date={tb.date_line or f'Preprint, v{version}'}",
-            "-V", "documentclass=article",
-            "-V", "geometry:margin=1in",
-            "-V", "fontsize=11pt",
-            "-V", "mainfont=DejaVu Serif",
-            "-V", "sansfont=DejaVu Sans",
-            "-V", "monofont=DejaVu Sans Mono",
-            "-V", "monofontoptions=Scale=0.82",
-            "-V", "colorlinks=true",
-            "-V", "linkcolor=blue!60!black",
-            "-V", "urlcolor=blue!60!black",
-            "-H", str(header_file),
+            "-f",
+            "markdown+pipe_tables+tex_math_dollars+raw_attribute+autolink_bare_uris",
+            "--toc",
+            "--toc-depth=2",
+            "-V",
+            f"title={tb.title}",
+            "-V",
+            f"subtitle={tb.subtitle}",
+            "-V",
+            f"author={author}",
+            "-V",
+            f"date={tb.date_line or f'Preprint, v{version}'}",
+            "-V",
+            "documentclass=article",
+            "-V",
+            "geometry:margin=1in",
+            "-V",
+            "fontsize=11pt",
+            "-V",
+            "mainfont=DejaVu Serif",
+            "-V",
+            "sansfont=DejaVu Sans",
+            "-V",
+            "monofont=DejaVu Sans Mono",
+            "-V",
+            "monofontoptions=Scale=0.82",
+            "-V",
+            "colorlinks=true",
+            "-V",
+            "linkcolor=blue!60!black",
+            "-V",
+            "urlcolor=blue!60!black",
+            "-H",
+            str(header_file),
         ]
-        subprocess.run(["pandoc", str(md_file), "-o", str(tex_file),
-                        "--standalone", *common], check=True)
+        subprocess.run(["pandoc", str(md_file), "-o", str(tex_file), "--standalone", *common], check=True)
 
         # Prepend the tagging request; it must precede \documentclass.
         tex = tex_file.read_text(encoding="utf-8")
@@ -227,8 +243,10 @@ def build(spec_path: Path, pdf_path: Path) -> None:
         for _ in range(2):
             subprocess.run(
                 ["lualatex", "-interaction=nonstopmode", "spec.tex"],
-                cwd=tmp_dir, check=False,
-                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                cwd=tmp_dir,
+                check=False,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
             )
         produced = tmp_dir / "spec.pdf"
         if not produced.exists():

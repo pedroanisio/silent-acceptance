@@ -8,7 +8,6 @@ import time
 import urllib.error
 import urllib.request
 from dataclasses import dataclass, field
-from typing import Optional
 
 from pals_check.constants import ErrorClass
 
@@ -22,27 +21,27 @@ class Reference:
     year: int
     title: str
     venue: str
-    doi: Optional[str] = None
-    arxiv_id: Optional[str] = None
-    relevance: Optional[str] = None
+    doi: str | None = None
+    arxiv_id: str | None = None
+    relevance: str | None = None
     error_classes_supported: list[str] = field(default_factory=list)
-    confidence_note: Optional[str] = None
+    confidence_note: str | None = None
     section_cited_in: list[str] = field(default_factory=list)
     publication_type: str = "unknown"  # "peer-reviewed" | "preprint" | "unknown"
     verification_status: str = "unverified"
-    fetched_title: Optional[str] = None
-    fetched_url: Optional[str] = None
-    fetch_error: Optional[str] = None
+    fetched_title: str | None = None
+    fetched_url: str | None = None
+    fetch_error: str | None = None
 
 
 def extract_references(text: str) -> list[Reference]:
     """Extract and normalize all references from the document text."""
     refs: list[Reference] = []
 
-    # Pattern 1: Formal table rows in \u00a74
-    table_pattern = re.compile(
-        r'\|\s*([^|]+?(?:\(\d{4}\)[^|]*?))\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|'
-    )
+    # Pattern 1: Formal table rows in \u00a74. Cells are bounded to one line: a pipe
+    # inside display math (|y|, |\u03b8|) must not open a "cell" that runs across
+    # paragraphs until the next pipe table and yields a phantom reference.
+    table_pattern = re.compile(r"\|\s*([^|\n]+?(?:\(\d{4}\)[^|\n]*?))\s*\|\s*([^|\n]+?)\s*\|\s*([^|\n]+?)\s*\|")
     for m in table_pattern.finditer(text):
         raw_ref = m.group(1).strip()
         relevance = m.group(2).strip()
@@ -59,22 +58,22 @@ def extract_references(text: str) -> list[Reference]:
 
     # Pattern 2: Inline citations
     inline_pattern = re.compile(
-        r'(?:(?:cited in|see|per|from)\s+)?'
-        r'([A-Z][a-z\u00e0-\u00fc]+(?:\s+et\s+al\.)?)'
-        r'[\s,]*\((\d{4})\)'
+        r"(?:(?:cited in|see|per|from)\s+)?"
+        r"([A-Z][a-z\u00e0-\u00fc]+(?:\s+et\s+al\.)?)"
+        r"[\s,]*\((\d{4})\)"
     )
     cited_locations: dict[str, list[str]] = {}
-    for section_match in re.finditer(r'#{2,4}\s+([\d.]+)\.?\s', text):
-        section_id = section_match.group(1).rstrip('.')
+    for section_match in re.finditer(r"#{2,4}\s+([\d.]+)\.?\s", text):
+        section_id = section_match.group(1).rstrip(".")
         start = section_match.end()
         # Delimit by the next heading at ANY level (##, ###, ####)
-        next_section = re.search(r'\n#{2,4}\s+[\d.]', text[start:])
+        next_section = re.search(r"\n#{2,4}\s+[\d.]", text[start:])
         end = start + next_section.start() if next_section else len(text)
         section_text = text[start:end]
 
         for cite in inline_pattern.finditer(section_text):
             key = f"{cite.group(1).strip().lower().replace(' ', '_')}_{cite.group(2)}"
-            key = re.sub(r'_et_al\.?', '', key)
+            key = re.sub(r"_et_al\.?", "", key)
             if key not in cited_locations:
                 cited_locations[key] = []
             cited_locations[key].append(f"\u00a7{section_id}")
@@ -92,27 +91,27 @@ def extract_references(text: str) -> list[Reference]:
     return refs
 
 
-def _parse_formal_reference(raw: str, relevance: str, confidence: str) -> Optional[Reference]:
+def _parse_formal_reference(raw: str, relevance: str, confidence: str) -> Reference | None:
     """Parse a single formal reference string from the \u00a74 table."""
-    doi_match = re.search(r'DOI:\s*([\d./\w-]+)', raw)
-    doi = doi_match.group(1).strip().rstrip('.') if doi_match else None
+    doi_match = re.search(r"DOI:\s*([\d./\w-]+)", raw)
+    doi = doi_match.group(1).strip().rstrip(".") if doi_match else None
 
-    arxiv_match = re.search(r'arXiv:([\d.]+)', raw)
-    arxiv_id = arxiv_match.group(1).rstrip('.') if arxiv_match else None
+    arxiv_match = re.search(r"arXiv:([\d.]+)", raw)
+    arxiv_id = arxiv_match.group(1).rstrip(".") if arxiv_match else None
 
-    year_match = re.search(r'\((\d{4})\)', raw)
+    year_match = re.search(r"\((\d{4})\)", raw)
     if not year_match:
         return None
     year = int(year_match.group(1))
 
-    authors_match = re.match(r'^([^(]+)', raw)
-    authors = authors_match.group(1).strip().rstrip(',. ') if authors_match else "Unknown"
+    authors_match = re.match(r"^([^(]+)", raw)
+    authors = authors_match.group(1).strip().rstrip(",. ") if authors_match else "Unknown"
 
     title_match = re.search(r'"([^"]+)"', raw)
     title = title_match.group(1) if title_match else "Unknown"
 
     venue = "Unknown"
-    venue_match = re.search(r'\*([^*]+)\*', raw)
+    venue_match = re.search(r"\*([^*]+)\*", raw)
     if venue_match:
         venue = venue_match.group(1)
 
@@ -135,7 +134,7 @@ def _parse_formal_reference(raw: str, relevance: str, confidence: str) -> Option
     combined_lower = (relevance + " " + raw).lower()
     # Negative-context patterns: keyword near "distinct from", "not", "separate from"
     negation_pattern = re.compile(
-        r'(?:distinct\s+(?:class\s+)?from|separate\s+from|not\s+(?:a\s+)?|rather\s+than)\s+\w*'
+        r"(?:distinct\s+(?:class\s+)?from|separate\s+from|not\s+(?:a\s+)?|rather\s+than)\s+\w*"
     )
     negated_text = " ".join(negation_pattern.findall(combined_lower))
     for kw, ec in kw_map.items():
@@ -146,7 +145,7 @@ def _parse_formal_reference(raw: str, relevance: str, confidence: str) -> Option
             error_classes.append(ec)
 
     first_author = authors.split(",")[0].strip().lower().replace(" ", "_")
-    first_author = re.sub(r'[^a-z_]', '', first_author)
+    first_author = re.sub(r"[^a-z_]", "", first_author)
     ref_id = f"{first_author}_{year}"
 
     # Infer publication type: DOI with non-arXiv venue = peer-reviewed
@@ -195,7 +194,7 @@ def verify_references(refs: list[Reference], quiet: bool = False) -> list[Refere
             url = f"https://doi.org/{ref.doi}"
             result = _fetch_and_extract(url, ref)
             if result["status"] == "unreachable" and ref.arxiv_id:
-                clean_id = ref.arxiv_id.rstrip('.')
+                clean_id = ref.arxiv_id.rstrip(".")
                 fallback_url = f"https://arxiv.org/abs/{clean_id}"
                 result = _fetch_and_extract(fallback_url, ref)
                 result["note"] = f"DOI blocked ({result.get('error', '403')}); verified via arXiv fallback"
@@ -205,7 +204,7 @@ def verify_references(refs: list[Reference], quiet: bool = False) -> list[Refere
                     result["status"] = "partial"
                     result["note"] = f"DOI exists but host blocks programmatic access ({err})"
         elif ref.arxiv_id:
-            clean_id = ref.arxiv_id.rstrip('.')
+            clean_id = ref.arxiv_id.rstrip(".")
             url = f"https://arxiv.org/abs/{clean_id}"
             result = _fetch_and_extract(url, ref)
         else:
@@ -221,8 +220,9 @@ def verify_references(refs: list[Reference], quiet: bool = False) -> list[Refere
         ref.fetch_error = result.get("error")
 
         if not quiet:
-            icon = {"verified": "\u2713", "mismatch": "\u2260", "unreachable": "\u2717",
-                    "partial": "~"}.get(result["status"], "?")
+            icon = {"verified": "\u2713", "mismatch": "\u2260", "unreachable": "\u2717", "partial": "~"}.get(
+                result["status"], "?"
+            )
             print(f"{icon} {result['status']}")
 
         if i < len(refs) - 1:
@@ -299,22 +299,23 @@ def _fetch_and_extract(url: str, ref: Reference) -> dict:
         }
 
 
-def _extract_html_title(html: str) -> Optional[str]:
+def _extract_html_title(html: str) -> str | None:
     """Extract the <title> tag content from HTML."""
-    m = re.search(r'<title[^>]*>(.*?)</title>', html, re.IGNORECASE | re.DOTALL)
+    m = re.search(r"<title[^>]*>(.*?)</title>", html, re.IGNORECASE | re.DOTALL)
     if m:
         title = m.group(1).strip()
-        title = re.sub(r'&#?\w+;', ' ', title)
-        title = re.sub(r'\s+', ' ', title)
+        title = re.sub(r"&#?\w+;", " ", title)
+        title = re.sub(r"\s+", " ", title)
         return title
     return None
 
 
-def _extract_meta_citation_title(html: str) -> Optional[str]:
+def _extract_meta_citation_title(html: str) -> str | None:
     """Extract citation_title meta tag (common on academic pages)."""
     m = re.search(
         r'<meta\s+name=["\']citation_title["\']\s+content=["\'](.*?)["\']',
-        html, re.IGNORECASE,
+        html,
+        re.IGNORECASE,
     )
     if m:
         return m.group(1).strip()
@@ -328,7 +329,7 @@ def _title_match(claimed: str, fetched: str) -> float:
 
     def normalize(s: str) -> set[str]:
         s = s.lower()
-        s = re.sub(r'[^a-z0-9\s]', ' ', s)
+        s = re.sub(r"[^a-z0-9\s]", " ", s)
         words = {w for w in s.split() if len(w) > 2}
         stopwords = {"the", "and", "for", "with", "from", "that", "this", "are", "was", "not"}
         return words - stopwords

@@ -14,11 +14,43 @@ from pals_check.references import (
     verify_references,
 )
 
-
 # --- extract_references ---
 
 
 class TestExtractReferences:
+    def test_pipes_in_math_do_not_form_a_phantom_reference(self):
+        """Regression: `|y|` in §6.1 math, a "(2024)" citation in prose after it, `|θ|`
+        further on, and a pipe table later in the document combined into one fake
+        table row, producing a reference with no DOI (`_p_theta_2024`). Cells must
+        not span lines."""
+        text = """\
+## 4. Empirical Support
+
+| Reference | Relevance | Note |
+|---|---|---|
+| Ji, Z., et al. (2023). "Survey." *ACM CSUR*. DOI: 10.1145/3571730 | hallucination | High. |
+
+## 6. Argument Sketch
+
+$$
+P_\\theta(y \\mid x) = \\prod_{t=1}^{|y|} P_\\theta(y_t \\mid y_{<t}, x)
+$$
+
+Xu, Jain & Kankanhalli (2024), cited in §4.1, provide the rigorous version.
+
+The parameter count $|\\theta|$ is finite.
+
+## 10. Artifacts
+
+```
+ *  class             | verifier | oracle | status
+ *  ERR_HALLUCINATION |          |        |
+```
+"""
+        refs = extract_references(text)
+        assert [r.ref_id for r in refs] == ["ji_2023"]
+        assert all(r.doi or r.arxiv_id for r in refs)
+
     def test_extract_references_from_table_rows(self, minimal_md_text: str):
         refs = extract_references(minimal_md_text)
         assert len(refs) >= 2
@@ -166,8 +198,11 @@ class TestTitleMatch:
 class TestVerifyReferences:
     def test_verify_references_no_identifier_sets_status(self):
         ref = Reference(
-            ref_id="test_2024", authors="Test", year=2024,
-            title="Test", venue="Test",
+            ref_id="test_2024",
+            authors="Test",
+            year=2024,
+            title="Test",
+            venue="Test",
         )
         result = verify_references([ref], quiet=True)
         assert result[0].verification_status == "no_identifier"
@@ -181,8 +216,12 @@ class TestVerifyReferences:
             "match_quality": 0.9,
         }
         ref = Reference(
-            ref_id="test_2024", authors="Test", year=2024,
-            title="Test Paper", venue="Test", doi="10.1234/test",
+            ref_id="test_2024",
+            authors="Test",
+            year=2024,
+            title="Test Paper",
+            venue="Test",
+            doi="10.1234/test",
         )
         result = verify_references([ref], quiet=True)
         assert result[0].verification_status == "verified"
@@ -195,8 +234,13 @@ class TestVerifyReferences:
             {"status": "verified", "url": "https://arxiv.org/abs/2207.05221", "fetched_title": "Fallback"},
         ]
         ref = Reference(
-            ref_id="test_2024", authors="Test", year=2024,
-            title="Test", venue="Test", doi="10.1234/test", arxiv_id="2207.05221",
+            ref_id="test_2024",
+            authors="Test",
+            year=2024,
+            title="Test",
+            venue="Test",
+            doi="10.1234/test",
+            arxiv_id="2207.05221",
         )
         result = verify_references([ref], quiet=True)
         assert result[0].verification_status == "verified"
@@ -204,11 +248,17 @@ class TestVerifyReferences:
     @patch("pals_check.references._fetch_and_extract")
     def test_verify_references_doi_403_no_arxiv_sets_partial(self, mock_fetch):
         mock_fetch.return_value = {
-            "status": "unreachable", "url": "https://doi.org/x", "error": "HTTP 403: Forbidden",
+            "status": "unreachable",
+            "url": "https://doi.org/x",
+            "error": "HTTP 403: Forbidden",
         }
         ref = Reference(
-            ref_id="test_2024", authors="Test", year=2024,
-            title="Test", venue="Test", doi="10.1234/test",
+            ref_id="test_2024",
+            authors="Test",
+            year=2024,
+            title="Test",
+            venue="Test",
+            doi="10.1234/test",
         )
         result = verify_references([ref], quiet=True)
         assert result[0].verification_status == "partial"

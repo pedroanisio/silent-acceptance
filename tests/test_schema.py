@@ -41,6 +41,11 @@ class TestBuildSchema:
 
     def test_build_schema_real_document(self, real_md_text: str):
         schema = build_schema(real_md_text)
+        assert schema.version == "2.1.0"
+        assert schema.layout == "v2"
+
+    def test_build_schema_real_v20_document(self, real_v20_md_text: str):
+        schema = build_schema(real_v20_md_text)
         assert schema.version == "2.0.0"
         assert schema.layout == "v2"
 

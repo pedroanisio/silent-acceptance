@@ -19,17 +19,35 @@ PROJECT_ROOT = Path(__file__).parent.parent
 @pytest.mark.integration
 class TestFullPipeline:
     def test_cli_runs_successfully(self):
-        """Run the CLI against the real document and verify exit code."""
-        result = subprocess.run(
-            [sys.executable, "-m", "pals_check", str(PROJECT_ROOT / "PALS_LAW-v1.5.0.md"), "--no-verify"],
-            capture_output=True,
-            text=True,
-            cwd=str(PROJECT_ROOT),
-            timeout=30,
-        )
+        """Run the CLI against the real document and verify exit code.
+
+        Runs in a temporary directory, never in the repository root: the CLI writes
+        ``output/`` relative to its cwd, and running it from the repo would replace
+        the committed audit artifacts with a v1.5.0 run. That happened in commits
+        2b2ec89 and 4a49025; the digest guard below keeps it from happening again.
+        """
+        import hashlib
+        import os
+
+        tracked = sorted((PROJECT_ROOT / "output").glob("pals_law_*.json"))
+        before = {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in tracked}
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            env = {**os.environ, "PYTHONPATH": str(PROJECT_ROOT)}
+            result = subprocess.run(
+                [sys.executable, "-m", "pals_check", str(PROJECT_ROOT / "PALS_LAW-v1.5.0.md"), "--no-verify"],
+                capture_output=True,
+                text=True,
+                cwd=tmpdir,
+                timeout=30,
+                env=env,
+            )
         assert result.returncode == 0
         assert "PALS's LAW" in result.stdout
         assert "Checks passed" in result.stdout
+
+        after = {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in tracked}
+        assert after == before, "the test suite must never rewrite the repository's output/ artifacts"
 
     def test_cli_writes_output_files(self):
         """Verify CLI creates report and schema JSON files."""
@@ -98,4 +116,6 @@ class TestReportSchemaConsistency:
 
     def test_no_checks_failed_on_real_document(self, real_md_text: str):
         report, _ = build_report(real_md_text, do_verify=False)
-        assert report.checks_failed == 0, f"Failed checks found: {[c for c in report.math_checks if c['status'] == 'fail']}"
+        assert report.checks_failed == 0, (
+            f"Failed checks found: {[c for c in report.math_checks if c['status'] == 'fail']}"
+        )
