@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd /home/admin *)",
+      "Read(//home/admin/codebases/pals-check/codebases/pals-check/zenodo-sdk/examples/**)",
+      "WebFetch(domain:www.hyrumslaw.com)",
+      "WebFetch(domain:zenodo.org)",
+      "Bash(rg -n -i \"into a click|reply marker|\\\\bR6\\\\b\" --max-count=2 -g '!node_modules' -g '!.git' -g '!*.lock' -g '*.{md,html,txt,json,yaml,yml}' new-age github-mirror/pedroanisio/_bench)"
+    ]
+  }
+}
