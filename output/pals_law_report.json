@@ -1,6 +1,6 @@
 {
-  "document_version": "2.0.0",
-  "content_hash": "b997ecbf349b7d12",
+  "document_version": "2.1.0",
+  "content_hash": "72e12795833ffbcb",
   "references": [
     {
       "ref_id": "ji_2023",
@@ -427,23 +427,32 @@
       "detail": "Operative quantifies over all realistic D; Existential only claims \u2203x with P(\u03b5=1)>0. Existential has \u2203x: True, lacks \u2200D: True"
     },
     {
-      "check_id": "CHK_PIPELINE_ALGEBRA",
+      "check_id": "CHK_PIPELINE_CHAINRULE",
       "target_blocks": [
         "math_3.4_1",
         "math_3.4_2"
       ],
-      "description": "Pipeline formula: P(error-free) = \u220f(1-p_i), P(\u22651 error) = 1 - \u220f(1-p_i)",
-      "status": "warn",
-      "detail": "{\"has_product_formula\": false, \"has_complement_formula\": false, \"has_limit_statement\": false}"
+      "description": "Pipeline decomposition is exact: P(error-free) = \u220f P(E\u1d62\u1d9c | E\u2081\u1d9c \u2026 E\u1d62\u208b\u2081\u1d9c), no independence assumed",
+      "status": "pass",
+      "detail": "{\"has_chain_rule\": true, \"conditions_on_history\": true, \"assumes_independence\": false}"
+    },
+    {
+      "check_id": "CHK_PIPELINE_HAZARD",
+      "target_blocks": [
+        "math_3.4_2"
+      ],
+      "description": "Hazard condition stated: P(E\u1d62 | E\u2081\u1d9c \u2026 E\u1d62\u208b\u2081\u1d9c) \u2265 \u03b4 for all i",
+      "status": "pass",
+      "detail": "The bound P(\u22651 error) \u2265 1 - (1-\u03b4)\u207f \u2192 1 holds only under this condition. Shared context can raise or lower the conditional hazard, so a deployment must estimate it rather than assume independence. Condition present: True"
     },
     {
       "check_id": "CHK_PIPELINE_LIMIT",
       "target_blocks": [
         "math_3.4_2"
       ],
-      "description": "Limit: \u220f(1-p_i) \u2192 0 as n \u2192 \u221e when all p_i > 0 (hence 1 - \u220f \u2192 1)",
+      "description": "Limit: P(\u22651 error) \u2265 1 - (1-\u03b4)\u207f \u2192 1 as n \u2192 \u221e under the hazard condition",
       "status": "pass",
-      "detail": "For p_i \u2208 (0,1) \u2200i: ln(\u220f(1-p_i)) = \u03a3ln(1-p_i). Since ln(1-p_i) < 0 for p_i > 0, the partial sums diverge to -\u221e iff \u03a3p_i = \u221e (which holds when p_i \u2265 \u03b4 > 0 for all i). Therefore \u220f(1-p_i) \u2192 0, so P(at least one error) \u2192 1. NOTE: requires independence assumption (flagged in \u00a73.4 caveat and \u00a78.3)."
+      "detail": "Under the chain-rule decomposition, if every conditional hazard P(E\u1d62 | E\u2081\u1d9c \u2026 E\u1d62\u208b\u2081\u1d9c) \u2265 \u03b4 > 0, then P(error-free) \u2264 (1-\u03b4)\u207f \u2192 0, so P(at least one error) \u2192 1. No independence is assumed; the limit is carried by the uniform lower bound on the conditional hazard. A hazard decaying fast enough leaves the product bounded away from zero \u2014 see \u00a73.4 and \u00a78.3."
     },
     {
       "check_id": "CHK_CONVERGENCE_CONDITION",
@@ -480,7 +489,7 @@
       ],
       "description": "All \u00a7N.M cross-references resolve to existing section headings",
       "status": "pass",
-      "detail": "{\n  \"existing_sections\": [\n    \"1\",\n    \"10\",\n    \"10.1\",\n    \"10.2\",\n    \"10.3\",\n    \"10.4\",\n    \"10.5\",\n    \"11\",\n    \"11.1\",\n    \"11.2\",\n    \"11.3\",\n    \"11.4\",\n    \"11.5\",\n    \"11.6\",\n    \"2\",\n    \"3\",\n    \"3.1\",\n    \"3.2\",\n    \"3.3\",\n    \"3.4\",\n    \"4\",\n    \"4.1\",\n    \"4.2\",\n    \"5\",\n    \"6\",\n    \"6.1\",\n    \"6.2\",\n    \"6.3\",\n    \"7\",\n    \"7.1\",\n    \"7.2\",\n    \"7.3\",\n    \"7.4\",\n    \"8\",\n    \"8.1\",\n    \"8.2\",\n    \"8.3\",\n    \"8.4\",\n    \"8.5\",\n    \"8.6\",\n    \"8.7\",\n    \"9\",\n    \"9.1\",\n    \"9.2\",\n    \"9.3\",\n    \"9.4\",\n    \"9.5\",\n    \"9.6\",\n    \"9.7\"\n  ],\n  \"referenced_sections\": [\n    \"10\",\n    \"10.1\",\n    \"10.4\",\n    \"10.5\",\n    \"11\",\n    \"11.1\",\n    \"11.2\",\n    \"11.5\",\n    \"3\",\n    \"3.1\",\n    \"3.2\",\n    \"3.3\",\n    \"3.4\",\n    \"4\",\n    \"4.1\",\n    \"4.2\",\n    \"5\",\n    \"6.1\",\n    \"6.2\",\n    \"7\",\n    \"7.1\",\n    \"7.2\",\n    \"7.3\",\n    \"8.2\",\n    \"8.3\",\n    \"8.4\",\n    \"8.6\",\n    \"8.7\",\n    \"9\",\n    \"9.1\",\n    \"9.5\",\n    \"9.6\",\n    \"9.7\"\n  ],\n  \"broken_references\": []\n}"
+      "detail": "{\n  \"existing_sections\": [\n    \"1\",\n    \"10\",\n    \"10.1\",\n    \"10.2\",\n    \"10.3\",\n    \"10.4\",\n    \"10.5\",\n    \"11\",\n    \"11.1\",\n    \"11.2\",\n    \"11.3\",\n    \"11.4\",\n    \"11.5\",\n    \"11.6\",\n    \"2\",\n    \"3\",\n    \"3.1\",\n    \"3.2\",\n    \"3.3\",\n    \"3.4\",\n    \"4\",\n    \"4.1\",\n    \"4.2\",\n    \"5\",\n    \"6\",\n    \"6.1\",\n    \"6.2\",\n    \"6.3\",\n    \"7\",\n    \"7.1\",\n    \"7.2\",\n    \"7.3\",\n    \"7.4\",\n    \"8\",\n    \"8.1\",\n    \"8.2\",\n    \"8.3\",\n    \"8.4\",\n    \"8.5\",\n    \"8.6\",\n    \"8.7\",\n    \"9\",\n    \"9.1\",\n    \"9.2\",\n    \"9.3\",\n    \"9.4\",\n    \"9.5\",\n    \"9.6\",\n    \"9.7\"\n  ],\n  \"referenced_sections\": [\n    \"10\",\n    \"10.1\",\n    \"10.4\",\n    \"10.5\",\n    \"11\",\n    \"11.1\",\n    \"11.2\",\n    \"11.4\",\n    \"11.5\",\n    \"3\",\n    \"3.1\",\n    \"3.2\",\n    \"3.3\",\n    \"3.4\",\n    \"4\",\n    \"4.1\",\n    \"4.2\",\n    \"5\",\n    \"6.1\",\n    \"6.2\",\n    \"7\",\n    \"7.1\",\n    \"7.2\",\n    \"7.3\",\n    \"8.2\",\n    \"8.3\",\n    \"8.4\",\n    \"8.6\",\n    \"8.7\",\n    \"9\",\n    \"9.1\",\n    \"9.5\",\n    \"9.6\",\n    \"9.7\"\n  ],\n  \"broken_references\": []\n}"
     },
     {
       "check_id": "CHK_EPSILON_DOMAIN",
@@ -564,17 +573,17 @@
   ],
   "total_references": 16,
   "total_math_blocks": 7,
-  "checks_passed": 9,
-  "checks_warned": 1,
+  "checks_passed": 11,
+  "checks_warned": 0,
   "checks_failed": 0,
   "_signature": {
     "signature_version": "1",
     "algorithm": "sha256",
     "tool_id": "pals-check",
     "tool_version": "1.0.0",
-    "signed_at": "2026-09-04T03:15:46Z",
-    "source_document_hash": "b997ecbf349b7d12",
-    "payload_digest": "fbfd4d975189276be19152e7abdaf92065a5c8597935ea4db5ac54a2d9cd555f",
-    "seal": "f247e35a5fd3c63b260acdc22da5a014d2230802f09b491ae01b09c33b39baba"
+    "signed_at": "2026-09-04T12:56:42Z",
+    "source_document_hash": "72e12795833ffbcb",
+    "payload_digest": "4760bdf66c7e05b78034ca5ed561b036fdd0f3c157e99a0c26eba24a944a67af",
+    "seal": "9702c8e235c7370ca5b72fbb41977e7328c9d15abb8e5d569afa6fbfd1414981"
   }
 }

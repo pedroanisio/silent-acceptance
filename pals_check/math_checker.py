@@ -238,35 +238,94 @@ def check_math_consistency(blocks: list[MathBlock], text: str, layout: SpecLayou
         has_complement = ("1-" in b2_norm and r"\prod" in b2) or r"1-\prod" in b2_norm
         has_limit = r"\xrightarrow" in b2 or r"\to" in b2
 
-        checks.append(
-            MathCheck(
-                check_id="CHK_PIPELINE_ALGEBRA",
-                target_blocks=[b.block_id for b in pipeline_blocks],
-                description="Pipeline formula: P(error-free) = ∏(1-p_i), P(≥1 error) = 1 - ∏(1-p_i)",
-                status="pass" if (has_prod_1_minus and has_complement) else "warn",
-                detail=json.dumps(
-                    {
-                        "has_product_formula": has_prod_1_minus,
-                        "has_complement_formula": has_complement,
-                        "has_limit_statement": has_limit,
-                    }
-                ),
-            )
+        # v2.1.0 replaced the independence-based product with a chain-rule
+        # decomposition over conditional hazards. Both forms are valid targets:
+        # older specs in this repo still carry the product form, so the check
+        # is selected by what the document actually states rather than assumed.
+        conditional = r"\mid" in b1 or "|" in b1
+        has_chain_rule = r"\prod" in b1 and conditional and "E_" in b1_norm
+        has_hazard_condition = "E_" in b2_norm and (r"\geq" in b2 or "≥" in b2) and (
+            r"\delta" in b2 or "δ" in b2
         )
+
+        if has_chain_rule:
+            checks.append(
+                MathCheck(
+                    check_id="CHK_PIPELINE_CHAINRULE",
+                    target_blocks=[b.block_id for b in pipeline_blocks],
+                    description=(
+                        "Pipeline decomposition is exact: "
+                        "P(error-free) = ∏ P(Eᵢᶜ | E₁ᶜ … Eᵢ₋₁ᶜ), no independence assumed"
+                    ),
+                    status="pass" if has_chain_rule else "warn",
+                    detail=json.dumps(
+                        {
+                            "has_chain_rule": has_chain_rule,
+                            "conditions_on_history": conditional,
+                            "assumes_independence": has_prod_1_minus,
+                        }
+                    ),
+                )
+            )
+            checks.append(
+                MathCheck(
+                    check_id="CHK_PIPELINE_HAZARD",
+                    target_blocks=[pipeline_blocks[1].block_id],
+                    description="Hazard condition stated: P(Eᵢ | E₁ᶜ … Eᵢ₋₁ᶜ) ≥ δ for all i",
+                    status="pass" if has_hazard_condition else "warn",
+                    detail=(
+                        "The bound P(≥1 error) ≥ 1 - (1-δ)ⁿ → 1 holds only under this "
+                        "condition. Shared context can raise or lower the conditional "
+                        "hazard, so a deployment must estimate it rather than assume "
+                        f"independence. Condition present: {has_hazard_condition}"
+                    ),
+                )
+            )
+        else:
+            checks.append(
+                MathCheck(
+                    check_id="CHK_PIPELINE_ALGEBRA",
+                    target_blocks=[b.block_id for b in pipeline_blocks],
+                    description="Pipeline formula: P(error-free) = ∏(1-p_i), P(≥1 error) = 1 - ∏(1-p_i)",
+                    status="pass" if (has_prod_1_minus and has_complement) else "warn",
+                    detail=json.dumps(
+                        {
+                            "has_product_formula": has_prod_1_minus,
+                            "has_complement_formula": has_complement,
+                            "has_limit_statement": has_limit,
+                        }
+                    ),
+                )
+            )
 
         checks.append(
             MathCheck(
                 check_id="CHK_PIPELINE_LIMIT",
                 target_blocks=[pipeline_blocks[1].block_id],
-                description="Limit: ∏(1-p_i) → 0 as n → ∞ when all p_i > 0 (hence 1 - ∏ → 1)",
+                description=(
+                    "Limit: P(≥1 error) ≥ 1 - (1-δ)ⁿ → 1 as n → ∞ under the hazard condition"
+                    if has_chain_rule
+                    else "Limit: ∏(1-p_i) → 0 as n → ∞ when all p_i > 0 (hence 1 - ∏ → 1)"
+                ),
                 status="pass",
                 detail=(
-                    "For p_i ∈ (0,1) ∀i: ln(∏(1-p_i)) = Σln(1-p_i). "
-                    "Since ln(1-p_i) < 0 for p_i > 0, the partial sums diverge to -∞ "
-                    "iff Σp_i = ∞ (which holds when p_i ≥ δ > 0 for all i). "
-                    "Therefore ∏(1-p_i) → 0, so P(at least one error) → 1. "
-                    f"NOTE: requires independence assumption (flagged in §{layout.pipeline} caveat "
-                    f"and §{layout.independence})."
+                    (
+                        "Under the chain-rule decomposition, if every conditional hazard "
+                        "P(Eᵢ | E₁ᶜ … Eᵢ₋₁ᶜ) ≥ δ > 0, then P(error-free) ≤ (1-δ)ⁿ → 0, so "
+                        "P(at least one error) → 1. No independence is assumed; the limit "
+                        "is carried by the uniform lower bound on the conditional hazard. "
+                        "A hazard decaying fast enough leaves the product bounded away from "
+                        f"zero — see §{layout.pipeline} and §{layout.independence}."
+                    )
+                    if has_chain_rule
+                    else (
+                        "For p_i ∈ (0,1) ∀i: ln(∏(1-p_i)) = Σln(1-p_i). "
+                        "Since ln(1-p_i) < 0 for p_i > 0, the partial sums diverge to -∞ "
+                        "iff Σp_i = ∞ (which holds when p_i ≥ δ > 0 for all i). "
+                        "Therefore ∏(1-p_i) → 0, so P(at least one error) → 1. "
+                        f"NOTE: requires independence assumption (flagged in §{layout.pipeline} caveat "
+                        f"and §{layout.independence})."
+                    )
                 ),
             )
         )

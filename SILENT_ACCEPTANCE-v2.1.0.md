@@ -8,7 +8,7 @@ disclaimer:
 ### LLM Output Error as an Architectural Invariant
 
 **Pedro Anisio de Luna e Silva**  
-Preprint, v2.0.0 — September 2026  
+Preprint, v2.1.0 — September 2026  
 *Versions 1.x were published as PALS's Law under the same concept DOI; see §11.*
 
 ---
@@ -44,10 +44,18 @@ classes that are hardest to detect, so a verifier held constant while the model 
 upgraded is a regression, not a conservative default. It is stated as a labeled
 hypothesis with the operational definitions and the protocol needed to test it.
 
-Version 2.0.0 adds evidence from the agent-harness literature (§4.2) and draws from it
-a sixth corollary (§9.7): the verifier must sit outside the boundary it verifies,
-because a system that can modify its own verifier will optimize the check rather than
-the work.
+Version 2.0.0 added evidence from the agent-harness literature (§4.2) and drew from it
+a sixth corollary (§9.7): the acceptance authority must remain outside the producer's
+control domain, because a system that can modify its own verifier will optimize the
+check rather than the work.
+
+Version 2.1.0 answers a review of that release. The invariant is restated as a
+measured, distribution-dependent bound $\delta_{M,\mathcal{D}}$ against a declared
+tolerance rather than a universal constant; the pipeline corollary drops its
+independence assumption for an explicit conditional-hazard condition; the unit indexed
+by $M$ becomes the solver configuration; and §9.1 gains the assurance-case statement
+and the declaration fields a boundary needs to be reviewable. §11.4 records what was
+adopted and what was declined.
 
 ---
 
@@ -890,7 +898,7 @@ the same block. The block is identical for every tool.
 ```markdown
 ## LLM Output Verification — Architectural Requirement (Silent Acceptance)
 
-**SILENT_ACCEPTANCE_VERSION:** 2.0.0
+**SILENT_ACCEPTANCE_VERSION:** 2.1.0
 **Specification:** https://doi.org/10.5281/zenodo.19401266
 
 **Across any realistic deployment, LLMs reliably produce errors —

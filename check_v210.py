@@ -54,7 +54,9 @@ REQUIRED = [
     (r"residual risk of the output crossing", "assurance-case sentence in 9.1 (C1)"),
     (r"specificity", "specificity alongside recall (C2)"),
     (r"September 2026 review", "the review recorded in 11.4 (E2)"),
-    (r"2\.1\.0", "version bumped (E3)"),
+    (r"Preprint,\s*v2\.1\.0", "document header declares v2.1.0 (E3) — "
+     "matching anywhere in the file gave a false pass while the header said 2.0.0"),
+    (r"\*\*SILENT_ACCEPTANCE_VERSION:\*\*\s*2\.1\.0", "§10.4 agent block bumped (D2)"),
 ]
 
 
