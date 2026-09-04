@@ -1,13 +1,18 @@
-"""Formal schema definition for PALS's LAW."""
+"""Formal schema definition for the specification (PALS's LAW v1.x / Silent Acceptance v2.x)."""
 
 from __future__ import annotations
 
 import hashlib
-import re
 from dataclasses import dataclass
-from typing import Optional
 
-from pals_check.constants import ClaimStatus
+from pals_check.constants import (
+    LAYOUT_V1,
+    VERSION_FIELD_NAMES,
+    ClaimStatus,
+    SpecLayout,
+    detect_layout,
+    document_version,
+)
 from pals_check.math_checker import _get_section_text
 
 
@@ -36,7 +41,7 @@ class FormalClaim:
     supported_by: list[str]
     caveats: list[str]
     is_falsifiable: bool
-    falsification_method: Optional[str] = None
+    falsification_method: str | None = None
 
 
 @dataclass
@@ -48,12 +53,12 @@ class ErrorClassDef:
     definition: str
     detection_strategy_type: str
     corollary5_sign: str
-    example: Optional[str] = None
+    example: str | None = None
 
 
 @dataclass
 class PractitionerArtifact:
-    """A copy-paste artifact defined in \u00a79."""
+    """A copy-paste artifact defined in the practitioner section."""
 
     artifact_id: str
     name: str
@@ -69,7 +74,7 @@ class PractitionerArtifact:
 
 @dataclass
 class PALSLawSchema:
-    """Complete formal schema of PALS's LAW."""
+    """Complete formal schema of the specification."""
 
     version: str
     content_hash: str
@@ -80,19 +85,20 @@ class PALSLawSchema:
     dependency_graph: dict[str, list[str]]
     structural_error_classes: list[str]
     semantic_error_classes: list[str]
+    layout: str = "v1"
 
 
-def build_schema(text: str) -> PALSLawSchema:
+def build_schema(text: str, layout: SpecLayout | None = None) -> PALSLawSchema:
     """Build the complete formal schema from the document text."""
-    version_match = re.search(r'Document version:\*\*\s*([\d.]+)', text)
-    version = version_match.group(1) if version_match else "unknown"
+    layout = layout or detect_layout(text)
+    version = document_version(text)
 
     content_hash = hashlib.sha256(text.encode()).hexdigest()[:16]
 
-    symbols = _build_symbols()
-    claims = _build_claims()
+    symbols = _build_symbols(layout)
+    claims = _build_claims(layout)
     error_classes = _build_error_classes()
-    artifacts = _build_artifacts(text)
+    artifacts = _build_artifacts(text, layout)
     dep_graph = _build_dependency_graph(claims)
 
     return PALSLawSchema(
@@ -104,134 +110,194 @@ def build_schema(text: str) -> PALSLawSchema:
         artifacts=artifacts,
         dependency_graph=dep_graph,
         structural_error_classes=[
-            "ERR_OMISSION", "ERR_SCHEMA", "ERR_TRUNCATION", "ERR_INSTRUCTION",
+            "ERR_OMISSION",
+            "ERR_SCHEMA",
+            "ERR_TRUNCATION",
+            "ERR_INSTRUCTION",
         ],
         semantic_error_classes=[
-            "ERR_HALLUCINATION", "ERR_SYCOPHANCY", "ERR_CALIBRATION",
-            "ERR_REASONING", "ERR_SEMANTIC",
+            "ERR_HALLUCINATION",
+            "ERR_SYCOPHANCY",
+            "ERR_CALIBRATION",
+            "ERR_REASONING",
+            "ERR_SEMANTIC",
         ],
+        layout=layout.name,
     )
 
 
-def _build_symbols() -> list[Symbol]:
-    return [
-        Symbol("M_class", r"\mathcal{M}", "Set",
-               "Class of autoregressive transformer language models", "3.1"),
-        Symbol("M", r"M", "M \u2208 M_class",
-               "Any concrete model with parameter set \u03b8", "3.1"),
-        Symbol("theta", r"\theta", "\u211d^d",
-               "Parameter set of model M", "3.1"),
-        Symbol("X", r"\mathcal{X}", "Set",
-               "Space of all valid input prompts", "3.1"),
-        Symbol("Y", r"\mathcal{Y}", "Set",
-               "Space of all possible output sequences", "3.1"),
-        Symbol("x", r"x", "x \u2208 X",
-               "Any specific prompt", "3.1"),
-        Symbol("y", r"y", "y \u2208 Y",
-               "One sampled output: y ~ P_\u03b8(\u00b7|x)", "3.1"),
-        Symbol("Sigma", r"\Sigma", "X \u21c0 Y (partial function)",
-               "Ground-truth semantic specification", "3.1"),
-        Symbol("epsilon", r"\varepsilon", "Y \u00d7 X \u2192 {0, 1}",
-               "Boolean error predicate: \u03b5(y,x) = 1 iff y deviates from \u03a3(x)", "3.1"),
-        Symbol("D", r"\mathcal{D}", "Distribution over X",
-               "Realistic task distribution (see working definition \u00a73.2)", "3.2"),
-        Symbol("delta", r"\delta", "\u211d, \u03b4 > 0",
-               "Non-negligible lower bound on expected error rate", "3.2"),
-        Symbol("P_pipeline", r"\mathcal{P}", "(M_1, ..., M_n)",
-               "Pipeline of n sequential LLM calls", "3.4"),
-        Symbol("p_i", r"p_i", "p_i \u2208 [\u03b4, 1)",
-               "Per-step error probability: P(\u03b5(M_i(x_i), x_i) = 1) \u2265 \u03b4 > 0 (uniform lower bound from \u00a73.2)", "3.4"),
-        Symbol("D_c", r"D_c(M)", "\u211d\u207a",
-               "Detection difficulty of error class c for model M", "8"),
-        Symbol("C_M", r"C(M)", "\u211d\u207a",
-               "Model capability (requires operational definition)", "8"),
+def _build_symbols(layout: SpecLayout = LAYOUT_V1) -> list[Symbol]:
+    d = layout.definitions
+    # In v1 the asymmetry symbols are introduced in the corollaries section (§8);
+    # in v2 they are introduced in the statement subsection (§7.1).
+    asym = layout.asymmetry if layout.name == "v1" else f"{layout.asymmetry}.1"
+    symbols = [
+        Symbol("M_class", r"\mathcal{M}", "Set", "Class of autoregressive transformer language models", d),
+        Symbol("M", r"M", "M ∈ M_class", "Any concrete model with parameter set θ", d),
+        Symbol("theta", r"\theta", "ℝ^d", "Parameter set of model M", d),
+        Symbol("X", r"\mathcal{X}", "Set", "Space of all valid input prompts", d),
+        Symbol("Y", r"\mathcal{Y}", "Set", "Space of all possible output sequences", d),
+        Symbol("x", r"x", "x ∈ X", "Any specific prompt", d),
+        Symbol("y", r"y", "y ∈ Y", "One sampled output: y ~ P_θ(·|x)", d),
+        Symbol("Sigma", r"\Sigma", "X ⇀ Y (partial function)", "Ground-truth semantic specification", d),
+        Symbol(
+            "epsilon",
+            r"\varepsilon",
+            "Y × X → {0, 1}",
+            "Boolean error predicate: ε(y,x) = 1 iff y deviates from Σ(x)",
+            d,
+        ),
+        Symbol(
+            "D",
+            r"\mathcal{D}",
+            "Distribution over X",
+            f"Realistic task distribution (see working definition §{layout.operative})",
+            layout.operative,
+        ),
+        Symbol("delta", r"\delta", "ℝ, δ > 0", "Non-negligible lower bound on expected error rate", layout.operative),
+        Symbol("P_pipeline", r"\mathcal{P}", "(M_1, ..., M_n)", "Pipeline of n sequential LLM calls", layout.pipeline),
+        Symbol(
+            "p_i",
+            r"p_i",
+            "p_i ∈ [δ, 1)",
+            f"Per-step error probability: P(ε(M_i(x_i), x_i) = 1) ≥ δ > 0 "
+            f"(uniform lower bound from §{layout.operative})",
+            layout.pipeline,
+        ),
+        Symbol("D_c", r"D_c(M)", "ℝ⁺", "Detection difficulty of error class c for model M", asym),
+        Symbol("C_M", r"C(M)", "ℝ⁺", "Model capability (requires operational definition)", asym),
     ]
+    if layout.name == "v2":
+        symbols.extend(
+            [
+                Symbol("C_classes", r"\mathcal{C}", "Set", "The set of error classes enumerated in the taxonomy", d),
+                Symbol(
+                    "V_c",
+                    r"V_c",
+                    "Y × X → {0, 1}",
+                    "Verifier for error class c: an executable predicate distinct from M "
+                    "that returns 1 when it detects ε_c(y,x) = 1",
+                    d,
+                ),
+                Symbol(
+                    "B",
+                    r"B",
+                    "(S, {V_c}_{c ∈ S}), S ⊆ C_classes",
+                    "Verification boundary: a declared subset of error classes with one "
+                    "verifier per class, applied before output reaches a consumer",
+                    d,
+                ),
+                Symbol(
+                    "R_c",
+                    r"R_c",
+                    "[0, 1]",
+                    "Recall of verifier V_c against model M on distribution D: P(V_c(y,x) = 1 | ε_c(y,x) = 1)",
+                    d,
+                ),
+            ]
+        )
+    return symbols
 
 
-def _build_claims() -> list[FormalClaim]:
-    return [
+def _build_claims(layout: SpecLayout = LAYOUT_V1) -> list[FormalClaim]:
+    v1 = layout.name == "v1"
+    cor = layout.corollary_sections
+    claims = [
         FormalClaim(
             claim_id="DEF_EPSILON",
             name="Error predicate definition",
-            section="3.1",
+            section=layout.definitions,
             status=ClaimStatus.DEFINITION.value,
             latex=r"\varepsilon(y, x) \in \{0, 1\},\ \varepsilon = 1 \iff y \text{ deviates from } \Sigma(x)",
             natural_language=(
-                "\u03b5 is 1 when model output deviates from ground truth in any dimension of \u00a75. "
-                "NOTE: \u03a3 is a partial function \u2014 \u03b5(y,x) is undefined when \u03a3(x) is undefined "
+                "ε is 1 when model output deviates from ground truth in any dimension of §5. "
+                "NOTE: Σ is a partial function — ε(y,x) is undefined when Σ(x) is undefined "
                 "(creative/subjective prompts). The operative form's expectation is implicitly "
-                "restricted to dom(\u03a3)."
+                "restricted to dom(Σ)."
             ),
             depends_on=[],
             supported_by=[],
-            caveats=["7.1", "7.5"],
+            caveats=[f"{layout.independence.split('.')[0]}.1", layout.boolean_predicate],
             is_falsifiable=False,
         ),
         FormalClaim(
             claim_id="OPERATIVE",
             name="Operative form (The Law)",
-            section="3.2",
+            section=layout.operative,
             status=ClaimStatus.OPERATIVE.value,
             latex=r"\forall M \in \mathcal{M},\ \forall \text{ realistic } \mathcal{D}: \mathbb{E}_{x \sim \mathcal{D}}[\varepsilon(M(x), x)] \geq \delta > 0",
             natural_language="For any model and any realistic distribution, expected error rate is non-negligibly above zero",
             depends_on=["DEF_EPSILON"],
-            supported_by=["ji_2023", "maynez_2020", "lin_2022", "kadavath_2022", "perez_2022", "sharma_2023", "kalai_2024"],
-            caveats=["7.1", "7.2", "7.5", "7.6"],
+            supported_by=[
+                "ji_2023",
+                "maynez_2020",
+                "lin_2022",
+                "kadavath_2022",
+                "perez_2022",
+                "sharma_2023",
+                "kalai_2024",
+            ],
+            caveats=[
+                f"{layout.independence.split('.')[0]}.1",
+                f"{layout.independence.split('.')[0]}.2",
+                layout.boolean_predicate,
+                f"{layout.independence.split('.')[0]}.6",
+            ],
             is_falsifiable=True,
             falsification_method=(
-                "Produce a model M and a realistic distribution D (per \u00a73.2 working definition) "
-                "where E[\u03b5(M(x),x)] is zero or negligible (below measurement threshold). "
+                f"Produce a model M and a realistic distribution D (per §{layout.operative} working definition) "
+                "where E[ε(M(x),x)] is zero or negligible (below measurement threshold). "
                 "Requires operationalizing 'realistic' and 'negligible' for the test domain."
             ),
         ),
         FormalClaim(
             claim_id="EXISTENTIAL",
             name="Existential form",
-            section="3.3",
+            section=layout.existential,
             status=ClaimStatus.EXISTENTIAL.value,
             latex=r"\forall M \in \mathcal{M}: \exists x \in \mathcal{X} \text{ s.t. } P_\theta(\varepsilon(M(x),x)=1) > 0",
             natural_language="For every model, there exists at least one input on which incorrect output has positive probability",
             depends_on=["DEF_EPSILON"],
             supported_by=["ARG_6.2"],
-            caveats=["7.1"],
+            caveats=[f"{layout.independence.split('.')[0]}.1"],
             is_falsifiable=True,
             falsification_method=(
-                "Prove that a specific model M has P(\u03b5=1) = 0 for ALL x \u2208 X. "
-                "This would require proving the model solves arbitrary NLU \u2014 "
+                "Prove that a specific model M has P(ε=1) = 0 for ALL x ∈ X. "
+                "This would require proving the model solves arbitrary NLU — "
                 "equivalent to proving a finite-parameter system represents all computable functions."
             ),
         ),
         FormalClaim(
             claim_id="PIPELINE",
             name="Pipeline corollary",
-            section="3.4",
+            section=layout.pipeline,
             status=ClaimStatus.COROLLARY.value,
             latex=r"P(\text{error-free pipeline}) = \prod_{i=1}^{n}(1-p_i) \to 0 \text{ as } n \to \infty",
             natural_language=(
                 "Unverified pipeline failure probability approaches 1 as pipeline length grows. "
-                "Requires \u03a3p_i = \u221e (e.g. p_i \u2265 \u03b4 > 0 uniform lower bound); "
+                "Requires Σp_i = ∞ (e.g. p_i ≥ δ > 0 uniform lower bound); "
                 "if p_i decreases fast enough (e.g. p_i = 2^{-i}), the product converges "
                 "and pipeline error stays bounded below 1."
             ),
             depends_on=["OPERATIVE"],
             supported_by=[],
-            caveats=["7.3"],
+            caveats=[layout.independence],
             is_falsifiable=True,
             falsification_method=(
                 "Show that pipeline errors are so correlated (non-independent) that "
                 "the product formula fundamentally mischaracterizes the risk direction, "
                 "or that per-step error probabilities decrease fast enough (p_i = o(1/i)) "
-                "for \u03a3p_i < \u221e, making the product converge to a positive value. "
-                "\u00a77.3 already acknowledges the independence assumption is approximate."
+                "for Σp_i < ∞, making the product converge to a positive value. "
+                f"§{layout.independence} already acknowledges the independence assumption is approximate."
             ),
         ),
         FormalClaim(
             claim_id="ARG_6.1",
-            name="Probabilistic generation \u2260 deterministic truth",
+            name="Probabilistic generation ≠ deterministic truth",
             section="6.1",
             status=ClaimStatus.INFORMAL_ARG.value,
             latex=r"P_\theta(y \mid x) = \prod_{t=1}^{|y|} P_\theta(y_t \mid y_{<t}, x)",
-            natural_language="No learned distribution over a discrete vocabulary exactly matches \u03a3 on all inputs",
+            natural_language="No learned distribution over a discrete vocabulary exactly matches Σ on all inputs",
             depends_on=["DEF_EPSILON"],
             supported_by=["ji_2023", "maynez_2020", "lin_2022"],
             caveats=[],
@@ -244,7 +310,7 @@ def _build_claims() -> list[FormalClaim]:
             section="6.2",
             status=ClaimStatus.INFORMAL_ARG.value,
             latex="",
-            natural_language="Pigeonhole: |\u03b8| finite, true propositions unbounded \u2192 some must be unrepresented",
+            natural_language="Pigeonhole: |θ| finite, true propositions unbounded → some must be unrepresented",
             depends_on=[],
             supported_by=[],
             caveats=[],
@@ -264,119 +330,239 @@ def _build_claims() -> list[FormalClaim]:
             is_falsifiable=True,
             falsification_method="Show that sampling always faithfully surfaces encoded beliefs.",
         ),
-        FormalClaim(
-            claim_id="COR1",
-            name="Appearance of correctness \u2260 correctness",
-            section="8",
-            status=ClaimStatus.COROLLARY.value,
-            latex="",
-            natural_language="Finite test-set validation does not demonstrate error-freedom on unverified inputs",
-            depends_on=["OPERATIVE"],
-            supported_by=[],
-            caveats=[],
-            is_falsifiable=False,
-        ),
-        FormalClaim(
-            claim_id="COR2",
-            name="Trust accumulation prohibited",
-            section="8",
-            status=ClaimStatus.COROLLARY.value,
-            latex="",
-            natural_language=(
-                "Observing correct outputs on x_1..x_k provides no guarantee about "
-                "P(\u03b5=1) on a new input x_{k+1} not in {x_1..x_k}. The operative form's "
-                "bound is unconditional — no finite sample inductively lowers it."
-            ),
-            depends_on=["OPERATIVE"],
-            supported_by=[],
-            caveats=[],
-            is_falsifiable=True,
-            falsification_method=(
-                "Show that observing correct outputs on a finite set of inputs "
-                "provides a provable bound on P(\u03b5=1) for unseen inputs."
-            ),
-        ),
-        FormalClaim(
-            claim_id="COR3",
-            name="Verification scope must match error taxonomy",
-            section="8",
-            status=ClaimStatus.COROLLARY.value,
-            latex="",
-            natural_language="Partial verification (e.g. schema-only) does not cover other error classes",
-            depends_on=["OPERATIVE", "DEF_EPSILON"],
-            supported_by=[],
-            caveats=["7.4"],
-            is_falsifiable=False,
-        ),
-        FormalClaim(
-            claim_id="COR4",
-            name="Silent acceptance is an architectural defect",
-            section="8",
-            status=ClaimStatus.COROLLARY.value,
-            latex="",
-            natural_language="Passing LLM output without a declared verification boundary is an architectural omission",
-            depends_on=["OPERATIVE"],
-            supported_by=[],
-            caveats=[],
-            is_falsifiable=False,
-        ),
-        FormalClaim(
-            claim_id="COR5",
-            name="Capability-Detection Asymmetry (Hypothesis)",
-            section="8",
-            status=ClaimStatus.HYPOTHESIS.value,
-            latex=r"\frac{\partial D_c}{\partial C} \leq 0 \text{ (structural)}, > 0 \text{ (semantic/epistemic)}",
-            natural_language="As model capability grows, structural errors get easier to detect while semantic errors get harder",
-            depends_on=["OPERATIVE"],
-            supported_by=["lin_2022"],
-            caveats=[],
-            is_falsifiable=True,
-            falsification_method=(
-                "Operationalize C(M) and D_c(M), then show \u2202D_c/\u2202C \u2264 0 for a semantic class "
-                "(e.g. hallucination detection gets easier with more capable models)."
-            ),
-        ),
     ]
+
+    asymmetry = FormalClaim(
+        claim_id="COR5" if v1 else "ASYMMETRY",
+        name="Capability-Detection Asymmetry (Hypothesis)",
+        section=layout.asymmetry,
+        status=ClaimStatus.HYPOTHESIS.value,
+        latex=r"\frac{\partial D_c}{\partial C} \leq 0 \text{ (structural)}, > 0 \text{ (semantic/epistemic)}",
+        natural_language="As model capability grows, structural errors get easier to detect while semantic errors get harder",
+        depends_on=["OPERATIVE"],
+        supported_by=["lin_2022"],
+        caveats=[] if v1 else [f"{layout.independence.split('.')[0]}.7"],
+        is_falsifiable=True,
+        falsification_method=(
+            "Operationalize C(M) and D_c(M), then show ∂D_c/∂C ≤ 0 for a semantic class "
+            "(e.g. hallucination detection gets easier with more capable models)."
+            if v1
+            else f"Run the protocol in §{layout.asymmetry}.3: fix a benchmark suite for C(M) and a "
+            "reference verifier per class for D_c(M) = 1 − recall; a semantic class whose "
+            "miss rate falls as C rises under the fixed verifier refutes the inequality."
+        ),
+    )
+
+    if not v1:
+        claims.append(
+            FormalClaim(
+                claim_id="VBP",
+                name="Verification Boundary Principle",
+                section=f"{layout.corollaries}.1",
+                status=ClaimStatus.PRESCRIPTION.value,
+                latex="",
+                natural_language=(
+                    "Every system consuming LLM output must declare a verification boundary "
+                    "B = (S, {V_c}) stating scope, mechanism, calibration model, and location "
+                    "before the output reaches a consumer."
+                ),
+                depends_on=["OPERATIVE", "DEF_EPSILON"],
+                supported_by=[],
+                caveats=[f"{layout.independence.split('.')[0]}.4"],
+                is_falsifiable=False,
+            )
+        )
+
+    claims.extend(
+        [
+            FormalClaim(
+                claim_id="COR1",
+                name="Appearance of correctness ≠ correctness",
+                section=cor[0],
+                status=ClaimStatus.COROLLARY.value,
+                latex="",
+                natural_language="Finite test-set validation does not demonstrate error-freedom on unverified inputs",
+                depends_on=["OPERATIVE"],
+                supported_by=[],
+                caveats=[],
+                is_falsifiable=False,
+            ),
+            FormalClaim(
+                claim_id="COR2",
+                name="Trust accumulation prohibited",
+                section=cor[1],
+                status=ClaimStatus.COROLLARY.value,
+                latex="",
+                natural_language=(
+                    "Observing correct outputs on x_1..x_k provides no guarantee about "
+                    "P(ε=1) on a new input x_{k+1} not in {x_1..x_k}. The operative form's "
+                    "bound is unconditional — no finite sample inductively lowers it."
+                ),
+                depends_on=["OPERATIVE"],
+                supported_by=[],
+                caveats=[],
+                is_falsifiable=True,
+                falsification_method=(
+                    "Show that observing correct outputs on a finite set of inputs "
+                    "provides a provable bound on P(ε=1) for unseen inputs."
+                ),
+            ),
+            FormalClaim(
+                claim_id="COR3",
+                name="Verification scope must match error taxonomy",
+                section=cor[2],
+                status=ClaimStatus.COROLLARY.value,
+                latex="",
+                natural_language="Partial verification (e.g. schema-only) does not cover other error classes",
+                depends_on=["OPERATIVE", "DEF_EPSILON"],
+                supported_by=[],
+                caveats=[f"{layout.independence.split('.')[0]}.4"],
+                is_falsifiable=False,
+            ),
+            FormalClaim(
+                claim_id="COR4",
+                name="Silent acceptance is an architectural defect",
+                section=cor[3],
+                status=ClaimStatus.COROLLARY.value,
+                latex="",
+                natural_language="Passing LLM output without a declared verification boundary is an architectural omission",
+                depends_on=["OPERATIVE"],
+                supported_by=[],
+                caveats=[],
+                is_falsifiable=False,
+            ),
+        ]
+    )
+
+    if v1:
+        claims.append(asymmetry)
+    else:
+        # In v2 the asymmetry precedes the corollaries in the document; keep the
+        # claim list in document order.
+        claims.insert(7, asymmetry)
+        claims.extend(
+            [
+                FormalClaim(
+                    claim_id="COR5",
+                    name="A verifier upgrade is a precondition for a model upgrade",
+                    section=f"{layout.corollaries}.6",
+                    status=ClaimStatus.COROLLARY.value,
+                    latex="",
+                    natural_language=(
+                        "If the asymmetry holds, a boundary calibrated against M_1 has lower recall "
+                        "on semantic classes when applied to a more capable M_2, so the verifier "
+                        "must be upgraded before the model is."
+                    ),
+                    depends_on=["ASYMMETRY"],
+                    supported_by=[],
+                    caveats=[f"{layout.independence.split('.')[0]}.7"],
+                    is_falsifiable=True,
+                    falsification_method=(
+                        "Show, under the §7.3 protocol, that a fixed verifier's recall on semantic "
+                        "classes does not fall across a capability upgrade."
+                    ),
+                ),
+                FormalClaim(
+                    claim_id="COR6",
+                    name="The verifier must sit outside the boundary it verifies",
+                    section=f"{layout.corollaries}.7",
+                    status=ClaimStatus.COROLLARY.value,
+                    latex="",
+                    natural_language=(
+                        "A verifier the model or its agent can modify inherits the model's error "
+                        "distribution and is under optimization pressure to weaken the check; "
+                        "verifiers must be immutable from the model's perspective and their "
+                        "verdicts externally checkable."
+                    ),
+                    depends_on=["OPERATIVE"],
+                    supported_by=["wang_2026", "guo_2026"],
+                    caveats=[f"{layout.independence.split('.')[0]}.7"],
+                    is_falsifiable=True,
+                    falsification_method=(
+                        "Show a self-modifying system whose agent-editable verifier retains its "
+                        "recall under selection on the score it produces."
+                    ),
+                ),
+            ]
+        )
+
+    return claims
 
 
 def _build_error_classes() -> list[ErrorClassDef]:
     return [
-        ErrorClassDef("ERR_HALLUCINATION", "Hallucination",
-                       "Asserting a false factual claim with apparent confidence",
-                       "semantic", "gt_0",
-                       "Fabricated citation with real author name, plausible DOI"),
-        ErrorClassDef("ERR_OMISSION", "Omission",
-                       "Silently dropping required content",
-                       "structural", "leq_0",
-                       "Instructions followed partially, constraints missed"),
-        ErrorClassDef("ERR_SCHEMA", "Schema violation",
-                       "Output structurally non-conformant with declared format",
-                       "structural", "leq_0",
-                       "JSON parse failure, missing keys"),
-        ErrorClassDef("ERR_TRUNCATION", "Partial completion",
-                       "Output cut short due to token budget or stopping heuristics",
-                       "structural", "leq_0",
-                       "Response ends mid-sentence"),
-        ErrorClassDef("ERR_SYCOPHANCY", "Sycophantic drift",
-                       "Output shaped by perceived user preference rather than truth",
-                       "semantic", "gt_0",
-                       "Model agrees with user's incorrect premise"),
-        ErrorClassDef("ERR_INSTRUCTION", "Instruction failure",
-                       "Violation of explicit constraints stated in the prompt",
-                       "structural", "leq_0",
-                       "Wrong language, exceeded length limit"),
-        ErrorClassDef("ERR_CALIBRATION", "Calibration failure",
-                       "Expressed confidence misaligned with actual reliability",
-                       "semantic", "gt_0",
-                       "High confidence on incorrect claim"),
-        ErrorClassDef("ERR_REASONING", "Reasoning failure",
-                       "Correct facts, invalid composition \u2014 multi-step inference breakdowns",
-                       "semantic", "gt_0",
-                       "A\u2192B known, B\u2192A fails; logical contradiction across steps"),
-        ErrorClassDef("ERR_SEMANTIC", "Semantic drift",
-                       "Correct surface form, wrong meaning",
-                       "semantic", "gt_0",
-                       "Paraphrase that inverts the intended claim"),
+        ErrorClassDef(
+            "ERR_HALLUCINATION",
+            "Hallucination",
+            "Asserting a false factual claim with apparent confidence",
+            "semantic",
+            "gt_0",
+            "Fabricated citation with real author name, plausible DOI",
+        ),
+        ErrorClassDef(
+            "ERR_OMISSION",
+            "Omission",
+            "Silently dropping required content",
+            "structural",
+            "leq_0",
+            "Instructions followed partially, constraints missed",
+        ),
+        ErrorClassDef(
+            "ERR_SCHEMA",
+            "Schema violation",
+            "Output structurally non-conformant with declared format",
+            "structural",
+            "leq_0",
+            "JSON parse failure, missing keys",
+        ),
+        ErrorClassDef(
+            "ERR_TRUNCATION",
+            "Partial completion",
+            "Output cut short due to token budget or stopping heuristics",
+            "structural",
+            "leq_0",
+            "Response ends mid-sentence",
+        ),
+        ErrorClassDef(
+            "ERR_SYCOPHANCY",
+            "Sycophantic drift",
+            "Output shaped by perceived user preference rather than truth",
+            "semantic",
+            "gt_0",
+            "Model agrees with user's incorrect premise",
+        ),
+        ErrorClassDef(
+            "ERR_INSTRUCTION",
+            "Instruction failure",
+            "Violation of explicit constraints stated in the prompt",
+            "structural",
+            "leq_0",
+            "Wrong language, exceeded length limit",
+        ),
+        ErrorClassDef(
+            "ERR_CALIBRATION",
+            "Calibration failure",
+            "Expressed confidence misaligned with actual reliability",
+            "semantic",
+            "gt_0",
+            "High confidence on incorrect claim",
+        ),
+        ErrorClassDef(
+            "ERR_REASONING",
+            "Reasoning failure",
+            "Correct facts, invalid composition — multi-step inference breakdowns",
+            "semantic",
+            "gt_0",
+            "A→B known, B→A fails; logical contradiction across steps",
+        ),
+        ErrorClassDef(
+            "ERR_SEMANTIC",
+            "Semantic drift",
+            "Correct surface form, wrong meaning",
+            "semantic",
+            "gt_0",
+            "Paraphrase that inverts the intended claim",
+        ),
     ]
 
 
@@ -384,7 +570,7 @@ def _has_operative_form(sec: str) -> bool:
     """Detect operative form via Unicode, LaTeX, or keyword."""
     low = sec.lower()
     return (
-        "\ud835\udd3c[\u03b5(M(x), x)]" in sec  # Unicode 𝔼[ε(M(x), x)]
+        "𝔼[ε(M(x), x)]" in sec  # Unicode
         or r"\mathbb{E}" in sec  # LaTeX
         or "operative" in low
         or "non-negligible" in low
@@ -394,8 +580,8 @@ def _has_operative_form(sec: str) -> bool:
 def _has_existential_form(sec: str) -> bool:
     """Detect existential form via Unicode, LaTeX, or keyword."""
     return (
-        "\u2203 x" in sec  # Unicode ∃ x
-        or "\u2203x" in sec
+        "∃ x" in sec
+        or "∃x" in sec
         or r"\exists" in sec  # LaTeX
         or "existential" in sec.lower()
     )
@@ -404,7 +590,7 @@ def _has_existential_form(sec: str) -> bool:
 def _has_pipeline_corollary(sec: str) -> bool:
     """Detect pipeline corollary via Unicode, LaTeX, or keyword."""
     return (
-        "\u220f" in sec  # Unicode ∏
+        "∏" in sec
         or r"\prod" in sec  # LaTeX
         or "pipeline" in sec.lower()
     )
@@ -422,69 +608,30 @@ def _has_error_checklist(sec: str) -> bool:
 
 
 def _has_spec_version_field(sec: str) -> bool:
-    """Detect PALS_LAW_VERSION field for contract staleness tracking."""
-    return "PALS_LAW_VERSION" in sec or "pals_law_version" in sec.lower()
+    """Detect the spec-version field (any layout's spelling) used for staleness tracking."""
+    low = sec.lower()
+    return any(name in sec or name.lower() in low for name in VERSION_FIELD_NAMES)
 
 
-def _build_artifacts(text: str) -> list[PractitionerArtifact]:
+def _build_artifacts(text: str, layout: SpecLayout | None = None) -> list[PractitionerArtifact]:
+    layout = layout or detect_layout(text)
     artifacts = []
-
-    sec91 = _get_section_text(text, "9.1")
-    artifacts.append(PractitionerArtifact(
-        artifact_id="contract_block",
-        name="Full Contract Block",
-        section="9.1",
-        scope="function",
-        contains_operative_form=_has_operative_form(sec91),
-        contains_existential_form=_has_existential_form(sec91),
-        contains_pipeline_corollary=_has_pipeline_corollary(sec91),
-        contains_independence_caveat=_has_independence_caveat(sec91),
-        contains_error_checklist=_has_error_checklist(sec91),
-        contains_spec_version_field=_has_spec_version_field(sec91),
-    ))
-
-    sec92 = _get_section_text(text, "9.2")
-    artifacts.append(PractitionerArtifact(
-        artifact_id="short_form",
-        name="Short-Form",
-        section="9.2",
-        scope="project",
-        contains_operative_form=_has_operative_form(sec92),
-        contains_existential_form=_has_existential_form(sec92),
-        contains_pipeline_corollary=_has_pipeline_corollary(sec92),
-        contains_independence_caveat=_has_independence_caveat(sec92),
-        contains_error_checklist=_has_error_checklist(sec92),
-        contains_spec_version_field=_has_spec_version_field(sec92),
-    ))
-
-    sec93 = _get_section_text(text, "9.3")
-    artifacts.append(PractitionerArtifact(
-        artifact_id="inline_banner",
-        name="Inline Banner",
-        section="9.3",
-        scope="inline",
-        contains_operative_form=_has_operative_form(sec93),
-        contains_existential_form=_has_existential_form(sec93),
-        contains_pipeline_corollary=_has_pipeline_corollary(sec93),
-        contains_independence_caveat=_has_independence_caveat(sec93),
-        contains_error_checklist=_has_error_checklist(sec93),
-        contains_spec_version_field=_has_spec_version_field(sec93),
-    ))
-
-    sec94 = _get_section_text(text, "9.4")
-    artifacts.append(PractitionerArtifact(
-        artifact_id="claudemd_block",
-        name="CLAUDE.md Integration Block",
-        section="9.4",
-        scope="repository",
-        contains_operative_form=_has_operative_form(sec94),
-        contains_existential_form=_has_existential_form(sec94),
-        contains_pipeline_corollary=_has_pipeline_corollary(sec94),
-        contains_independence_caveat=_has_independence_caveat(sec94),
-        contains_error_checklist=_has_error_checklist(sec94),
-        contains_spec_version_field=_has_spec_version_field(sec94),
-    ))
-
+    for spec in layout.artifacts:
+        sec = _get_section_text(text, spec.section)
+        artifacts.append(
+            PractitionerArtifact(
+                artifact_id=spec.artifact_id,
+                name=spec.name,
+                section=spec.section,
+                scope=spec.scope,
+                contains_operative_form=_has_operative_form(sec),
+                contains_existential_form=_has_existential_form(sec),
+                contains_pipeline_corollary=_has_pipeline_corollary(sec),
+                contains_independence_caveat=_has_independence_caveat(sec),
+                contains_error_checklist=_has_error_checklist(sec),
+                contains_spec_version_field=_has_spec_version_field(sec),
+            )
+        )
     return artifacts
 
 

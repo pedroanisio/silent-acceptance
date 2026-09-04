@@ -1,6 +1,7 @@
-.PHONY: check test lint regen clean
+.PHONY: check test lint regen regen-verify pdf lint-code clean
 
-SPEC := PALS_LAW-v1.5.4.md
+SPEC := SILENT_ACCEPTANCE-v2.0.0.md
+PDF_OUT := output/SILENT_ACCEPTANCE-v2.0.0.pdf
 
 # Run the full audit (no network verification) and regenerate output JSON
 regen:
@@ -14,10 +15,18 @@ regen-verify:
 test:
 	python3 -m pytest tests/ --cov=pals_check --cov-report=term-missing -v
 
+# Render the specification to PDF (pandoc + lualatex)
+pdf:
+	python3 -m tools.build_pdf $(SPEC) $(PDF_OUT)
+
 # Run linter
 lint:
-	python3 -m ruff check pals_check/ tests/
-	python3 -m ruff format --check pals_check/ tests/
+	python3 -m ruff check pals_check/ tests/ tools/
+	python3 -m ruff format --check pals_check/ tests/ tools/
+
+# Lint the code-side verification-boundary check (silent-acceptance-lint)
+lint-code:
+	cd silent-acceptance-lint && node --test 'tests/*.test.ts'
 
 # Full check: lint + test + regenerate and diff
 check: lint test

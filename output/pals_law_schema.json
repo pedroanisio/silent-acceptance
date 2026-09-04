@@ -1,6 +1,6 @@
 {
-  "version": "1.5.4",
-  "content_hash": "eb0df6521a993c8c",
+  "version": "1.5.0",
+  "content_hash": "d1d1f8d3f8015a00",
   "symbols": [
     {
       "name": "M_class",
@@ -402,7 +402,7 @@
       "contains_pipeline_corollary": true,
       "contains_independence_caveat": true,
       "contains_error_checklist": true,
-      "contains_spec_version_field": true
+      "contains_spec_version_field": false
     },
     {
       "artifact_id": "short_form",
@@ -438,7 +438,7 @@
       "contains_pipeline_corollary": true,
       "contains_independence_caveat": true,
       "contains_error_checklist": false,
-      "contains_spec_version_field": true
+      "contains_spec_version_field": false
     }
   ],
   "dependency_graph": {
@@ -487,14 +487,15 @@
     "ERR_REASONING",
     "ERR_SEMANTIC"
   ],
+  "layout": "v1",
   "_signature": {
     "signature_version": "1",
     "algorithm": "sha256",
     "tool_id": "pals-check",
     "tool_version": "1.0.0",
-    "signed_at": "2026-04-03T10:35:55Z",
-    "source_document_hash": "eb0df6521a993c8c",
-    "payload_digest": "978c1d6310741422e8bd468a15c1381eb6c0e09e08923a082f474472ff399c31",
-    "seal": "4e0021ebc181aee083bee0510708f606457504d10540e5206fae36310d8d444d"
+    "signed_at": "2026-09-04T02:37:02Z",
+    "source_document_hash": "d1d1f8d3f8015a00",
+    "payload_digest": "0ff9172a7260f98f051f36a20a8db627482dec004606b4e6a250d8048034dffb",
+    "seal": "db998ad54d227dacc9ff5638d83d71ac528c00a1c12d6bf26f583f0e0880eae0"
   }
 }

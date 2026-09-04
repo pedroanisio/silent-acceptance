@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PALS's Law — LLM Output Unreliability as an Architectural Invariant</title>
-  <meta name="description" content="Every pipeline consuming LLM output without verification contains an architectural defect. PALS's Law formalizes this as an enforceable engineering contract.">
+  <title>Silent Acceptance — LLM Output Error as an Architectural Invariant</title>
+  <meta name="description" content="Silent acceptance is the defect in which a system passes LLM output onward with no declared verification boundary. The specification names the defect, states the invariant, and ships the check.">
 
   <!-- Open Graph -->
-  <meta property="og:title" content="PALS's Law">
-  <meta property="og:description" content="LLM output error is a statistical invariant of the model class. Absence of a verification layer is a design defect.">
+  <meta property="og:title" content="Silent Acceptance">
+  <meta property="og:description" content="LLM output error is a statistical invariant of the model class. Passing output onward with no declared verification boundary is a design defect.">
   <meta property="og:type" content="article">
 
   <!-- Fonts -->
@@ -106,8 +106,15 @@
       font-weight: 300;
       color: var(--fg-muted);
       max-width: 540px;
-      margin: 0 auto 2.4rem;
+      margin: 0 auto 1rem;
       letter-spacing: 0.01em;
+    }
+
+    .hero .formerly {
+      font-size: 0.85rem;
+      color: var(--fg-muted);
+      font-style: italic;
+      margin-bottom: 2rem;
     }
 
     .version-badge {
@@ -356,21 +363,21 @@
 <!-- ════ Hero ════════════════════════════════════════════ -->
 <header class="hero">
   <div class="hero-inner">
-    <span class="version-badge">v1.5.4 · April 2026</span>
-    <h1><span class="accent">PALS's</span> Law</h1>
+    <span class="version-badge">Preprint · v2.0.0 · September 2026</span>
+    <h1><span class="accent">Silent</span> Acceptance</h1>
     <p class="subtitle">
-      A Formal Specification of LLM Output Unreliability
-      as an Architectural Invariant
+      LLM Output Error as an Architectural Invariant
     </p>
+    <p class="formerly">Versions 1.x were published as PALS's Law under the same concept DOI.</p>
     <div class="cta-row">
-      <a class="cta-btn cta-primary" href="https://github.com/USERNAME/pals-law">
+      <a class="cta-btn cta-primary" href="https://github.com/pedroanisio/silent-acceptance">
         ↓ GitHub
       </a>
-      <a class="cta-btn cta-secondary" href="https://doi.org/10.5281/zenodo.XXXXXXX">
+      <a class="cta-btn cta-secondary" href="https://doi.org/10.5281/zenodo.19401266">
         DOI · Zenodo
       </a>
-      <a class="cta-btn cta-secondary" href="https://arxiv.org/abs/XXXX.XXXXX">
-        arXiv preprint
+      <a class="cta-btn cta-secondary" href="https://github.com/pedroanisio/silent-acceptance/tree/main/silent-acceptance-lint">
+        Linter · CI check
       </a>
     </div>
   </div>
@@ -381,16 +388,18 @@
 
 <div class="law-block">
   <p>
+    <strong>Silent acceptance</strong> is the defect in which a system passes LLM
+    output to a downstream consumer with no declared verification boundary.
+  </p>
+  <p>
     Across any realistic deployment, LLMs reliably produce errors — at a rate
-    that is non-zero and non-negligible.
+    that is non-zero and non-negligible. Failing to verify LLM output is not a bug
+    in the generated artifact. It is an <strong>architectural omission</strong> in
+    the system that consumed it.
   </p>
   <p>
-    Failing to verify LLM output is not a bug in the generated artifact.
-    It is an <strong>architectural omission</strong> in the system that consumed it.
-  </p>
-  <p>
-    <strong>Absence of a verification layer is a design defect, regardless of
-    how correct the LLM output appears to be.</strong>
+    <strong>Passing LLM output onward with no declared verification boundary is a
+    design defect, regardless of how correct the output appears to be.</strong>
   </p>
 </div>
 
@@ -417,8 +426,8 @@
 
 <p>
   Each class requires a distinct detection strategy. No single verifier
-  can detect all classes — this is the foundational motivation for treating
-  verification as a first-class architectural concern.
+  can detect all classes — which is why a verification boundary is declared
+  per class, not as a single bit.
 </p>
 
 <table class="taxonomy-table">
@@ -438,6 +447,28 @@
   </tbody>
 </table>
 
+<!-- ── Asymmetry ───────────────────────────────────────── -->
+<h2>The Capability-Detection Asymmetry</h2>
+
+<p>
+  The specification's one original and testable claim, stated as a labeled
+  hypothesis with an experiment protocol: as model capability <em>C</em> grows,
+  the errors that remain migrate toward the classes that are hardest to detect.
+  With detection difficulty <em>D<sub>c</sub></em> defined as the miss rate of a
+  fixed verifier on class <em>c</em>,
+</p>
+
+<div class="math-block" id="math-asym-structural"></div>
+<div class="math-block" id="math-asym-semantic"></div>
+
+<p>
+  A less capable model fabricates a citation with a nonsensical author and a
+  malformed DOI. A more capable model fabricates one with a real author, a real
+  journal, and a plausible abstract. The verifier that caught the first is blind
+  to the second — so a verifier held constant across a model upgrade is a
+  regression, not a conservative default.
+</p>
+
 <!-- ── Pipeline ────────────────────────────────────────── -->
 <h2>Pipeline Compounding</h2>
 
@@ -454,8 +485,16 @@
   failure probability that approaches certainty as pipeline length grows.
 </p>
 
-<!-- ── Corollaries ─────────────────────────────────────── -->
-<h2>Five Corollaries</h2>
+<!-- ── Principle ───────────────────────────────────────── -->
+<h2>The Verification Boundary Principle</h2>
+
+<p>
+  Every system that consumes LLM output must declare a verification boundary
+  before the output reaches a consumer: which error classes are checked
+  (<em>scope</em>), by what (<em>mechanism</em>), against which model version
+  (<em>calibration</em>), and where the verifier runs and who cannot modify it
+  (<em>location</em>). Six corollaries follow.
+</p>
 
 <div class="corollary">
   <div class="corollary-title">Corollary 1 · Appearance ≠ Correctness</div>
@@ -464,7 +503,7 @@
 
 <div class="corollary">
   <div class="corollary-title">Corollary 2 · Trust Accumulation Prohibited</div>
-  <p>A system must not relax its verification layer after observing a run of correct outputs.</p>
+  <p>A system must not relax its verification boundary after observing a run of correct outputs.</p>
 </div>
 
 <div class="corollary">
@@ -474,12 +513,17 @@
 
 <div class="corollary">
   <div class="corollary-title">Corollary 4 · Silent Acceptance is a Defect</div>
-  <p>Absence of an output validation layer is a blocking defect, equivalent to missing authentication.</p>
+  <p>Absence of a declared boundary is a blocking defect, equivalent to missing authentication. The check is mechanical and automated.</p>
 </div>
 
 <div class="corollary">
-  <div class="corollary-title">Corollary 5 · Capability Growth Shifts Risk</div>
-  <p>More capable models produce harder-to-detect errors. Verifier upgrades are a precondition for model upgrades.</p>
+  <div class="corollary-title">Corollary 5 · Verifier Upgrade Precedes Model Upgrade</div>
+  <p>If the asymmetry holds, a boundary calibrated on the old model is blind exactly where the new model's residual errors concentrate.</p>
+</div>
+
+<div class="corollary">
+  <div class="corollary-title">Corollary 6 · The Verifier Sits Outside the Boundary</div>
+  <p>A verifier the model or its agent can edit inherits the model's error distribution and is under pressure to weaken the check. Harness-tampering audits find exactly that. A verifier the agent can rewrite is silent acceptance with extra steps.</p>
 </div>
 
 <hr>
@@ -488,15 +532,16 @@
 <h2>Quick Start</h2>
 
 <h3>Inline banner</h3>
-<pre>// ⚠ PALS's LAW: LLM output is untrusted by default. Verify before use.</pre>
+<pre>// ⚠ VERIFICATION BOUNDARY: LLM output is untrusted by default. Verify before use. (Silent Acceptance v2.0.0)</pre>
 
-<h3>Contract checklist (TypeScript)</h3>
+<h3>Contract block (TypeScript)</h3>
 <pre>/**
- * ⚠ ARCHITECTURAL CONTRACT — PALS's LAW
+ * ⚠ VERIFICATION BOUNDARY — Silent Acceptance specification
+ * SILENT_ACCEPTANCE_VERSION: 2.0.0
  * MODEL_VERSION: &lt;pinned model&gt;
- * PALS_LAW_VERSION: 1.5.4
+ * VERIFIER_LOCATION: &lt;module the model cannot write to&gt;
  *
- * ERROR CLASSES NOT COVERED:
+ * ERROR CLASSES NOT COVERED BY THIS BOUNDARY:
  *   [ ] ERR_HALLUCINATION
  *   [ ] ERR_OMISSION
  *   [ ] ERR_SCHEMA
@@ -507,13 +552,21 @@
  *   [ ] ERR_SEMANTIC
  *   [ ] ERR_REASONING
  *
- * Unchecked = known, accepted risk.
+ * MITIGATION: &lt;downstream boundary or accepted-risk note per unchecked class&gt;
  */</pre>
+
+<h3>CI check</h3>
+<p>
+  The linter flags every LLM call site with no boundary declaration in scope,
+  every declaration whose checklist is entirely unchecked with no mitigation,
+  and every declaration with no model pin. Zero dependencies; Node 24.
+</p>
+<pre>node silent-acceptance-lint/src/cli.ts src/</pre>
 
 <hr>
 
 <!-- ── Foundations ──────────────────────────────────────── -->
-<h2>Theoretical Foundations</h2>
+<h2>Foundations and Evidence</h2>
 
 <p>
   The inevitability of LLM hallucination has been independently established by:
@@ -533,24 +586,43 @@
   <a href="https://arxiv.org/abs/2506.06382">arXiv</a>
 </p>
 <p>
-  PALS's Law does not claim priority over these results. Its contribution is
-  the bridge from theoretical inevitability to an enforceable engineering
-  contract.
+  The harness-level evidence behind Corollary 6:
+</p>
+<p>
+  <strong>Lewis (2026)</strong> — same model, same tasks, one context-policy
+  change in the harness: fail-to-pass fraction moved from 28 to 49 percent.
+  <a href="https://arxiv.org/abs/2608.26218">arXiv</a>
+</p>
+<p>
+  <strong>Wang, Zhang &amp; Shao (2026)</strong> — self-improving agents tamper
+  with their own harness, and the tampered edits persist in the best lineage.
+  <a href="https://arxiv.org/abs/2609.00069">arXiv</a>
+</p>
+<p>
+  <strong>Guo et al. (2026)</strong> — self-authored verification scores stay
+  near perfect while sealed deployment performance degrades; at least one
+  acceptance signal outside the agent's control is required.
+  <a href="https://arxiv.org/abs/2607.24300">arXiv</a>
+</p>
+<p>
+  The specification does not claim priority over these results. Its contribution
+  is the bridge from theoretical inevitability to an enforceable engineering
+  contract, and the check that enforces it.
 </p>
 
 <hr>
 
 <h2>Citation</h2>
 
-<pre>@misc{pals_law_2026,
+<pre>@misc{silent_acceptance_2026,
   author       = {de Luna e Silva, Pedro Anisio},
-  title        = {{PALS's Law}: A Formal Specification of
-                  {LLM} Output Unreliability as an
+  title        = {Silent Acceptance: {LLM} Output Error as an
                   Architectural Invariant},
   year         = {2026},
-  version      = {1.5.4},
-  howpublished = {\url{https://github.com/USERNAME/pals-law}},
-  note         = {Version 1.5.4, April 2026}
+  version      = {2.0.0},
+  doi          = {10.5281/zenodo.19401266},
+  note         = {Formerly published as PALS's Law (v1.x).
+                  Version 2.0.0, September 2026}
 }</pre>
 
 </main>
@@ -562,26 +634,34 @@
   </p>
   <p>
     Specification: <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>
-    · Practitioner artifacts (§9):
+    · Practitioner artifacts (§10):
     <a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0 1.0</a>
   </p>
   <p style="margin-top: 0.6rem;">
-    Document generated with assistance from Claude (Anthropic).
+    Drafted with AI assistance (Claude); references resolved and math checks recorded in the
+    published verification report. See §11 of the specification for what was verified and how.
   </p>
 </footer>
 
 <!-- ════ Math Rendering ════════════════════════════════ -->
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+  const opts = { displayMode: true, throwOnError: false };
   katex.render(
     String.raw`\forall M \in \mathcal{M},\ \forall \text{ realistic } \mathcal{D}:\quad \mathbb{E}_{x \sim \mathcal{D}}\!\bigl[\varepsilon(M(x), x)\bigr] \geq \delta > 0`,
-    document.getElementById('math-operative'),
-    { displayMode: true, throwOnError: false }
+    document.getElementById('math-operative'), opts
+  );
+  katex.render(
+    String.raw`\frac{\partial D_c}{\partial C} \leq 0 \quad \text{for structural classes: } \texttt{OMISSION},\ \texttt{SCHEMA},\ \texttt{TRUNCATION},\ \texttt{INSTRUCTION}`,
+    document.getElementById('math-asym-structural'), opts
+  );
+  katex.render(
+    String.raw`\frac{\partial D_c}{\partial C} > 0 \quad \text{for semantic classes: } \texttt{HALLUCINATION},\ \texttt{SEMANTIC},\ \texttt{SYCOPHANCY},\ \texttt{CALIBRATION},\ \texttt{REASONING}`,
+    document.getElementById('math-asym-semantic'), opts
   );
   katex.render(
     String.raw`P(\text{at least one error}) = 1 - \prod_{i=1}^{n}(1 - p_i) \;\xrightarrow{n \to \infty}\; 1`,
-    document.getElementById('math-pipeline'),
-    { displayMode: true, throwOnError: false }
+    document.getElementById('math-pipeline'), opts
   );
 });
 </script>

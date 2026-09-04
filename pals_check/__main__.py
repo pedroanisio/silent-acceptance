@@ -17,6 +17,7 @@ from dataclasses import asdict
 from datetime import datetime, timezone
 from pathlib import Path
 
+from pals_check.constants import detect_layout
 from pals_check.report import build_report
 from pals_check.signing import generate_certificate, sign_artifact, verify_artifact, verify_certificate
 
@@ -25,7 +26,10 @@ def main() -> None:
     if len(sys.argv) < 2 or "--help" in sys.argv:
         print("Usage: python -m pals_check <path_to_md_file> [--no-verify]", file=sys.stderr)
         print("       python -m pals_check --check-sig <json_file>", file=sys.stderr)
-        print("       python -m pals_check --verify-cert <cert.json> <spec.md> [report.json] [schema.json]", file=sys.stderr)
+        print(
+            "       python -m pals_check --verify-cert <cert.json> <spec.md> [report.json] [schema.json]",
+            file=sys.stderr,
+        )
         print("  --no-verify    Skip network fetching of reference URLs", file=sys.stderr)
         print("  --package      Bundle spec + outputs into a signed .zip archive", file=sys.stderr)
         print("  --check-sig    Verify the digital signature of an output file", file=sys.stderr)
@@ -35,7 +39,10 @@ def main() -> None:
     # Certificate verification mode
     if sys.argv[1] == "--verify-cert":
         if len(sys.argv) < 4:
-            print("Usage: python -m pals_check --verify-cert <cert.json> <spec.md> [report.json] [schema.json]", file=sys.stderr)
+            print(
+                "Usage: python -m pals_check --verify-cert <cert.json> <spec.md> [report.json] [schema.json]",
+                file=sys.stderr,
+            )
             sys.exit(1)
         cert_path = Path(sys.argv[2])
         cert = json.loads(cert_path.read_text(encoding="utf-8"))
@@ -57,8 +64,10 @@ def main() -> None:
             icon = "\u2713" if ": OK" in msg else "\u2717"
             print(f"  {icon} {msg}")
         checks = cert.get("checks", {})
-        print(f"  Checks at generation: {checks.get('passed', '?')} passed, "
-              f"{checks.get('warned', '?')} warned, {checks.get('failed', '?')} failed")
+        print(
+            f"  Checks at generation: {checks.get('passed', '?')} passed, "
+            f"{checks.get('warned', '?')} warned, {checks.get('failed', '?')} failed"
+        )
         print(f"  Generated: {cert.get('generated_at', '?')}")
         sys.exit(0 if valid else 1)
 
@@ -89,7 +98,8 @@ def main() -> None:
     do_package = "--package" in sys.argv
 
     text = md_path.read_text(encoding="utf-8")
-    report, schema = build_report(text, do_verify=do_verify)
+    layout = detect_layout(text)
+    report, schema = build_report(text, do_verify=do_verify, layout=layout)
 
     # Ensure output directory exists
     output_dir = Path("output")
@@ -119,7 +129,7 @@ def main() -> None:
     if do_package:
         version = report.document_version
         ts = datetime.now(timezone.utc).strftime("%Y%m%d")
-        zip_name = f"pals-law-v{version}-{ts}.zip"
+        zip_name = f"{layout.package_prefix}-v{version}-{ts}.zip"
         zip_path = output_dir / zip_name
 
         with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zf:
@@ -130,7 +140,7 @@ def main() -> None:
 
     # Print summary
     print("=" * 72)
-    print("  PALS's LAW \u2014 Deterministic Companion Report")
+    print(f"  {layout.display_name} \u2014 Deterministic Companion Report")
     print("=" * 72)
     print(f"  Document version : {report.document_version}")
     print(f"  Content hash     : {report.content_hash}")
@@ -157,8 +167,14 @@ def main() -> None:
         doi = ref_dict.get("doi") or ref_dict.get("arxiv_id") or "\u2014"
         classes = ", ".join(ref_dict.get("error_classes_supported", []))
         vstatus = ref_dict.get("verification_status", "unverified")
-        vicon = {"verified": "\u2713", "partial": "~", "mismatch": "\u2260",
-                 "unreachable": "\u2717", "unverified": "?", "no_identifier": "\u2014"}.get(vstatus, "?")
+        vicon = {
+            "verified": "\u2713",
+            "partial": "~",
+            "mismatch": "\u2260",
+            "unreachable": "\u2717",
+            "unverified": "?",
+            "no_identifier": "\u2014",
+        }.get(vstatus, "?")
         print(f"  [{ref_id}] {authors} ({year})  [{vicon} {vstatus}]")
         print(f"    ID: {doi}")
         if ref_dict.get("fetched_url"):
@@ -175,9 +191,7 @@ def main() -> None:
     print("  MATH CONSISTENCY CHECKS:")
     print("  " + "-" * 68)
     for chk in report.math_checks:
-        status_icon = {"pass": "\u2713", "warn": "\u26a0", "fail": "\u2717", "info": "\u2139"}.get(
-            chk["status"], "?"
-        )
+        status_icon = {"pass": "\u2713", "warn": "\u26a0", "fail": "\u2717", "info": "\u2139"}.get(chk["status"], "?")
         print(f"  [{status_icon}] {chk['check_id']}: {chk['description']}")
     print()
 

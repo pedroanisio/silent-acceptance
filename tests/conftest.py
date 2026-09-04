@@ -6,20 +6,38 @@ from pathlib import Path
 
 import pytest
 
+from pals_check.constants import LAYOUT_V1, LAYOUT_V2, SpecLayout
+
 FIXTURES_DIR = Path(__file__).parent / "fixtures"
 PROJECT_ROOT = Path(__file__).parent.parent
+
+SPEC_V1_PATH = PROJECT_ROOT / "PALS_LAW-v1.5.4.md"
+SPEC_V2_PATH = PROJECT_ROOT / "SILENT_ACCEPTANCE-v2.0.0.md"
 
 
 @pytest.fixture
 def real_md_text() -> str:
-    """Load the actual PALS's LAW markdown document."""
-    md_path = PROJECT_ROOT / "PALS_LAW-v1.5.4.md"
-    return md_path.read_text(encoding="utf-8")
+    """Load the current specification (Silent Acceptance v2.0.0)."""
+    return SPEC_V2_PATH.read_text(encoding="utf-8")
+
+
+@pytest.fixture
+def real_v1_md_text() -> str:
+    """Load the last v1 specification (PALS's LAW v1.5.4), kept auditable for Zenodo records."""
+    return SPEC_V1_PATH.read_text(encoding="utf-8")
+
+
+@pytest.fixture(params=["v1", "v2"], ids=["pals-law-v1.5.4", "silent-acceptance-v2.0.0"])
+def spec_doc(request, real_v1_md_text: str, real_md_text: str) -> tuple[str, SpecLayout]:
+    """Both published layouts, as (text, layout) pairs, for contract tests."""
+    if request.param == "v1":
+        return real_v1_md_text, LAYOUT_V1
+    return real_md_text, LAYOUT_V2
 
 
 @pytest.fixture
 def minimal_md_text() -> str:
-    """A minimal synthetic document with all required structural elements."""
+    """A minimal synthetic document (v1 structure) with all required structural elements."""
     return """\
 ---
 disclaimer:

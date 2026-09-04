@@ -7,19 +7,16 @@ docstring explaining what was broken and how.
 from __future__ import annotations
 
 import json
-import re
 from unittest.mock import MagicMock, patch
 
-import pytest
-
-from pals_check.constants import ErrorClass
+from pals_check.constants import ErrorClass, SpecLayout
 from pals_check.math_checker import (
     _get_section_text,
+    asymmetry_blocks,
     check_math_consistency,
     extract_math_blocks,
 )
 from pals_check.references import (
-    _extract_meta_citation_title,
     _fetch_and_extract,
     _parse_formal_reference,
     extract_references,
@@ -29,7 +26,6 @@ from pals_check.schema import (
     _build_error_classes,
     build_schema,
 )
-
 
 # =====================================================================
 # Regression: _get_section_text f-string quantifier bug
@@ -72,16 +68,20 @@ class TestGetSectionTextFStringRegression:
         assert _get_section_text(text_h1, "1.0") == ""
         assert _get_section_text(text_h5, "1.0") == ""
 
-    def test_real_document_section_91(self, real_md_text: str):
-        """§9.1 must return non-empty text containing ERR_HALLUCINATION."""
-        result = _get_section_text(real_md_text, "9.1")
-        assert len(result) > 0, "_get_section_text returned empty for §9.1"
+    def test_real_document_contract_section(self, spec_doc: tuple[str, SpecLayout]):
+        """The contract-block section must return non-empty text containing ERR_HALLUCINATION."""
+        text, layout = spec_doc
+        section = layout.artifacts[0].section
+        result = _get_section_text(text, section)
+        assert len(result) > 0, f"_get_section_text returned empty for §{section}"
         assert "ERR_HALLUCINATION" in result
 
-    def test_real_document_section_94(self, real_md_text: str):
-        """§9.4 must return non-empty text containing pipeline language."""
-        result = _get_section_text(real_md_text, "9.4")
-        assert len(result) > 0, "_get_section_text returned empty for §9.4"
+    def test_real_document_repository_section(self, spec_doc: tuple[str, SpecLayout]):
+        """The repository-block section must return non-empty text containing pipeline language."""
+        text, layout = spec_doc
+        section = layout.artifacts[3].section
+        result = _get_section_text(text, section)
+        assert len(result) > 0, f"_get_section_text returned empty for §{section}"
         assert "pipeline" in result.lower()
 
 
@@ -100,9 +100,10 @@ class TestArtifactFlagsRegression:
     correctly reflect the actual content of each §9 subsection.
     """
 
-    def test_contract_block_all_flags_true(self, real_md_text: str):
-        """§9.1 contract block must detect all five content types."""
-        artifacts = _build_artifacts(real_md_text)
+    def test_contract_block_all_flags_true(self, spec_doc: tuple[str, SpecLayout]):
+        """The contract block must detect all five content types."""
+        text, layout = spec_doc
+        artifacts = _build_artifacts(text, layout)
         contract = next(a for a in artifacts if a.artifact_id == "contract_block")
         assert contract.contains_operative_form
         assert contract.contains_existential_form
@@ -110,23 +111,26 @@ class TestArtifactFlagsRegression:
         assert contract.contains_independence_caveat
         assert contract.contains_error_checklist
 
-    def test_short_form_operative_true(self, real_md_text: str):
-        """§9.2 short-form must detect the operative form (non-negligible)."""
-        artifacts = _build_artifacts(real_md_text)
+    def test_short_form_operative_true(self, spec_doc: tuple[str, SpecLayout]):
+        """The short form must detect the operative form (non-negligible)."""
+        text, layout = spec_doc
+        artifacts = _build_artifacts(text, layout)
         short = next(a for a in artifacts if a.artifact_id == "short_form")
         assert short.contains_operative_form
 
-    def test_claudemd_block_flags(self, real_md_text: str):
-        """§9.4 CLAUDE.md block must detect operative, pipeline, independence."""
-        artifacts = _build_artifacts(real_md_text)
-        claude = next(a for a in artifacts if a.artifact_id == "claudemd_block")
-        assert claude.contains_operative_form
-        assert claude.contains_pipeline_corollary
-        assert claude.contains_independence_caveat
+    def test_repository_block_flags(self, spec_doc: tuple[str, SpecLayout]):
+        """The repository block (CLAUDE.md / agent file) must detect operative, pipeline, independence."""
+        text, layout = spec_doc
+        artifacts = _build_artifacts(text, layout)
+        repo_block = next(a for a in artifacts if a.artifact_id == layout.artifacts[3].artifact_id)
+        assert repo_block.contains_operative_form
+        assert repo_block.contains_pipeline_corollary
+        assert repo_block.contains_independence_caveat
 
-    def test_not_all_false(self, real_md_text: str):
+    def test_not_all_false(self, spec_doc: tuple[str, SpecLayout]):
         """At least one artifact must have at least one True flag."""
-        artifacts = _build_artifacts(real_md_text)
+        text, layout = spec_doc
+        artifacts = _build_artifacts(text, layout)
         any_true = any(
             a.contains_operative_form
             or a.contains_existential_form
@@ -149,31 +153,34 @@ class TestArtifactFlagsRegression:
 class TestCorollary5PartitionRegression:
     """Guard against error classes being orphaned from the Cor.5 partition."""
 
-    def test_all_nine_classes_in_partition(self, real_md_text: str):
+    def test_all_nine_classes_in_partition(self, spec_doc: tuple[str, SpecLayout]):
         """structural ∪ semantic must equal all ErrorClass members."""
-        schema = build_schema(real_md_text)
+        text, layout = spec_doc
+        schema = build_schema(text, layout)
         structural = set(schema.structural_error_classes)
         semantic = set(schema.semantic_error_classes)
         all_classes = {ec.value for ec in ErrorClass}
         assert structural | semantic == all_classes
 
-    def test_err_omission_in_partition(self, real_md_text: str):
+    def test_err_omission_in_partition(self, spec_doc: tuple[str, SpecLayout]):
         """ERR_OMISSION must be classified (was orphaned before fix)."""
-        schema = build_schema(real_md_text)
+        text, layout = spec_doc
+        schema = build_schema(text, layout)
         all_in_partition = set(schema.structural_error_classes) | set(schema.semantic_error_classes)
         assert "ERR_OMISSION" in all_in_partition
 
-    def test_err_calibration_in_partition(self, real_md_text: str):
+    def test_err_calibration_in_partition(self, spec_doc: tuple[str, SpecLayout]):
         """ERR_CALIBRATION must be classified (was orphaned before fix)."""
-        schema = build_schema(real_md_text)
+        text, layout = spec_doc
+        schema = build_schema(text, layout)
         all_in_partition = set(schema.structural_error_classes) | set(schema.semantic_error_classes)
         assert "ERR_CALIBRATION" in all_in_partition
 
-    def test_spec_math_blocks_cover_all_classes(self, real_md_text: str):
-        """The actual LaTeX in §8 must now mention all 9 error classes."""
-        blocks = extract_math_blocks(real_md_text)
-        cor5_blocks = [b for b in blocks if "8" in b.section and r'\partial' in b.latex]
-        assert len(cor5_blocks) >= 2, "Expected at least 2 Corollary 5 math blocks"
+    def test_spec_math_blocks_cover_all_classes(self, spec_doc: tuple[str, SpecLayout]):
+        """The actual asymmetry LaTeX must mention all 9 error classes."""
+        text, layout = spec_doc
+        cor5_blocks = asymmetry_blocks(extract_math_blocks(text, layout), layout)
+        assert len(cor5_blocks) >= 2, "Expected at least 2 asymmetry math blocks"
 
         all_found: set[str] = set()
         for b in cor5_blocks:
@@ -183,21 +190,21 @@ class TestCorollary5PartitionRegression:
                     all_found.add(ec.value)
 
         expected = {ec.value for ec in ErrorClass}
-        assert all_found == expected, (
-            f"Spec math blocks missing: {expected - all_found}"
-        )
+        assert all_found == expected, f"Spec math blocks missing: {expected - all_found}"
 
-    def test_chk_cor5_signs_passes(self, real_md_text: str):
+    def test_chk_cor5_signs_passes(self, spec_doc: tuple[str, SpecLayout]):
         """CHK_COR5_SIGNS must pass (not warn) now that all classes are present."""
-        blocks = extract_math_blocks(real_md_text)
-        checks = check_math_consistency(blocks, real_md_text)
+        text, layout = spec_doc
+        blocks = extract_math_blocks(text, layout)
+        checks = check_math_consistency(blocks, text, layout)
         cor5 = next(c for c in checks if c.check_id == "CHK_COR5_SIGNS")
         assert cor5.status == "pass", f"CHK_COR5_SIGNS status: {cor5.status}, detail: {cor5.detail}"
 
-    def test_chk_cor5_coverage_complete(self, real_md_text: str):
+    def test_chk_cor5_coverage_complete(self, spec_doc: tuple[str, SpecLayout]):
         """The coverage_complete flag in CHK_COR5_SIGNS detail must be True."""
-        blocks = extract_math_blocks(real_md_text)
-        checks = check_math_consistency(blocks, real_md_text)
+        text, layout = spec_doc
+        blocks = extract_math_blocks(text, layout)
+        checks = check_math_consistency(blocks, text, layout)
         cor5 = next(c for c in checks if c.check_id == "CHK_COR5_SIGNS")
         detail = json.loads(cor5.detail)
         assert detail["coverage_complete"] is True
@@ -215,9 +222,9 @@ class TestMetaCitationTitleFallbackRegression:
     def test_fallback_to_meta_citation_title(self):
         """When <title> is absent, citation_title meta tag should be used."""
         html_no_title = (
-            '<html><head>'
+            "<html><head>"
             '<meta name="citation_title" content="Calibrated LMs Must Hallucinate">'
-            '</head><body>content</body></html>'
+            "</head><body>content</body></html>"
         )
         ref = MagicMock()
         ref.title = "Calibrated Language Models Must Hallucinate"
@@ -257,9 +264,10 @@ class TestArxivIdTrailingPeriodRegression:
         assert ref.arxiv_id == "2109.07958"
         assert not ref.arxiv_id.endswith(".")
 
-    def test_arxiv_id_clean_in_real_doc(self, real_md_text: str):
+    def test_arxiv_id_clean_in_real_doc(self, spec_doc: tuple[str, SpecLayout]):
         """All extracted references must have clean arxiv_ids."""
-        refs = extract_references(real_md_text)
+        text, _ = spec_doc
+        refs = extract_references(text)
         for ref in refs:
             if ref.arxiv_id:
                 assert not ref.arxiv_id.endswith("."), (
@@ -300,9 +308,7 @@ $$
         checks = check_math_consistency(blocks, text)
         cor5 = next((c for c in checks if c.check_id == "CHK_COR5_SIGNS"), None)
         assert cor5 is not None
-        assert cor5.status == "warn", (
-            f"Expected 'warn' for incomplete coverage, got '{cor5.status}'"
-        )
+        assert cor5.status == "warn", f"Expected 'warn' for incomplete coverage, got '{cor5.status}'"
         detail = json.loads(cor5.detail)
         assert detail["coverage_complete"] is False
 
@@ -344,7 +350,9 @@ class TestErrorClassDefPartitionAgreement:
     def test_structural_defs_have_leq_0_sign(self):
         """All structural error classes must have corollary5_sign 'leq_0'."""
         defs = _build_error_classes()
-        schema = build_schema("**Document version:** 0.0.1\n## 9. Artifacts\n### 9.1 A\ntest\n### 9.2 B\ntest\n### 9.3 C\ntest\n### 9.4 D\ntest")
+        schema = build_schema(
+            "**Document version:** 0.0.1\n## 9. Artifacts\n### 9.1 A\ntest\n### 9.2 B\ntest\n### 9.3 C\ntest\n### 9.4 D\ntest"
+        )
         structural_set = set(schema.structural_error_classes)
         for ec in defs:
             if ec.identifier in structural_set:
@@ -355,10 +363,10 @@ class TestErrorClassDefPartitionAgreement:
     def test_semantic_defs_have_gt_0_sign(self):
         """All semantic error classes must have corollary5_sign 'gt_0'."""
         defs = _build_error_classes()
-        schema = build_schema("**Document version:** 0.0.1\n## 9. Artifacts\n### 9.1 A\ntest\n### 9.2 B\ntest\n### 9.3 C\ntest\n### 9.4 D\ntest")
+        schema = build_schema(
+            "**Document version:** 0.0.1\n## 9. Artifacts\n### 9.1 A\ntest\n### 9.2 B\ntest\n### 9.3 C\ntest\n### 9.4 D\ntest"
+        )
         semantic_set = set(schema.semantic_error_classes)
         for ec in defs:
             if ec.identifier in semantic_set:
-                assert ec.corollary5_sign == "gt_0", (
-                    f"{ec.identifier} is semantic but has sign '{ec.corollary5_sign}'"
-                )
+                assert ec.corollary5_sign == "gt_0", f"{ec.identifier} is semantic but has sign '{ec.corollary5_sign}'"

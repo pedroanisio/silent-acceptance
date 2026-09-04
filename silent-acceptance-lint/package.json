@@ -1,0 +1,40 @@
+{
+  "name": "silent-acceptance-lint",
+  "version": "0.1.0",
+  "description": "Flags LLM call sites that pass model output onward with no declared verification boundary (Silent Acceptance spec, §10.5).",
+  "type": "module",
+  "bin": {
+    "silent-acceptance-lint": "./dist/cli.js"
+  },
+  "main": "./dist/lint.js",
+  "types": "./dist/lint.d.ts",
+  "files": [
+    "dist",
+    "src",
+    "ci",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "node --test 'tests/*.test.ts'",
+    "typecheck": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.build.json",
+    "lint:self": "node src/cli.ts src/ --format text"
+  },
+  "engines": {
+    "node": ">=23.6.0"
+  },
+  "keywords": [
+    "llm",
+    "verification",
+    "lint",
+    "silent-acceptance",
+    "verification-boundary",
+    "hallucination"
+  ],
+  "author": "Pedro Anisio de Luna e Silva",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.8.0"
+  }
+}

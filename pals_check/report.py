@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
 
-from pals_check.constants import ErrorClass
-from pals_check.math_checker import MathCheck, extract_math_blocks, check_math_consistency, validate_section_ids
-from pals_check.references import Reference, extract_references, verify_references
+from pals_check.constants import ErrorClass, SpecLayout, detect_layout
+from pals_check.math_checker import check_math_consistency, extract_math_blocks, validate_section_ids
+from pals_check.references import extract_references, verify_references
 from pals_check.schema import PALSLawSchema, build_schema
 
 
@@ -30,8 +30,12 @@ class AuditReport:
     checks_failed: int = 0
 
 
-def build_report(text: str, do_verify: bool = True) -> tuple[AuditReport, PALSLawSchema]:
+def build_report(
+    text: str, do_verify: bool = True, layout: SpecLayout | None = None
+) -> tuple[AuditReport, PALSLawSchema]:
     """Run the full audit pipeline and return (report, schema)."""
+    layout = layout or detect_layout(text)
+
     # Phase 1: References
     refs = extract_references(text)
 
@@ -41,11 +45,11 @@ def build_report(text: str, do_verify: bool = True) -> tuple[AuditReport, PALSLa
         print()
 
     # Phase 2: Math
-    math_blocks = extract_math_blocks(text)
-    math_checks = check_math_consistency(math_blocks, text)
+    math_blocks = extract_math_blocks(text, layout)
+    math_checks = check_math_consistency(math_blocks, text, layout)
 
     # Phase 3: Schema
-    schema = build_schema(text)
+    schema = build_schema(text, layout)
 
     # Aggregate
     checks_passed = sum(1 for c in math_checks if c.status == "pass")
@@ -65,13 +69,11 @@ def build_report(text: str, do_verify: bool = True) -> tuple[AuditReport, PALSLa
     warnings: list[str] = []
 
     # Validate hardcoded section IDs against document structure
-    section_warnings = validate_section_ids(text)
+    section_warnings = validate_section_ids(text, layout)
     warnings.extend(section_warnings)
 
     if uncovered:
-        warnings.append(
-            f"Error classes with no direct empirical reference: {', '.join(uncovered)}"
-        )
+        warnings.append(f"Error classes with no direct empirical reference: {', '.join(uncovered)}")
     if checks_failed > 0:
         warnings.append(f"{checks_failed} math consistency check(s) FAILED")
     for ref in refs:
@@ -98,11 +100,11 @@ def build_report(text: str, do_verify: bool = True) -> tuple[AuditReport, PALSLa
             "Scope gap: no ERR_POLICY/ERR_COMPLIANCE class for outputs that are "
             "correct and well-formed but violate business/safety guardrails"
         )
-    # Check if contract block has PALS_LAW_VERSION field
+    # Check if contract block has the spec-version field
     for artifact in schema.artifacts:
         if artifact.artifact_id == "contract_block" and not artifact.contains_spec_version_field:
             warnings.append(
-                "Contract block (\u00a79.1) missing PALS_LAW_VERSION field \u2014 "
+                f"Contract block (\u00a7{artifact.section}) missing {layout.version_field} field \u2014 "
                 "contracts become stale as the specification evolves"
             )
 

@@ -1,0 +1,17 @@
+# Verification-boundary check (Silent Acceptance spec §10.5).
+# Copy to .github/workflows/verification-boundary.yml in the project you want checked.
+name: verification-boundary
+on: [push, pull_request]
+jobs:
+  silent-acceptance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: pedroanisio/silent-acceptance
+          path: .silent-acceptance
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: node .silent-acceptance/silent-acceptance-lint/src/cli.ts src/

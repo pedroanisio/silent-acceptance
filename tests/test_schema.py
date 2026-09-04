@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from pals_check.constants import LAYOUT_V1, LAYOUT_V2
 from pals_check.schema import (
     PALSLawSchema,
     _build_claims,
@@ -10,7 +11,6 @@ from pals_check.schema import (
     _build_symbols,
     build_schema,
 )
-
 
 # --- build_schema ---
 
@@ -41,7 +41,17 @@ class TestBuildSchema:
 
     def test_build_schema_real_document(self, real_md_text: str):
         schema = build_schema(real_md_text)
+        assert schema.version == "2.0.0"
+        assert schema.layout == "v2"
+
+    def test_build_schema_real_v1_document(self, real_v1_md_text: str):
+        schema = build_schema(real_v1_md_text)
         assert schema.version == "1.5.4"
+        assert schema.layout == "v1"
+
+    def test_build_schema_minimal_document_uses_v1_layout(self, minimal_md_text: str):
+        schema = build_schema(minimal_md_text)
+        assert schema.layout == "v1"
 
 
 # --- _build_symbols ---
@@ -65,6 +75,19 @@ class TestBuildSymbols:
         symbols = _build_symbols()
         eps = next(s for s in symbols if s.name == "epsilon")
         assert "{0, 1}" in eps.type_signature
+
+    def test_build_symbols_v2_adds_boundary_vocabulary(self):
+        v1_names = {s.name for s in _build_symbols(LAYOUT_V1)}
+        v2 = _build_symbols(LAYOUT_V2)
+        v2_names = {s.name for s in v2}
+        assert len(v2) == 19
+        assert v2_names - v1_names == {"C_classes", "V_c", "B", "R_c"}
+        assert all(s.section_defined == "3.1" for s in v2 if s.name in {"C_classes", "V_c", "B", "R_c"})
+
+    def test_build_symbols_v2_asymmetry_symbols_move_to_statement(self):
+        v2 = {s.name: s for s in _build_symbols(LAYOUT_V2)}
+        assert v2["D_c"].section_defined == "7.1"
+        assert v2["C_M"].section_defined == "7.1"
 
 
 # --- _build_claims ---
@@ -104,6 +127,30 @@ class TestBuildClaims:
         claims = _build_claims()
         cor5 = next(c for c in claims if c.claim_id == "COR5")
         assert cor5.status == "hypothesis"
+
+    def test_build_claims_v2_count_and_ids(self):
+        claims = _build_claims(LAYOUT_V2)
+        assert len(claims) == 15
+        ids = [c.claim_id for c in claims]
+        assert len(ids) == len(set(ids))
+        assert {"ASYMMETRY", "VBP", "COR5", "COR6"} <= set(ids)
+
+    def test_build_claims_v2_asymmetry_is_hypothesis_and_precedes_corollaries(self):
+        claims = _build_claims(LAYOUT_V2)
+        ids = [c.claim_id for c in claims]
+        asym = next(c for c in claims if c.claim_id == "ASYMMETRY")
+        assert asym.status == "hypothesis"
+        assert asym.section == "7"
+        assert ids.index("ASYMMETRY") < ids.index("VBP") < ids.index("COR1")
+
+    def test_build_claims_v2_new_corollaries(self):
+        claims = {c.claim_id: c for c in _build_claims(LAYOUT_V2)}
+        assert claims["VBP"].status == "prescription"
+        assert claims["VBP"].section == "9.1"
+        assert claims["COR5"].status == "corollary"
+        assert claims["COR5"].depends_on == ["ASYMMETRY"]
+        assert claims["COR6"].section == "9.7"
+        assert set(claims["COR6"].supported_by) == {"wang_2026", "guo_2026"}
 
 
 # --- _build_error_classes ---
