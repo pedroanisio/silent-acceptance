@@ -1,7 +1,7 @@
 .PHONY: check test lint regen regen-verify pdf lint-code clean
 
-SPEC := SILENT_ACCEPTANCE-v2.0.0.md
-PDF_OUT := output/SILENT_ACCEPTANCE-v2.0.0.pdf
+SPEC := SILENT_ACCEPTANCE-v2.1.0.md
+PDF_OUT := output/SILENT_ACCEPTANCE-v2.1.0.pdf
 
 # Run the full audit (no network verification) and regenerate output JSON
 regen:

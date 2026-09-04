@@ -459,8 +459,11 @@ $$
 $$
 
 $$
-\frac{\partial D_c}{\partial C} > 0
-\quad \text{for } c \in \bigl\{\texttt{ERR\_HALLUCINATION},\ \texttt{ERR\_SEMANTIC},\ \texttt{ERR\_SYCOPHANCY},\ \texttt{ERR\_CALIBRATION},\ \texttt{ERR\_REASONING}\bigr\}
+\begin{gathered}
+\frac{\partial D_c}{\partial C} > 0 \quad \text{for } c \in \bigl\{
+\texttt{ERR\_HALLUCINATION},\ \texttt{ERR\_SEMANTIC},\ \texttt{ERR\_SYCOPHANCY}, \\
+\texttt{ERR\_CALIBRATION},\ \texttt{ERR\_REASONING} \bigr\}
+\end{gathered}
 $$
 
 The supporting observation is qualitative but concrete: a less capable model
@@ -847,22 +850,23 @@ For any function that invokes an LLM:
  * validate the output is introducing an architectural omission —
  * not a downstream bug.
  *
- * PER-CLASS BOUNDARY TABLE — every class carries an explicit status.
+ * PER-CLASS BOUNDARY TABLE - every class carries an explicit status.
+ * status is COVERED or ACCEPTED_RISK: <reason>.
  *
- *  class             | verifier | evidence source | recall/specificity | on reject | status
- *  ERR_HALLUCINATION |          |                 |                   |           | COVERED | ACCEPTED_RISK: <reason>
- *  ERR_OMISSION      |          |                 |                   |           |
- *  ERR_SCHEMA        |          |                 |                   |           |
- *  ERR_TRUNCATION    |          |                 |                   |           |
- *  ERR_SYCOPHANCY    |          |                 |                   |           |
- *  ERR_INSTRUCTION   |          |                 |                   |           |
- *  ERR_CALIBRATION   |          |                 |                   |           |
- *  ERR_SEMANTIC      |          |                 |                   |           |
- *  ERR_REASONING     |          |                 |                   |           |
+ *  class             | verifier | oracle | rec/spec | on reject | status
+ *  ERR_HALLUCINATION |          |        |          |           |
+ *  ERR_OMISSION      |          |        |          |           |
+ *  ERR_SCHEMA        |          |        |          |           |
+ *  ERR_TRUNCATION    |          |        |          |           |
+ *  ERR_SYCOPHANCY    |          |        |          |           |
+ *  ERR_INSTRUCTION   |          |        |          |           |
+ *  ERR_CALIBRATION   |          |        |          |           |
+ *  ERR_SEMANTIC      |          |        |          |           |
+ *  ERR_REASONING     |          |        |          |           |
  *
- * Specificity is required alongside recall: a verifier that rejects everything
- * has recall 1 (§9.1 item 5). "on reject" is retry | abstain | escalate |
- * fallback (item 6).
+ * Specificity is required alongside recall: a verifier that rejects
+ * everything has recall 1 (§9.1 item 5). "on reject" is retry | abstain |
+ * escalate | fallback (item 6).
  *
  * If no row is COVERED then S = ∅. That is silent acceptance, and no
  * mitigation note excuses it — the linter reports it as an error (§10.5).
@@ -1080,9 +1084,9 @@ people who did not take part in drafting has not yet happened.
 
 ### 11.5 Publication, license, and citation
 
-All versions share the Zenodo concept DOI 10.5281/zenodo.19401266, which always
+All versions share the Zenodo concept DOI [10.5281/zenodo.19401266](https://doi.org/10.5281/zenodo.19401266), which always
 resolves to the latest version. Version 1.5.4 was uploaded three times on 2026-04-03;
-the last of them, Zenodo version 3, is record 10.5281/zenodo.19401530 and carries the
+the last of them, Zenodo version 3, is record [10.5281/zenodo.19401530](https://doi.org/10.5281/zenodo.19401530) and carries the
 PDF and the audit artifacts (the earlier uploads are records 19401267 and 19401346).
 The source, the spec audit tool `pals-check`, and the code-side linter
 `silent-acceptance-lint` are maintained at

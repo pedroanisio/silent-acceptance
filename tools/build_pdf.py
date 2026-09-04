@@ -117,15 +117,44 @@ def substitute_glyphs(body: str) -> str:
     return "\n".join(out)
 
 
-def latex_header(running_title: str) -> str:
+# Tagging must be requested before \documentclass, which pandoc will not do
+# from a header include. The build therefore goes Markdown -> .tex -> PDF so
+# this line can be prepended. Requires TeX Live 2024+.
+DOCUMENT_METADATA = r"\DocumentMetadata{testphase={phase-III}}"
+
+
+def latex_header(running_title: str, *, title: str = "", author: str = "",
+                 subject: str = "", keywords: str = "") -> str:
+    """Preamble additions: running head, code-block wrapping, PDF metadata."""
     return rf"""
 \usepackage{{fancyhdr}}
 \usepackage{{microtype}}
+\usepackage{{fvextra}}
+\usepackage{{etoolbox}}
 \pagestyle{{fancy}}
 \fancyhf{{}}
 \fancyhead[L]{{\small {running_title}}}
 \fancyfoot[C]{{\thepage}}
 \setlength{{\emergencystretch}}{{3em}}
+
+%% Code blocks wrap instead of running past the margin. The contract block in
+%% §10.1 is wide enough to clip without this.
+\fvset{{breaklines=true,breakanywhere=true,breaksymbolleft={{}}}}
+
+%% Reference tables one step up from the surrounding body text.
+\AtBeginEnvironment{{longtable}}{{\normalsize}}
+
+%% hyperref arrives with \usepackage{{bookmark}}, which pandoc emits after this
+%% include, so setting metadata here directly is a no-op. Defer it.
+\AtBeginDocument{{%
+  \hypersetup{{
+    pdftitle={{{title}}},
+    pdfauthor={{{author}}},
+    pdfsubject={{{subject}}},
+    pdfkeywords={{{keywords}}},
+    pdflang={{en}},
+  }}%
+}}
 """
 
 
@@ -145,6 +174,15 @@ def build(spec_path: Path, pdf_path: Path) -> None:
     md, tb = prepare_markdown(text)
     version = document_version(text)
     running_title = f"{tb.title} v{version}"
+    author = tb.author or "Pedro Anisio de Luna e Silva"
+    subject = (
+        "Silent acceptance: passing LLM output to a consumer with no declared "
+        "verification boundary is an architectural defect."
+    )
+    keywords = (
+        "LLM; hallucination; verification boundary; silent acceptance; "
+        "agent harness; solver configuration; software architecture; evaluation"
+    )
 
     pdf_path.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="spec-pdf-") as tmp:
@@ -152,50 +190,58 @@ def build(spec_path: Path, pdf_path: Path) -> None:
         md_file = tmp_dir / "spec.md"
         header_file = tmp_dir / "header.tex"
         md_file.write_text(md, encoding="utf-8")
-        header_file.write_text(latex_header(running_title), encoding="utf-8")
+        header_file.write_text(
+            latex_header(running_title, title=tb.title, author=author,
+                         subject=subject, keywords=keywords),
+            encoding="utf-8",
+        )
 
-        cmd = [
-            "pandoc",
-            str(md_file),
-            "-o",
-            str(pdf_path),
-            "--pdf-engine=lualatex",
-            "--toc",
-            "--toc-depth=2",
-            "-f",
-            "markdown+pipe_tables+tex_math_dollars+raw_attribute",
-            "-V",
-            f"title={tb.title}",
-            "-V",
-            f"subtitle={tb.subtitle}",
-            "-V",
-            f"author={tb.author or 'Pedro Anisio de Luna e Silva'}",
-            "-V",
-            f"date={tb.date_line or f'Preprint, v{version}'}",
-            "-V",
-            "documentclass=article",
-            "-V",
-            "geometry:margin=1in",
-            "-V",
-            "fontsize=11pt",
-            "-V",
-            "mainfont=DejaVu Serif",
-            "-V",
-            "sansfont=DejaVu Sans",
-            "-V",
-            "monofont=DejaVu Sans Mono",
-            "-V",
-            "monofontoptions=Scale=0.82",
-            "-V",
-            "colorlinks=true",
-            "-V",
-            "linkcolor=blue!60!black",
-            "-V",
-            "urlcolor=blue!60!black",
-            "-H",
-            str(header_file),
+        tex_file = tmp_dir / "spec.tex"
+        common = [
+            "-f", "markdown+pipe_tables+tex_math_dollars+raw_attribute+autolink_bare_uris",
+            "--toc", "--toc-depth=2",
+            "-V", f"title={tb.title}",
+            "-V", f"subtitle={tb.subtitle}",
+            "-V", f"author={author}",
+            "-V", f"date={tb.date_line or f'Preprint, v{version}'}",
+            "-V", "documentclass=article",
+            "-V", "geometry:margin=1in",
+            "-V", "fontsize=11pt",
+            "-V", "mainfont=DejaVu Serif",
+            "-V", "sansfont=DejaVu Sans",
+            "-V", "monofont=DejaVu Sans Mono",
+            "-V", "monofontoptions=Scale=0.82",
+            "-V", "colorlinks=true",
+            "-V", "linkcolor=blue!60!black",
+            "-V", "urlcolor=blue!60!black",
+            "-H", str(header_file),
         ]
-        subprocess.run(cmd, check=True)
+        subprocess.run(["pandoc", str(md_file), "-o", str(tex_file),
+                        "--standalone", *common], check=True)
+
+        # Prepend the tagging request; it must precede \documentclass.
+        tex = tex_file.read_text(encoding="utf-8")
+        tex_file.write_text(f"{DOCUMENT_METADATA}\n{tex}", encoding="utf-8")
+
+        # Twice, so the table of contents resolves.
+        for _ in range(2):
+            subprocess.run(
+                ["lualatex", "-interaction=nonstopmode", "spec.tex"],
+                cwd=tmp_dir, check=False,
+                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+            )
+        produced = tmp_dir / "spec.pdf"
+        if not produced.exists():
+            raise SystemExit("lualatex produced no PDF; see the log in " + str(tmp_dir))
+
+        log = (tmp_dir / "spec.log").read_text(encoding="utf-8", errors="replace")
+        overfull = [ln for ln in log.splitlines() if "Overfull \\hbox" in ln]
+        if overfull:
+            print(f"warning: {len(overfull)} overfull hbox(es) - content may clip:")
+            for ln in overfull[:5]:
+                print("  " + ln.strip())
+
+        shutil.copyfile(produced, pdf_path)
     print(f"PDF written to {pdf_path}")
 
 
