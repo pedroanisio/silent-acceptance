@@ -70,7 +70,8 @@ is chosen from the document's major version, so `python -m pals_check PALS_LAW-v
 and `python -m pals_check SILENT_ACCEPTANCE-v2.1.0.md` both audit cleanly. The
 v2.1.0 vocabulary (acceptability predicate, $\tau$, conditional-hazard pipeline form)
 is gated on the document's exact version. The contract tests in
-`tests/test_drift_guards.py` run against both layouts.
+`tests/test_drift_guards.py` run against all three published specs (v1.5.4, v2.0.0,
+v2.1.0).
 
 The test suite never writes into the repository's `output/`; an integration test
 asserts the committed artifacts are byte-identical before and after the CLI run.
@@ -112,8 +113,10 @@ node silent-acceptance-lint/src/cli.ts path/to/your/src
 
 It reports every LLM call site (Anthropic, OpenAI, Google, Vercel AI SDK, Bedrock,
 Ollama by default; configurable) that has no verification boundary declaration in
-scope, every declaration whose checklist is entirely unchecked with no mitigation
-note, and every declaration with no `MODEL_VERSION` pin. Exit code 1 on findings.
+scope, every declaration in which no error class is `COVERED` (S = ∅, which no
+mitigation note excuses), every declaration with no `ACCEPTANCE_AUTHORITY`, and every
+declaration with no `SOLVER_CONFIGURATION_ID` pin; the v2.0.0 `MODEL_VERSION` field
+is accepted with a deprecation warning. Exit code 1 on findings.
 
 ## CLI usage
 
@@ -199,7 +202,7 @@ make check         # lint, test, regenerate, and detect output drift
 
 The repository currently includes:
 
-- `324` passing Python tests, run against both spec layouts
+- `324` passing Python tests, run against all three published specs
 - a Node test suite for the linter (`node --test`)
 - strict `ruff` linting configuration
 - `mypy` settings in [`pyproject.toml`](./pyproject.toml)
